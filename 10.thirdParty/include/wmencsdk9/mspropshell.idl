@@ -1,0 +1,217 @@
+//*@@@+++@@@@******************************************************************
+//
+// Microsoft Windows Media
+// Copyright (C) Microsoft Corporation. All rights reserved.
+//
+//*@@@---@@@@******************************************************************
+//
+// MSPropShell.idl : IDL source for MSPropShell.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (MSPropShell.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+#include "olectl.h"
+
+//
+// GUIDs
+//
+cpp_quote( "EXTERN_GUID( LIBID_MSPROPSHELLLib,      0xC4941F47, 0x8BC1, 0x49D3, 0x99, 0x89, 0x2B, 0x78, 0x26, 0xF2, 0x6A, 0xE6 );" )
+cpp_quote( "EXTERN_GUID( DIID__IMSPropShellEvents,  0xDF8AD1EA, 0xFCAA, 0x4455, 0x87, 0x72, 0xB4, 0xF5, 0x39, 0x48, 0x8E, 0xE3 );" )
+
+cpp_quote( "EXTERN_GUID( IID_IMSPropShellEvents2,  0x48b22f5f, 0xdcad, 0x4b7c, 0xb1, 0x3c, 0xc4, 0x8b, 0x45, 0x9c, 0xe2, 0xe8);")
+
+cpp_quote( "EXTERN_GUID( CLSID_MSPropShell,         0xE297AB5E, 0x40B0, 0x41BD, 0x9E, 0x06, 0xE4, 0x14, 0x40, 0x84, 0xEE, 0x5F );" )
+cpp_quote( "EXTERN_GUID( IID_IMSPropShell,          0x119338AA, 0xF278, 0x47CC, 0x9F, 0x88, 0x50, 0x0E, 0x86, 0x51, 0x0B, 0x66 );" )
+cpp_quote( "EXTERN_GUID( IID_IMSPropPage,           0x24DB76A0, 0x2A25, 0x48BE, 0xB4, 0x0B, 0x67, 0xC0, 0x99, 0x63, 0x61, 0x4C );" )
+cpp_quote( "EXTERN_GUID( IID_IMSPropPageSite,       0x8E849609, 0xC7E8, 0x4EC7, 0x8B, 0xD3, 0xD5, 0x5E, 0x87, 0x1A, 0x34, 0x0D );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncPageProp,       0xec74c5c1, 0xd214, 0x4fdd, 0x81, 0xc3, 0xa5, 0x84, 0x3e, 0x57, 0xaa, 0xcb);" )
+
+
+    typedef
+    [
+        uuid(C3003841-7A40-4091-8B96-996910610EB9),
+        helpstring("Enumeration type defining the tab style for a property page."),
+    ]
+    enum PSSTYLE
+    {
+        [helpstring("Indicates that property pages have no tabs.")]                    pssNoTabs       = 0x0000,
+        [helpstring("Indicates that property pages have tabs along the top edge.")]    pssTabsTop      = 0x0001,
+        [helpstring("Indicates that property pages have tabs along the bottom edge.")] pssTabsBottom   = 0x0002
+    } PSSTYLE;
+
+    [
+        object,
+        uuid(119338AA-F278-47CC-9F88-500E86510B66),
+        dual,
+        helpstring("Manages property page objects."),
+        pointer_default(unique)
+    ]
+    interface IMSPropShell : IDispatch
+    {
+        [id(1), helpstring("Adds a property page to the control.")] 
+        HRESULT AddPage([in] LPUNKNOWN pUnknown);
+        [id(2), helpstring("Retrieves a specific property page.")] 
+        HRESULT GetPage([in] long Index, [out, retval] LPUNKNOWN *ppUnknown);
+        [id(3), helpstring("Removes all of the property pages from the control.")] 
+        HRESULT RemoveAllPages();
+        [id(4), helpstring("Adds an object to the control that is referenced by all of the property pages.")] 
+        HRESULT AddObject([in] LPUNKNOWN pUnknown);
+        [id(5), helpstring("Removes all referenced objects from the control.")] 
+        HRESULT RemoveAllObjects();
+        [id(6), helpstring("Tells all property pages to apply any changes to their referenced objects.")] 
+        HRESULT Apply();
+        [id(7), helpstring("Refreshes all of the propety page and referenced object relationships.")] 
+        HRESULT Refresh();
+        [propget, id(8), helpstring("Retrieves the number of property pages in the control.")] 
+        HRESULT PageCount([out, retval] long *pVal);
+        [propget, id(9), helpstring("Indicates whether to call the Refresh method after adding or removing property pages or referenced objects.")] 
+        HRESULT AutoRefresh([out, retval] VARIANT_BOOL *pVal);
+        [propput, id(9), helpstring("Indicates whether to call the Refresh method after adding or removing property pages or referenced objects.")] 
+        HRESULT AutoRefresh([in] VARIANT_BOOL newVal);
+        [propget, id(10), helpstring("Specifies and retrieves the index of the currently active property page.")] 
+        HRESULT PageIndex([out, retval] long *pVal);
+        [propput, id(10), helpstring("Specifies and retrieves the index of the currently active property page.")] 
+        HRESULT PageIndex([in] long newVal);
+        [propget, id(11), helpstring("Indicates the visual appearance of the control.")] 
+        HRESULT Style([out, retval] PSSTYLE *pVal);
+        [propput, id(11), helpstring("Indicates the visual appearance of the control.")] 
+        HRESULT Style([in] PSSTYLE newVal);
+        [propget, id(12), helpstring("Specifies and retrieves the national language used in the property pages.")] 
+        HRESULT LocaleID([out, retval] long *pVal);
+        [propput, id(12), helpstring("Specifies and retrieves the national language used in the property pages.")] 
+        HRESULT LocaleID([in] long newVal);
+        [propget, id(13), helpstring("Retrieves the index number of the property page being applied during the Apply method.")] 
+        HRESULT ApplyIndex([out, retval] long *pVal);
+        [propget, id(14), helpstring("Indicates whether the property pages hosted by the control should initialize themselves to a new state.")] 
+        HRESULT InitNew([out, retval] VARIANT_BOOL *pVal);
+        [propput, id(14), helpstring("Indicates whether the property pages hosted by the control should initialize themselves to a new state.")] 
+        HRESULT InitNew([in] VARIANT_BOOL newVal);
+        [propget, id(15), helpstring("Specifies and retrieves the width of the property page tabs.")] 
+        HRESULT TabWidth([out, retval] short *pVal);
+        [propput, id(15), helpstring("Specifies and retrieves the width of the property page tabs.")] 
+        HRESULT TabWidth([in] short newVal);
+        [propget, id(16), helpstring("Retrieves the title of a specific property page.")] 
+        HRESULT PageTitle([in] long Index, [out, retval] BSTR *pbstrTitle );
+        [propget, id(17), helpstring("Indicates whether help is available for a specific page.")] 
+        HRESULT PageHasHelp([in] long Index, [out, retval] VARIANT_BOOL *pVal );
+        [id(18), helpstring("Displays help for a specific property page.")] HRESULT ShowPageHelp( [in] long Index );
+        [propget, id(19), helpstring("Indicates whether any of the pages are dirty and the changes need to be applied.")] 
+        HRESULT IsDirty([out, retval] VARIANT_BOOL *pVal);
+        [propput, id(19), helpstring("Sets the pages dirty or not.")] 
+        HRESULT IsDirty([in] VARIANT_BOOL newVal);
+        [id(20), helpstring("Resets the property bag under the hood.")] 
+        HRESULT ResetBag();
+        [id(21), helpstring("Resets the property bag and initializes it s values from the engine.")] 
+        HRESULT ResetBagFromEngine([in]    VARIANT_BOOL fForce);
+        [id(22), helpstring("Loads the property pages from the property bag.")] 
+         HRESULT Load();
+         [id(23), helpstring("Updates the visuals of the property pages.")] 
+         HRESULT Update();     
+         [id(24), helpstring("Validates the property bag.")] 
+         HRESULT Validate();
+         [id(25), helpstring("Send a special message to all the page.")] 
+         HRESULT ModifyProperty([in] long lIDRecepient,  [in] BSTR bstrValue , [in] long lParam1, [in] VARIANT var );
+    };
+
+    [
+        uuid(48B22F5F-DCAD-4b7c-B13C-C48B459CE2E8),
+        helpstring("Receives event notifications from the property page control.")
+    ]
+    interface IMSPropShellEvents2 : IUnknown
+    {                
+        HRESULT OnDirtyChanged([in] VARIANT_BOOL fDirty);
+        HRESULT OnQuerySupportApply([out] VARIANT_BOOL* pfSupport );
+        HRESULT OnApplyClicked();
+        HRESULT OnCancelClicked();
+        HRESULT OnHelpClicked();
+    };
+
+    [
+        object,
+        uuid( EC74C5C1-D214-4fdd-81C3-A5843E57AACB ),
+        dual,
+        helpstring( "IWMEncPageProp"),
+        pointer_default(unique)
+    ]
+    interface IWMEncPageProp : IUnknown
+    {
+        HRESULT ResetBag();  
+        HRESULT ResetBagFromEngine(VARIANT_BOOL fForce);
+        HRESULT Load();
+        HRESULT Update();
+        HRESULT SetDirty( BOOL bDirty );
+        HRESULT GetBagDirty( BOOL* pbDirty );
+        HRESULT SetNew( BOOL fNew );
+        HRESULT GetNew( BOOL* pfNew );
+        HRESULT EnableApply( BOOL fEnable );
+        HRESULT ModifyProperty([in] long lIDRecepient,  [in] BSTR bstrValue , [in] long lParam1, [in] VARIANT var );
+        HRESULT SaveBagToEngine();
+        HRESULT SetBagDirty( BOOL bDirty );
+        HRESULT Validate();
+        
+    };
+
+    [
+        object,
+        uuid(24DB76A0-2A25-48BE-B40B-67C09963614C),
+        helpstring("IMSPropPage Interface"),
+        pointer_default(unique)
+    ]
+    interface IMSPropPage : IPropertyPage
+    {
+        HRESULT IsPageValid();
+        HRESULT AreObjectsValid();
+    };
+
+    [
+        object,
+        uuid(8E849609-C7E8-4EC7-8BD3-D55E871A340D),
+        helpstring("Extended IPropertyPageSite Interface"),
+        pointer_default(unique)
+    ]
+    interface IMSPropPageSite : IPropertyPageSite
+    {
+        HRESULT GetInitNew( BOOL *pVal );
+        HRESULT OnQuerySupportApply([out] VARIANT_BOOL* pfSupport );
+        HRESULT OnApplyClicked();
+        HRESULT OnCancelClicked();
+        HRESULT OnHelpClicked();        
+    };
+
+[
+    uuid(C4941F47-8BC1-49D3-9989-2B7826F26AE6),
+    version(1.0),
+    helpstring("Microsoft PropShell Control 1.0")
+]
+library MSPROPSHELLLib
+{
+    importlib("stdole32.tlb");
+    importlib("stdole2.tlb");
+
+    [
+        uuid(DF8AD1EA-FCAA-4455-8772-B4F539488EE3),
+        helpstring("Receives event notifications from the property page control.")
+    ]
+    dispinterface _IMSPropShellEvents
+    {
+        properties:
+        methods:
+        [id(1), helpstring("Specifies that a new page is about to become active.")] 
+        HRESULT OnPageChanging([in] long Index, [in, out] VARIANT_BOOL *bAllow);
+        [id(2), helpstring("Specifies that a new page has become active.")] 
+        HRESULT OnPageChanged([in] long Index);        
+    };
+
+    [
+        uuid(E297AB5E-40B0-41BD-9E06-E4144084EE5F),
+        helpstring("MSPropShell Control Class")
+    ]
+    coclass MSPropShell
+    {
+        [default] interface IMSPropShell;
+        [default, source] dispinterface _IMSPropShellEvents;
+    };
+};

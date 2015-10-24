@@ -1,0 +1,87 @@
+<html>
+	<head>
+		<title>定制浏览器演示</title>
+<script language="javascript">
+// 如果要使用脚本禁止网页元素的选取用下面语句即可
+//document.onselectstart=new Function('return false');
+
+function ShowTime()
+{
+	var text;
+	text = "<font size='5' color='#00ff00'>";
+	var today;
+	today = new Date();
+	text += today.getFullYear() + "年" + today.getMonth() + "月" + today.getDay() + "日";
+	text += today.getHours() + "时" + today.getMinutes() + "分" + today.getSeconds() + "秒";
+	text += "</font>";
+	
+	timer.innerHTML = text;
+}
+</script>
+
+	</head>
+	<body>
+		<table border="1" width="52%" height="242" >
+			<tr>
+				<td><input type="button" value="使窗口抖动" onclick="external.WobbleWnd()"><br>
+				使用external接口扩展脚本，窗口的抖动是C++代码实现</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="button" value="定制消息框默认标题" onclick="alert('请注意这个警告框的标题')">
+					<br>
+					<input type="button" value="VBScript弹出来的消息框标题还是可以改的" onclick="vbscript:msgbox '请注意这个警告框的标题',65,'在脚本中指定的'">
+				</td>
+			</tr>
+			<tr>
+				<td height="100" ondragenter="event.returnValue = false" ondragover="event.returnValue = false" ondrop="event.returnValue = false" bgcolor="#66CCFF">
+					把文件从资源管理器拖入此单元格，网页能处理来自外部的拖放
+				</td>
+			</tr>
+			<tr>
+				<td><a href="javascript:ShowTime()">点我</a>，将调用一个JavaScript函数，点窗体上的按钮“调用JavaScript函数”也同样能执行此代码。<br>
+				
+				<div id="timer" Width="200" Height="100">
+					<font size="5" color="#00FF00">00:00:00	</font>
+				</div>
+				
+				</td>
+			</tr>
+			<tr>
+				<td>在红、绿、蓝颜色的单元格里右键试一试<br>
+			　	<table border="1" width="100%">
+					<tr>
+						<td bgcolor="#FF0000" id="red">　</td>
+						<td bgcolor="#00FF00" id="green">　</td>
+						<td bgcolor="#0000FF" id="blue">　</td>
+					</tr>
+				</table>
+				
+				</td>
+			</tr>
+
+			<tr><td><a href="image://001.jpg"> <img Src="001.jpg" border="0"></a></td></tr>
+			<tr><td><a href="image://002.jpg"> <img Src="003.jpg" border="0"></a></td></tr>
+			<tr><td><a href="image://003.jpg"> <img Src="003.jpg" border="0"></a></td></tr>
+			<tr><td><a href="image://001.jpg"> <img Src="001.jpg" border="0"></a></td></tr>
+			<tr><td><a href="image://1000.gif"> <img Src="1000.gif" border="0"></a></td></tr>
+			<tr><td><a href="image://1001.gif"> <img Src="1001.gif" border="0"></a></td></tr>
+			<tr><td><a href="image://1002.gif"> <img Src="1002.gif" border="0"></a></td></tr>
+		</table>
+
+	<form>
+	<INPUT size="20" name="name"></INPUT>
+	<SELECT name="type">
+		<OPTION value="UNKNOWN" selected>Unknown</OPTION>
+		<OPTION value="MP3">MP3</OPTION>
+		<OPTION value="OGG">OGG</OPTION>
+		<OPTION value="WMA">WMA</OPTION>
+		<OPTION value="NSV">NSV</OPTION>
+		<OPTION value="WMV">WMV</OPTION>
+		<OPTION value="RAW">RAW</OPTION>
+	</SELECT>
+	<INPUT type="submit" value="提交" name="stream"></INPUT>
+	</form>
+
+	</body>	
+</html>

@@ -1,0 +1,109 @@
+//*@@@+++@@@@******************************************************************
+//
+// Microsoft Windows Media
+// Copyright (C) Microsoft Corporation. All rights reserved.
+//
+//*@@@---@@@@******************************************************************
+//
+import "oaidl.idl";
+
+cpp_quote( "EXTERN_GUID( IID_IWMEncDataView,            0xbb406aa0, 0x2b2b,0x11d3,0xb3,0x6b,0x00,0xc0,0x4f,0x61,0x08,0xff );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncPreview,            0xC3043B13, 0xE649, 0x436A, 0x9C, 0xE7, 0x8D, 0xA8, 0xCB, 0x0B, 0xF7, 0xC8 );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncDataView2,           0x113BEC6A, 0x9BAE, 0x48AB, 0x80, 0xA7, 0x5E, 0xF3, 0xC4, 0x9F, 0xE2, 0x03 );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncDataViewVB,          0x6E292D34, 0x8123, 0x4E4E, 0xB8, 0x13, 0x46, 0xEE, 0xE3, 0x35, 0x17, 0xDB );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncPrePreview,		    0x72F9AA1F, 0x024B, 0x403C, 0xB9, 0x21, 0xAF, 0xCC, 0xE2, 0x41, 0xD4, 0xD4);" )
+
+//
+// If wmsdkidl header is not used, we will define WM_MEDIA_TYPE here.
+//
+cpp_quote( "#ifndef __wmsdkidl_h__" )
+
+typedef struct _WMMediaType
+{
+    GUID majortype;
+    GUID subtype;
+    BOOL bFixedSizeSamples;
+    BOOL bTemporalCompression;
+    ULONG lSampleSize;
+    GUID formattype;
+    IUnknown *pUnk;
+    ULONG cbFormat;
+    [size_is(cbFormat)] BYTE *pbFormat;
+} WM_MEDIA_TYPE;
+
+cpp_quote( "#endif" )
+
+
+///////////////////////////////////////////////////////////////////////////////
+[
+    object,
+    uuid( BB406AA0-2B2B-11d3-B36B-00C04F6108FF ),
+    helpstring( "IWMEncDataView Interface"),
+    pointer_default(unique)
+]
+interface IWMEncDataView : IUnknown
+{
+    HRESULT SetViewSetting( [in] DWORD dwStreamCookie, [in] DWORD dwSize, [in, size_is(dwSize)] BYTE* pData );
+    HRESULT GetViewSetting([in] DWORD dwStreamCookie, [in] DWORD* pdwSize, [in, size_is(*pdwSize)] BYTE* pData );
+
+    HRESULT AddStream( [in] DWORD dwStreamCookie, [in] WM_MEDIA_TYPE *pType );
+    HRESULT RemoveStream( [in] DWORD dwStreamCookie );
+    HRESULT SetMediaFormat( [in] DWORD dwStreamCookie, [in] WM_MEDIA_TYPE *pType );
+    HRESULT GetMediaFormat( [in] DWORD dwStreamCookie, [out] WM_MEDIA_TYPE **ppType );
+    HRESULT Start( [in] DWORD dwStreamCookie );
+    HRESULT Stop( [in] DWORD dwStreamCookie );
+    HRESULT StartAll();
+    HRESULT StopAll();
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+[
+    object,
+    uuid( 6E292D34-8123-4e4e-B813-46EEE33517DB ),
+    helpstring( "IWMEncDataViewVB Interface"),
+    pointer_default(unique)
+]
+interface IWMEncDataViewVB : IUnknown
+{
+    HRESULT SetViewProperties( [in] long lStreamCookie, [in] long hWnd );
+    HRESULT GetViewProperties( [in] long lStreamCookie, [out, retval] long* phWnd );
+
+    HRESULT StartView( [in] long lStreamCookie );
+    HRESULT StopView( [in] long lStreamCookie );
+    HRESULT StartAllViews();
+    HRESULT StopAllViews();
+};
+
+///////////////////////////////////////////////////////////////////////////////
+[
+    object,
+    uuid( 113BEC6A-9BAE-48ab-80A7-5EF3C49FE203 ),
+    helpstring( "IWMEncDataView2 Interface"),
+    pointer_default(unique)
+]
+interface IWMEncDataView2 : IUnknown
+{
+    [propput] 
+    HRESULT ViewAvailable( [in] DWORD dwStreamCookie, [in] VARIANT_BOOL fAvail );
+    [propget] 
+    HRESULT ViewAvailable( [in] DWORD dwStreamCookie, [out,retval] VARIANT_BOOL* pfAvail );
+    [propput] 
+    HRESULT FrameRateBalance( [in] DWORD dwStreamCookie, [in] VARIANT_BOOL fFrameRateBalance );
+    [propget] 
+    HRESULT FrameRateBalance( [in] DWORD dwStreamCookie, [out,retval] VARIANT_BOOL* pfFrameRateBalance );
+    HRESULT IsRunning( [in] DWORD dwStreamCookie, [out, retval] VARIANT_BOOL* pfRunning );
+};
+
+///////////////////////////////////////////////////////////////////////////////
+[
+    object,
+    uuid(72F9AA1F-024B-403c-B921-AFCCE241D4D4),
+    helpstring("IWMEncPrePreview Interface"),
+    pointer_default(unique)
+]
+interface IWMEncPrePreview : IUnknown
+{
+    HRESULT SetCaptureParent( [in] long hWnd );
+};
+

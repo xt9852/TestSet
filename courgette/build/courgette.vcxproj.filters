@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{e185e83f-7dae-4c5b-8eab-802a8bde6a29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\third_party">
+      <UniqueIdentifier>{81be4d20-c222-4eb1-9774-e254fc7be3b4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\courgette.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\adjustment_method.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\assembly_program.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\crc.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\difference_estimator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\disassembler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\disassembler_win32_x86.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\encoded_program.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ensemble.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\memory_allocator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\patch_generator_x86_32.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\patcher_x86_32.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\region.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\simple_delta.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\streams.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\types_elf.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\types_win_pe.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\bsdiff.h">
+      <Filter>src\third_party</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\paged_array.h">
+      <Filter>src\third_party</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\courgette_tool.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\adjustment_method.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\adjustment_method_2.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\assembly_program.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\crc.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\difference_estimator.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\disassembler.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\disassembler_win32_x86.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\encoded_program.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ensemble.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ensemble_apply.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ensemble_create.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\memory_allocator.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\memory_monitor.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\simple_delta.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\streams.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\bsdiff_apply.cc">
+      <Filter>src\third_party</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\bsdiff_create.cc">
+      <Filter>src\third_party</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

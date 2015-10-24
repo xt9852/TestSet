@@ -1,0 +1,51 @@
+// AddinOLE.idl : AddinOLE 的 IDL 源
+//
+
+// 此文件将由 MIDL 工具处理以
+// 产生类型库(AddinOLE.tlb)和封送处理代码。
+
+#include "olectl.h"
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(5CD71D8E-4B61-4618-B420-DBF1312C1DE5),
+	dual,
+	nonextensible,
+	helpstring("IShowImage 接口"),
+	pointer_default(unique)
+]
+interface IShowImage : IDispatch{
+	[id(1), helpstring("方法LoadFileTrans")] HRESULT LoadFileTrans([in] BSTR filename, [in] UINT64 fileLen, [in] BSTR iconFilename);
+	[id(2), helpstring("方法SetFileTrans")] HRESULT SetFileTrans([in] BSTR msg, [in] DWORD state, [in] UINT64 param);
+	[id(3), helpstring("方法LoadGif")] HRESULT LoadGif([in] BSTR filename);
+};
+
+[
+	uuid(FDB2B619-4F8E-4AF2-9B9E-BCC13997E900),
+	version(1.0),
+	helpstring("ShowImage 1.0 类型库")
+]
+library AddinOLELib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(1D6E8FF5-C00D-4A14-A767-80168C019ADB),//A),
+		helpstring("_IShowImage事件接口")
+	]
+	dispinterface _IShowImageEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(1D6E8FF5-C00D-4A14-A767-80168C019ADA),
+		helpstring("ShowImage Class")
+	]
+	coclass ShowImage
+	{
+		[default] interface IShowImage;
+		[default, source] dispinterface _IShowImageEvents;
+	};
+};

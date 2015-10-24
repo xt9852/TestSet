@@ -1,0 +1,67 @@
+数据总线：	16bit
+
+地址总线：	24bit=16MBytes(A型)
+	  	26bit=64MBytes(B型)
+	  	(
+		total:0x000000~0xFFFFFF
+	  	ROM:  0x000000~0x0FFFFF
+	   	ROM:  0x100000~0xFFFFFF
+	  	外部设备的数据端口:
+	  	serial port 0:		0xFFFFF0~0xFFFFFF
+	  	serial port 1:		0xFFFFE0~0xFFFFEF
+	  	heartbeat interrput:	0xFFFFE0~0xFFFFEF
+	  	network:		0xFFFFD0~0xFFFFDF
+	  	usb:			0xFFFFC0~0xFFFFCF
+	  	IDE interface:		0xFFFFB0~0xFFFFBF
+	  	外部设备的数据缓冲区:
+	  	IDE interface:		0xFFFBC0~0xFFFEFF(1KBytes)
+	  	network:		0xFFEBCO~0XFFFBBF(4KBytes)
+	  	)
+
+控制总线：	12bit
+	 	(
+		serial port 0
+	  	serial port 1
+	   	heartbeat interrput
+	   	network
+	   	usb
+	  	IDE interface
+	  	DMA_IRQ
+	   	DMA_ACK
+	   	reset
+	   	unassigned
+	  	unassigned
+	  	)
+
+总频：		20~50MHz
+
+内存寻址:	Seg:Off
+		(DOS)
+		(Seg:20bit,Off:20bit)
+		(Memory Address:seg<<4+Off)
+
+电源：		5V*20A=100W
+		(
+		VCC:红色线
+		GND：黑
+		DataBus:绿
+		AddressBus:白
+		ControlBus:黄
+		Other:蓝
+		)	
+
+指令集：	x86
+
+工具：		电烙铁，焊油，万能表，示波器
+
+零件：		开发板(铆钉板带针的)，彩排线，
+		RL接口背板用，RJ45接口，USB接口，COM接口(公母头),
+		IDE接品(数据线)
+
+
+
+
+
+
+
+

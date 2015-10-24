@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'AddinOLE'
+		'AddinOLE.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}

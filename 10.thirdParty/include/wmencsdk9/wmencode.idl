@@ -1,0 +1,2980 @@
+//*@@@+++@@@@******************************************************************
+//
+// Microsoft Windows Media
+// Copyright (C) Microsoft Corporation. All rights reserved.
+//
+//*@@@---@@@@******************************************************************
+//
+// WMEncod.idl : IDL source for encengine.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (WMEncode.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+#include "..\include\wmsencid.h"
+#include "..\include\wmsprofid.h"
+
+import "wmdrmprf.idl";
+
+interface IWMEncPluginInfo;
+interface IWMEncDeviceControlPluginInfoManager;
+interface IWMEncDeviceControl;
+interface IWMEncDeviceControlCollection;
+interface IWMEncContentAnalyzer;
+interface IWMEncWatermarkCollection;
+interface IWMEncProfile2;
+
+//
+// GUIDs
+//
+cpp_quote( "EXTERN_GUID( LIBID_WMEncoderLib,            0x632B6060, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76 );" )
+cpp_quote( "EXTERN_GUID( DIID__IWMEncoderEvents,        0x632B6062, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76 );" )
+cpp_quote( "EXTERN_GUID( DIID__IWMEncoderAppEvents,     0x32B8ECC9, 0x2901, 0x11D3, 0x8F, 0xB8, 0x00, 0xC0, 0x4F, 0x61, 0x09, 0xB7 );" )
+cpp_quote( "EXTERN_GUID( DIID__IWMEncBasicEditEvents,   0xAB5AF3CC, 0x9347, 0x4DC1, 0x92, 0xE3, 0xB9, 0x65, 0x37, 0xB8, 0xC4, 0x46 );" )
+
+cpp_quote( "EXTERN_GUID( CLSID_WMEncoder,               0x632B606A, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76 );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncoderApp,            0x632B606B, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76 );" )
+
+cpp_quote( "EXTERN_GUID( CLSID_WMEncSourcesPage,        0x247161C5, 0x995C, 0x4097, 0x9F, 0xF4, 0x65, 0x5D, 0xC6, 0xD1, 0x2D, 0xB5 );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncSourcesAltPage,     0x95F57411, 0x9A21, 0x4846, 0xB1, 0x31, 0x45, 0x0A, 0xDB, 0xEA, 0xE7, 0x53 );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncDisplayInfoPage,    0x4178CE3B, 0x11B1, 0x46DD, 0xA3, 0x6D, 0xBB, 0xCD, 0x36, 0xA5, 0x42, 0x5A );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncAttributesPage,     0x0037AC54, 0xE32B, 0x4ACA, 0x98, 0x64, 0x09, 0xF8, 0x69, 0xAA, 0x82, 0xFE );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncProfilePage,        0xFF8F1D65, 0xAD2B, 0x47F1, 0x9E, 0x71, 0x66, 0xB7, 0xD3, 0x5E, 0x38, 0x52 );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncOutputPage,         0x447AC255, 0xCE81, 0x43AD, 0x98, 0x27, 0xAF, 0xDD, 0xB1, 0x56, 0x1B, 0x07 );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncAdvancedPage,       0xD5DC4B7F, 0x786B, 0x42b7, 0xB8, 0x3B, 0xFE, 0x1B, 0x5F, 0xC1, 0x5E, 0x2C );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncVideoSizePage,    0x94e15fa1, 0x68af, 0x4281, 0xa6, 0x7c, 0x7d, 0x5a, 0x8, 0x61, 0x69, 0xf2 );")
+cpp_quote( "EXTERN_GUID( CLSID_WMEncProcessingPage,  0x12594540, 0x9b58, 0x4fe9, 0xa7, 0xea, 0x8a, 0x10, 0xf6, 0x41, 0xb0, 0x49 );")
+cpp_quote( "EXTERN_GUID( CLSID_WMEncPluginsPage,      0xa9b377b6, 0x7d6f, 0x4f37, 0xb2, 0x8, 0x2a, 0xf6, 0xdc, 0x85, 0xe6, 0x8);")
+cpp_quote( "EXTERN_GUID( CLSID_WMEncDRMPage,          0xfcc970b8, 0x86d5, 0x4a30, 0xac, 0x33, 0xb7, 0x66, 0x79, 0xbd, 0xf9, 0x70);")
+
+
+cpp_quote( "EXTERN_GUID( CLSID_WMEncMonMainPage,        0xDF0AD8E0, 0xF91C, 0x4109, 0xAE, 0x46, 0x1E, 0xAA, 0x5C, 0xD8, 0xAB, 0x08 );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncMonDisplayInfoPage, 0xA7E9EBC4, 0x4B2D, 0x44F4, 0x8D, 0xDC, 0x28, 0xBE, 0x73, 0x91, 0x1E, 0x0A );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncMonConnectionsPage, 0x8D52AA2E, 0x40BE, 0x46D7, 0x8F, 0x36, 0xDB, 0x7B, 0x0F, 0x63, 0x68, 0x24 );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncProfileManager,     0xA8D3AD02, 0x7508, 0x4004, 0xB2, 0xE9, 0xAD, 0x33, 0xF0, 0x87, 0xF4, 0x3C );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncBasicEdit,          0x9571D958, 0x9BCF, 0x4E19, 0xA3, 0x74, 0xFC, 0x2F, 0x32, 0x1C, 0x8F, 0x61 );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncMonStatsPage,       0xDF0AD8E1, 0xF91C, 0x4109, 0xAE, 0x46, 0x1E, 0xAA, 0x5C, 0xD8, 0xAB, 0x08 );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncMonServerPage,      0xDF0AD8E3, 0xF91C, 0x4109, 0xAE, 0x46, 0x1E, 0xAA, 0x5C, 0xD8, 0xAB, 0x08 );" )
+
+cpp_quote( "EXTERN_GUID( IID_IWMEncSourcePluginInfoManager,       0x5AE18C51, 0xDB2E, 0x11D2, 0xA3, 0x4A, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncTransformPluginInfoManager,    0x5AE18C52, 0xDB2E, 0x11D2, 0xA3, 0x4A, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncPluginInfo,                    0x5AE18C53, 0xDB2E, 0x11D2, 0xA3, 0x4A, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncTransformCollection,           0x5AE18C54, 0xDB2E, 0x11D2, 0xA3, 0x4A, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncDataViewCollection,            0x5AE18C55, 0xDB2E, 0x11D2, 0xA3, 0x4A, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncSourceGroupCollection,       0x632B606F, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncSourceGroup,         0x632B6071, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncSourceGroup2,        0x632B608A, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncDisplayInfo,         0x632B6073, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncAttributes,          0x632B6075, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncProfileCollection,   0x632B6077, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncProfile,             0x632B6078, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncFile,                0x632B607B, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncBroadcast,           0x632B607D, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncoder,                0x632B607F, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncoder2,               0x632B6081, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncoderApp,             0x632B6080, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncOutputStats,         0x2BE53BA6, 0xB726, 0x11D2, 0xA8, 0xEB, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncFileArchiveStats,    0xB12B5B14, 0xF6D2, 0x4a47, 0xAA, 0xED, 0x63, 0x74, 0x98, 0xBD, 0x49, 0xD6);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncIndexerStats,        0xC23F0A1E, 0x53DF, 0x4f6d, 0xB8, 0xF4, 0xEF, 0x32, 0x42, 0xD5, 0x35, 0xDE);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncStatistics,          0x632B6082, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncNetConnectionStats,  0x632B6083, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncSource,              0x632B6084, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncVideoSource,         0x632B6086, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncProfileManager,      0x731B9D9E, 0x6CF4, 0x4C37, 0xA6, 0xA9, 0xA8, 0x9B, 0x88, 0x0D, 0x36, 0xEC);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncPostViewCollection,  0x2b712593, 0xb68c, 0x40dc, 0x80, 0xc3, 0x41, 0x24, 0xbe, 0xa9, 0x21, 0x6a);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncTransform,           0x58441831, 0x0B0C, 0x4A19, 0xAE, 0x34, 0x54, 0x2F, 0x1D, 0x39, 0x36, 0x78);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncPushDistribution,    0x10CBC166, 0x7F83, 0x451E, 0x90, 0xA1, 0x75, 0xF4, 0x3E, 0x2C, 0x20, 0xA0);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncFile2,               0x10CBC168, 0x7F83, 0x451E, 0x90, 0xA1, 0x75, 0xF4, 0x3E, 0x2C, 0x20, 0xA0);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncDeviceControlPluginInfoManager,  0x632B6087, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncDeviceControl,       0x632B6089, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncDeviceControlCollection,       0x632B608C, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncOutputStats2,        0x18DB3000, 0xFFEA, 0x4363, 0x80, 0xC5, 0x81, 0x8A, 0xF4, 0x17, 0xBC, 0x84);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncContentAnalyzer,     0x221ADE1A, 0x3CF9, 0x4BA2, 0x84, 0x1C, 0xE5, 0x80, 0xC5, 0x88, 0x76, 0x6A);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncBasicEdit,           0x22A65C28, 0xF99D, 0x4C0D, 0x80, 0x70, 0x5F, 0x86, 0xFE, 0x6E, 0xC5, 0x55);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncVideoSource2,        0xC0973771, 0x5F87, 0x456A, 0xB3, 0x1B, 0x51, 0x71, 0xC2, 0x8A, 0xC0, 0x1E);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncAudioSource,         0xC0973772, 0x5F87, 0x456A, 0xB3, 0x1B, 0x51, 0x71, 0xC2, 0x8A, 0xC0, 0x1E);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncStatistics2,         0x3C694BEE, 0xBA71, 0x4967, 0x88, 0xEA, 0x43, 0xF8, 0xC2, 0x7E, 0xD9, 0x18);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncPushDistributionStats,         0x252F3333, 0x53D0, 0x47D9, 0x94, 0xC6, 0xC3, 0x87, 0x36, 0xF1, 0xBA, 0x6A);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncWatermarkCollection, 0x252F3335, 0x53D0, 0x47D9, 0x94, 0xC6, 0xC3, 0x87, 0x36, 0xF1, 0xBA, 0x6A);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncNetConnectionStats2, 0x52350A39, 0x5581, 0x4b7B, 0xA6, 0x5A, 0xF3, 0x78, 0x48, 0xF2, 0xC0, 0xF6);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncInputCollection,     0xaafde109, 0xeb40, 0x47bc, 0x96, 0xc3, 0xb4, 0xfb, 0xf5, 0x2a, 0x56, 0x8d);" )
+
+
+cpp_quote( "EXTERN_GUID( CLSID_WMEncProfile2,             0xA5AC04E7, 0x3E13, 0x48CE, 0xA4, 0x3F, 0x9F, 0xBA, 0x59, 0xDB, 0x15, 0x44 );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncProfile2,              0xC70E1CAC, 0x32D2, 0x4e22, 0xA0, 0xFF, 0x3A, 0x32, 0xE3, 0x15, 0xD0, 0x95 );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncAudienceObj,           0xBB494815, 0x9432, 0x47f2, 0x97, 0x9D, 0x94, 0xE4, 0xAE, 0x6C, 0x96, 0xCF );" )
+
+cpp_quote( "EXTERN_GUID( CLSID_WMEncFileTransferSource,     0x2EFB8BAD, 0x7074, 0x4814, 0x9F, 0xBF, 0x93, 0x8A, 0xD1, 0xF7, 0xFB, 0x01 );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncFileTransferSource,      0x8E452E5A, 0xB739, 0x452F, 0xA4, 0xD2, 0x5D, 0x84, 0xFD, 0x52, 0x49, 0x16 );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncFileSet,                 0x54B54844, 0x4F93, 0x458E, 0xAC, 0x10, 0x45, 0xFF, 0xED, 0x1D, 0x18, 0x16 );" )
+
+cpp_quote( "EXTERN_GUID( IID_IWMEncStreamEdit,              0x5AE18C57, 0xDB2E, 0x11D2, 0xA3, 0x4A, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncStreamEdit,             0x216D96AA, 0x9109, 0x472e, 0x8C, 0xDD, 0x82, 0x1C, 0x95, 0x2C, 0x4D, 0x6E);" )
+
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "//" )
+cpp_quote( "//" )
+cpp_quote( "#define WMENC_TOTAL     ( ( WMENC_SOURCE_TYPE ) 0x00000004 )" )
+cpp_quote( "#define WMENC_ANY       ( ( WMENC_SOURCE_TYPE ) 0xFFFFFFFF )" )
+cpp_quote( "#define WMENC_STREAMLEVEL_TRANSFORM_PLUGIN      0x00000001" )
+cpp_quote( "#define WMENC_GROUPLEVEL_TRANSFORM_PLUGIN       0x00000002" )
+cpp_quote( "#define WMENC_BOTHLEVEL_TRANSFORM_PLUGIN        0x00000003" )
+cpp_quote( "" )
+
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "// The following defines are the property names for IWMEncOutputStats2." )
+cpp_quote( "// They define the names for the sample drop rate for encoding process." )
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "#define WMENC_STATS_CURRENT_SAMPLEDROPRATE_INQUEUE  L\"CurrentSampleDropRateInQueue\"" )
+cpp_quote( "#define WMENC_STATS_CURRENT_SAMPLEDROPRATE_INCODEC  L\"CurrentSampleDropRateInCodec\"" )
+cpp_quote( "#define WMENC_STATS_CURRENT_SAMPLEDROPRATE_INMUX    L\"CurrentSampleDropRateInMux\"" )
+cpp_quote( "#define WMENC_STATS_TOTAL_SAMPLESDROPPED_INQUEUE    L\"TotalSamplesDroppedInQueue\"" )
+cpp_quote( "#define WMENC_STATS_TOTAL_SAMPLESDROPPED_INCODEC    L\"TotalSamplesDroppedInCodec\"" )
+cpp_quote( "#define WMENC_STATS_TOTAL_SAMPLESDROPPED_INMUX      L\"TotalSamplesDroppedInMux\"" )
+cpp_quote( "#define WMENC_STATS_PERCENT_CODECBUFFERFULLNESS     L\"PercentCodecBufferFullness\"" )
+
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "// The following defines are for extracting the profile at the end of encoding." )
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "#define WMENC_STATS_DEVICE_CONFORMANCE_TEMPLATE  L\"DeviceConformanceTemplate\"" )
+
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "// The following defines are the property names for IWMEncPushDistributionStats." )
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "#define WMENC_STATS_PUSH_PEAK_STARTTIME            L\"PubPointStartTimeForPeak\"" )
+cpp_quote( "#define WMENC_STATS_PUSH_CURRENT_CONNECTEDPLAYERS  L\"PubPointCurrentConnectedPlayers\"" )
+cpp_quote( "#define WMENC_STATS_PUSH_PEAK_CONNECTEDPLAYERS     L\"PubPointPeakConnectedPlayers\"" )
+cpp_quote( "#define WMENC_STATS_PUSH_TOTAL_CONNECTEDPLAYERS    L\"PubPointTotalConnectedPlayers\"" )
+cpp_quote( "#define WMENC_STATS_PUSH_PLAYERSLIMIT              L\"PubPointPlayersLimit\"" )
+cpp_quote( "#define WMENC_STATS_PUSH_CURRENT_PLAYERBANDWIDTH   L\"PubPointCurrentPlayerBandwidth\"" )
+cpp_quote( "#define WMENC_STATS_PUSH_PEAK_PLAYERBANDWIDTH      L\"PubPointPeakPlayerBandwidth\"" )
+cpp_quote( "#define WMENC_STATS_PUSH_BANDWIDTHLIMIT            L\"PubPointBandwidthLimit\"" )
+cpp_quote( "#define WMENC_STATS_PUSH_CPU                       L\"CurrentServerCPU\"" )
+
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "// The following defines 5.1 fold down coefficient." )
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "#define WMENC_AUDIO_SURROUND_MIX                L\"SurroundMix\"" )
+cpp_quote( "#define WMENC_AUDIO_CENTER_MIX                  L\"CenterMix\"" )
+cpp_quote( "#define WMENC_AUDIO_SUBWOOFER_MIX               L\"LFEMix\"" )
+
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "// The following defines predefined Source Group Rollover Name." )
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "#define WMENC_SOURCEGROUP_AUTOROLLOVER_TO_NEXT     L\"WMENC_SOURCEGROUP_AUTOROLLOVER_TO_NEXT\"" )
+cpp_quote( "#define WMENC_SOURCEGROUP_AUTOROLLOVER_TO_FIRST    L\"WMENC_SOURCEGROUP_AUTOROLLOVER_TO_FIRST\"" )
+
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "// The following defines are the propertynames for IWMEncProfile2." )
+cpp_quote( "////////////////////////////////////////////////////////////////" )
+cpp_quote( "#define WMENC_PROFILE2_BUFFER_WINDOW                L\"BufferWindow\"" )
+cpp_quote( "#define WMENC_PROFILE2_DEVICE_CONFORMANCE_TARGET    L\"DeviceConformanceTarget\"" )
+
+
+    typedef
+    [
+        uuid(2BE53BA5-B726-11D2-A8EB-006097C4E476),
+        helpstring("64 bit QWORD based on Automation CURRENCY data type."),
+    ]
+    CURRENCY    WMENC_LONGLONG;    
+
+    typedef
+    [
+        uuid(2BE53BA7-B726-11D2-A8EB-006097C4E476),
+        helpstring("Enumeration type that indicates the operating state of the encoder engine."),
+    ]
+    enum WMENC_ENCODER_STATE
+    {
+        [helpstring("Indicates that the encoder engine is starting.")]                              WMENC_ENCODER_STARTING    = 0x00000001,
+        [helpstring("Indicates that the encoder engine is running.")]                               WMENC_ENCODER_RUNNING     = 0x00000002,
+        [helpstring("Indicates that the encoder engine has been paused.")]                          WMENC_ENCODER_PAUSED      = 0x00000003,
+        [helpstring("Indicates that the encoder engine is stopping.")]                              WMENC_ENCODER_STOPPING    = 0x00000004,
+        [helpstring("Indicates that the encoder engine has been stopped.")]                         WMENC_ENCODER_STOPPED     = 0x00000005,
+        [helpstring("Indicates that the encoder engine has finished the first pass encoding.")]     WMENC_ENCODER_END_PREPROCESS     = 0x00000006,
+        [helpstring("Indicates that the encoder engine started to pause.")]                         WMENC_ENCODER_PAUSING     = 0x00000007
+    } WMENC_ENCODER_STATE;
+
+    typedef
+    [
+        uuid(2BE53BA8-B726-11D2-A8EB-006097C4E476),
+        helpstring("Enumeration type that indicates the type of archive file."),
+    ]
+    enum WMENC_ARCHIVE_TYPE
+    {
+        [helpstring("Indicates that the archive file is located on the local computer")]    WMENC_ARCHIVE_LOCAL    = 0x00000001
+    } WMENC_ARCHIVE_TYPE;
+
+    typedef
+    [
+        uuid(2BE53BA9-B726-11D2-A8EB-006097C4E476),
+        helpstring("Enumeration type that can be used to control the archiving operation."),
+    ]
+    enum WMENC_ARCHIVE_OPERATION
+    {
+        [helpstring("Starts the archiving operation.")]    WMENC_ARCHIVE_START    = 0x00000001,
+        [helpstring("Stops the archiving operation.")]     WMENC_ARCHIVE_STOP     = 0x00000002,
+        [helpstring("Pauses the archiving operation.")]    WMENC_ARCHIVE_PAUSE    = 0x00000003
+    } WMENC_ARCHIVE_OPERATION;
+
+    typedef
+    [
+        uuid(2BE53BAA-B726-11D2-A8EB-006097C4E476),
+        helpstring("Enumeration type that indicates the state of the archiving operation."),
+    ]
+    enum WMENC_ARCHIVE_STATE
+    {
+        [helpstring("Indicates that the archiving operation is running.")]   WMENC_ARCHIVE_RUNNING    = 0x00000001,
+        [helpstring("Indicates that the archiving operation has been paused.")]    WMENC_ARCHIVE_PAUSED     = 0x00000002,
+        [helpstring("Indicates that the archiving operation has been stopped.")]   WMENC_ARCHIVE_STOPPED    = 0x00000003
+    } WMENC_ARCHIVE_STATE;
+
+    typedef
+    [
+        uuid(2BE53BAB-B726-11D2-A8EB-006097C4E476),
+        helpstring("Enumeration type that indicates the type of content."),
+    ]
+    enum WMENC_SOURCE_TYPE
+    {
+        [helpstring("Indicates that the content includes audio.")]       WMENC_AUDIO    = 0x00000001,
+        [helpstring("Indicates that the content includes video.")]       WMENC_VIDEO    = 0x00000002,
+        [helpstring("Indicates that the content includes script.")]      WMENC_SCRIPT   = 0x00000004,
+        [helpstring("Indicates that the content includes file transfer data.")]      WMENC_FILETRANSFER   = 0x00000008
+    } WMENC_SOURCE_TYPE;
+
+    typedef
+    [
+        uuid(2BE53BAC-B726-11D2-A8EB-006097C4E476),
+        helpstring("Enumeration type that indicates the state of a source."),
+    ]
+    enum WMENC_SOURCE_STATE
+    {
+        [helpstring("The source is starting to stream.")]               WMENC_SOURCE_START     = 0x00000001,
+        [helpstring("The source is stopping streaming .")]              WMENC_SOURCE_STOP      = 0x00000002,
+        [helpstring("The source is being prepared.")]                   WMENC_SOURCE_PREPARE   = 0x00000003,
+        [helpstring("The source is being unprepared.")]                 WMENC_SOURCE_UNPREPARE = 0x00000004,
+        [helpstring("Filetransfer source has started sending data")]    WMENC_START_FILETRANSFER = 0x00000005,
+        [helpstring("Filetransfer source has finished sending data")]   WMENC_STOP_FILETRANSFER  = 0x00000006,
+    } WMENC_SOURCE_STATE;
+
+    typedef
+    [
+        uuid(2BE53BAD-B726-11D2-A8EB-006097C4E476),
+        helpstring("Enumeration type that indicates the operating state of the encoder engine."),
+    ]
+    enum WMENC_DEVICECONTROL_STATE
+    {
+        [helpstring("Device control is playing")]           WMENC_DEVICECONTROL_PLAYING       = 0x00000001,       
+        [helpstring("Device control is paused")]            WMENC_DEVICECONTROL_PAUSED        = 0x00000002,       
+        [helpstring("Device control is stopped")]           WMENC_DEVICECONTROL_STOPPED       = 0x00000003,       
+        [helpstring("Device control is fast forwarding")]   WMENC_DEVICECONTROL_FASTFORWARDING= 0x00000004,       
+        [helpstring("Device control is rewinding")]         WMENC_DEVICECONTROL_REWINDING     = 0x00000005,       
+        [helpstring("Device control is cueing")]            WMENC_DEVICECONTROL_CUEING        = 0x00000006,
+        [helpstring("Device control is pre-rolling")]       WMENC_DEVICECONTROL_PREROLLING    = 0x00000007,
+        [helpstring("Device control is in unstable state")] WMENC_DEVICECONTROL_UNSTABLE   = 0x00000009,
+        [helpstring("Device control ejected tape")]         WMENC_DEVICECONTROL_EJECT         = 0x0000000A,
+        [helpstring("Device control is playing back at variable speed")]             WMENC_DEVICECONTROL_VAR_FORWARD  = 0x0000000B,
+        [helpstring("Device control is playing back in reverse at variable speed")]  WMENC_DEVICECONTROL_VAR_REVERSE  = 0x0000000C,
+        [helpstring("Device control reached end of the tape")]  WMENC_DEVICECONTROL_ENDOFTAPE  = 0x0000000D
+    } WMENC_DEVICECONTROL_STATE;
+
+    typedef
+    [
+        uuid(2BE53BAE-B726-11D2-A8EB-006097C4E476),
+        helpstring(" "),
+    ]
+    enum WMENC_PLUGIN_TYPE
+    {
+        [helpstring("Source Plugin")]           WMENC_PLUGIN_SOURCE         = 0x00000001,
+        [helpstring("Transform Plugin")]        WMENC_PLUGIN_TRANSFORM      = 0x00000002,
+        [helpstring("Device Control Plugin")]   WMENC_PLUGIN_DEVICECONTROL  = 0x00000003
+    } WMENC_PLUGIN_TYPE;
+    
+    typedef
+    [
+        uuid(2BE53BAF-B726-11D2-A8EB-006097C4E476),
+        helpstring("Enumeration type that identifies the protocol used to broadcast encoded content."),
+    ]
+    enum WMENC_BROADCAST_PROTOCOL
+    {
+        [helpstring("Indicates that HTTP is used to broadcast encoded content.")]        WMENC_PROTOCOL_HTTP                = 0x00000001,
+        [helpstring("Indicates that push distribution is used to connect to server.")]   WMENC_PROTOCOL_PUSH_DISTRIBUTION   = 0x00000002
+    } WMENC_BROADCAST_PROTOCOL;
+
+
+    typedef
+    [
+        uuid(30298E9E-7A93-473f-9E01-625869CF382E),
+        helpstring("Enumeration type that identifies the content filters for profiles."),
+    ]
+    enum WMENC_MEDIA_FILTER
+    {
+        [helpstring("There are no content filters.")]                                                            WMENC_FILTER_NONE    = 0x00000000,
+        [helpstring("Filters for profiles that have only 1 audio stream.")]                                      WMENC_FILTER_A       = 0x00000001,
+        [helpstring("Filters for profiles that have any combination of 1 audio and 1 video stream.")]            WMENC_FILTER_AV      = 0x00000011,
+        [helpstring("Filters for profiles that have any combination of 1 audio and 1 script stream.")]           WMENC_FILTER_AS      = 0x00000101,
+        [helpstring("Filters for profiles that have any combination of 1 audio, 1 video, and script stream.")]   WMENC_FILTER_AVS     = 0x00000111
+    } WMENC_MEDIA_FILTER;
+
+    typedef
+    [
+        uuid(EEAA5F39-A1F8-4696-B612-1022F39500BC),
+        helpstring("Enumeration type that identifies method used to crop images."),
+    ]
+    enum WMENC_CROPPING_MODE
+    {
+        [helpstring("Indicates that the amount to crop must be specified as an absolute number.")]   WMENC_CROPPING_ABSOLUTE     = 0x00000000
+    } WMENC_CROPPING_MODE;
+
+    typedef
+    [
+        uuid(8FA09255-5B77-4da8-BE45-B756E4B80C24),
+        helpstring("Enumeration type that identifies the state of the archive file indexer."),
+    ]
+    enum WMENC_INDEXER_STATE
+    {
+        [helpstring("Indicates that the indexer is running.")]   WMENC_INDEXER_RUNNING    = 0x00000001,
+        [helpstring("Indicates that the indexer has been stopped.")]   WMENC_INDEXER_STOPPED    = 0x00000002
+    } WMENC_INDEXER_STATE;
+
+    typedef
+    [
+        uuid(9514675E-2B6F-43CB-8D15-57F8E3EADDF4),
+        helpstring("Enumeration type that identifies the  property class for the user interface."),
+    ]
+    enum WMENCAPP_PROP_CLASS
+    {
+        [helpstring("Indicates that the property is for the end-user.")]      WMENCAPP_PROP_USER       = 0x00000001
+    } WMENCAPP_PROP_CLASS;
+
+    typedef
+    [
+        uuid(E40CC379-3603-4f77-AF9B-B0F0CCF7EBDC),
+        helpstring("Enumeration type that identifies the optimization applied to a video stream."),
+    ]
+    enum WMENC_VIDEO_OPTIMIZATION
+    {
+        [helpstring("Indicates no optimization.")]                                      WMENC_VIDEO_STANDARD            = 0x00000001,
+        [helpstring("Indicates deinterlace optimization.")]                             WMENC_VIDEO_DEINTERLACE         = 0x00000002,
+        [helpstring("Indicates inverse telecine optimization.")]                        WMENC_VIDEO_INVERSETELECINE     = 0x00000003,
+        [helpstring("Indicates process as interlace content.")]                         WMENC_VIDEO_PROCESS_INTERLACED  = 0x00000004,
+
+        [helpstring("Indicates auto detect telecine patern.")]                           WMENC_VIDEO_TELECINE_AUTO      = 0x00000010,
+        [helpstring("Indicates coherent telecine content starts at AA with first line from top field as first frame.")] WMENC_VIDEO_TELECINE_AA_TOP        = 0x00000020,
+        [helpstring("Indicates coherent telecine content starts at BB with first line from top field as first frame.")] WMENC_VIDEO_TELECINE_BB_TOP        = 0x00000030,
+        [helpstring("Indicates coherent telecine content starts at BC with first line from top field as first frame.")] WMENC_VIDEO_TELECINE_BC_TOP        = 0x00000040,
+        [helpstring("Indicates coherent telecine content starts at CD with first line from top field as first frame.")] WMENC_VIDEO_TELECINE_CD_TOP        = 0x00000050,
+        [helpstring("Indicates coherent telecine content starts at DD with first line from top field as first frame.")] WMENC_VIDEO_TELECINE_DD_TOP        = 0x00000060,
+        [helpstring("Indicates coherent telecine content starts at AA with first line from bottom field as first frame.")] WMENC_VIDEO_TELECINE_AA_BOTTOM  = 0x00000070,
+        [helpstring("Indicates coherent telecine content starts at BB with first line from bottom field as first frame.")] WMENC_VIDEO_TELECINE_BB_BOTTOM  = 0x00000080,
+        [helpstring("Indicates coherent telecine content starts at BC with first line from bottom field as first frame.")] WMENC_VIDEO_TELECINE_BC_BOTTOM  = 0x00000090,
+        [helpstring("Indicates coherent telecine content starts at CD with first line from bottom field as first frame.")] WMENC_VIDEO_TELECINE_CD_BOTTOM  = 0x000000A0,
+        [helpstring("Indicates coherent telecine content starts at DD with first line from bottom field as first frame.")] WMENC_VIDEO_TELECINE_DD_BOTTOM  = 0x000000B0,
+
+        [helpstring("Indicates that video image is vertically flipped.")]       WMENC_VIDEO_FLIPPING_VERTICAL   = 0x00000100,  // these video flipping option can be OR'd with other options.
+//        [helpstring("Indicates that video image is horizontally flipped.")]   WMENC_VIDEO_FLIPPING_HORIZONTAL = 0x00000200,
+
+        [helpstring("Indicates that interlaced video field is programmatically determined.")] WMENC_VIDEO_INTERLACED_AUTO         = 0x00001000,
+        [helpstring("Indicates that interlaced video top field is before bottom field.")]     WMENC_VIDEO_INTERLACED_TOP_FIRST    = 0x00002000,
+        [helpstring("Indicates that interlaced video bottom field is before top field.")]     WMENC_VIDEO_INTERLACED_BOTTOM_FIRST = 0x00003000,
+    } WMENC_VIDEO_OPTIMIZATION;
+
+    typedef
+    [
+        uuid(384C1030-317C-42fc-A5A0-537FDC6FB92F),
+        helpstring("Enumeration type that identifies the pixel format of a video stream."),
+    ]
+    enum WMENC_PIXELFORMAT_VIDEO
+    {
+        [helpstring("Indicates that the video pixel format is automatically determined.")]    WMENC_PIXELFORMAT_AUTO   = 0x00000001,
+        [helpstring("Indicates that the video pixel format is IYUV.")]    WMENC_PIXELFORMAT_IYUV   = 0x56555949,
+        [helpstring("Indicates that the video pixel format is I420.")]    WMENC_PIXELFORMAT_I420   = 0x30323449,
+        [helpstring("Indicates that the video pixel format is YV12.")]    WMENC_PIXELFORMAT_YV12   = 0x32315659,
+        [helpstring("Indicates that the video pixel format is YUY2.")]    WMENC_PIXELFORMAT_YUY2   = 0x32595559,
+        [helpstring("Indicates that the video pixel format is UYVY.")]    WMENC_PIXELFORMAT_UYVY   = 0x59565955,
+        [helpstring("Indicates that the video pixel format is YVYU.")]    WMENC_PIXELFORMAT_YVYU   = 0x55595659,
+        [helpstring("Indicates that the video pixel format is YVU9.")]    WMENC_PIXELFORMAT_YVU9   = 0x39555659,
+        [helpstring("Indicates that the video pixel format is RGB24.")]   WMENC_PIXELFORMAT_RGB24  = 0xE436EB7D,
+        [helpstring("Indicates that the video pixel format is RGB32.")]   WMENC_PIXELFORMAT_RGB32  = 0xE436EB7E,
+        [helpstring("Indicates that the video pixel format is RGB555.")]  WMENC_PIXELFORMAT_RGB555 = 0xE436EB7C,
+        [helpstring("Indicates that the video pixel format is RGB565.")]  WMENC_PIXELFORMAT_RGB565 = 0xE436EB7B,
+        [helpstring("Indicates that the video pixel format is RGB8.")]    WMENC_PIXELFORMAT_RGB8   = 0xE436EB7A,
+        [helpstring("Indicates that the video pixel format is RGB4.")]    WMENC_PIXELFORMAT_RGB4   = 0xE436EB79,
+        [helpstring("Indicates that the video pixel format is RGB1.")]    WMENC_PIXELFORMAT_RGB1   = 0xE436EB78
+    } WMENC_PIXELFORMAT_VIDEO;
+
+    typedef
+    [
+        uuid(B0FA616E-C173-45e5-BCC6-7DA3B185979E),
+        helpstring("Enumeration type that controls the operating state of the file indexer."),
+    ]
+    enum WMENC_INDEXER_OPERATION
+    {
+        [helpstring("Stops the file indexer.")]     WMENC_INDEXER_STOP     = 0x00000001,
+    } WMENC_INDEXER_OPERATION;
+
+    typedef
+    [
+        uuid(3BE52C8E-9B0D-4f21-B237-DF76317F38EC),
+        helpstring("Enumeration type that identifies the units of measure for the audio level."),
+    ]
+    enum WMENC_AUDIOLEVEL_UNITS
+    {
+        [helpstring("Indicates the units of measure are decibels.")]   WMENC_AUDIOLEVEL_DB      = 0x00000001,
+        [helpstring("Indicates the units of measure are linear.")]     WMENC_AUDIOLEVEL_LINEAR  = 0x00000002
+    } WMENC_AUDIOLEVEL_UNITS;
+
+    typedef
+    [
+        uuid(3BE52C8F-9B0D-4f21-B237-DF76317F38EC),
+        helpstring("Enumeration type that identifies the Windows Media storage format."),
+    ]
+    enum WMENC_STORAGE_FORMAT
+    {
+        [helpstring("Indicates the storage format is Windows Media Format V1.")]    WMENC_STORAGE_FORMAT_V1 = 0x00000001,
+        [helpstring("Indicates the storage format is Windows Media Format V2.")]    WMENC_STORAGE_FORMAT_V2 = 0x00000002
+    } WMENC_STORAGE_FORMAT;
+
+    typedef
+    [
+        uuid(DC3C7C50-F4CE-462c-9236-645F276F5716),
+        helpstring("Enumeration type that indicates the operating state of the basic edit engine."),
+    ]
+    enum WMENC_BASICEDIT_STATE
+    {
+        [helpstring("Indicates that the edit engine is running.")]        WMENC_BASICEDIT_RUNNING = 0x00000001,
+        [helpstring("Indicates that the edit engine has been stopped.")]  WMENC_BASICEDIT_STOPPED = 0x00000002
+    } WMENC_BASICEDIT_STATE;
+
+    typedef
+    [
+        uuid(DC3C7C51-F4CE-462c-9236-645F276F5716),
+        helpstring("Enumeration type that indicates the content mode for speech codec."),
+    ]
+    enum WMENC_CONTENT_MODE
+    {
+        [helpstring("Specify no special mode for the audio content.")]                        WMENC_AUDIOCONTENT_NO_MODE       = 0x00000000,
+        [helpstring("Specify Speech mode as the input audio content for speech codec.")]      WMENC_AUDIOCONTENT_SPEECH_MODE   = 0x00000001,
+        [helpstring("Specify Mixed mode as the input audio content for speech codec.")]       WMENC_AUDIOCONTENT_MIXED_MODE    = 0x00000002
+    } WMENC_CONTENT_MODE;
+
+    //
+    // Enums used by profileobj
+    //
+    typedef
+    [
+        uuid(2CB3CB95-45AF-4dfc-B209-EE715EDE803C),
+        helpstring("Enumeration type that indicates the compatibility mode."),
+    ]
+    enum WMENC_PROFILE_COMPATIBILITY
+    {
+        WMENC_ENCODER_V8 = 0x0,
+        WMENC_ENCODER_V9 = 0x1
+    } WMENC_PROFILE_COMPATIBILITY;
+
+    typedef
+    [
+        uuid(15B36445-1FC5-4ef8-8928-ECDD4A245412),
+        helpstring("Enumeration type that indicates the VBR mode."),
+    ]
+    enum WMENC_PROFILE_VBR_MODE
+    {
+        [helpstring("Indicates that VBR mode is not being used.")]           WMENC_PVM_NONE            = 0x00000001,
+        [helpstring("Indicates that peak VBR mode is used.")]                WMENC_PVM_PEAK            = 0x00000002,
+        [helpstring("Indicates that unconstrained VBR mode is used.")]       WMENC_PVM_UNCONSTRAINED   = 0x00000003,
+        [helpstring("Indicates that bitrate based VBR mode is used.")]       WMENC_PVM_BITRATE_BASED   = 0x00000004
+    } WMENC_PROFILE_VBR_MODE;
+
+    typedef
+    [
+        uuid(09EA2938-3777-4672-8FEA-E8AC7D76156F),
+        helpstring("Enumeration type that indicates the profile broadcast mode."),
+    ]
+    enum WMENC_PROFILE_BROADCAST_MODE
+    {
+        [helpstring("Indicates that a custom frame rate is used.")]                     WMENC_PFM_CUSTOM          = 0x00000001,
+        [helpstring("Indicates that frame rate and video size are NTSC compatible.")]   WMENC_PFM_NTSC            = 0x00000002,
+        [helpstring("Indicates that frame rate and video size are PAL compatible.")]    WMENC_PFM_PAL             = 0x00000003,
+    } WMENC_PROFILE_BROADCAST_MODE;
+
+    typedef 
+    [
+        uuid(09EA2939-3777-4672-8FEA-E8AC7D76156F),
+        helpstring("Enumeration type that indicates come common media content types."),
+    ]
+    enum WMENC_MEDIA_CONTENT
+    {
+        [helpstring("Nothing")]                                             WMENC_CONTENT_NOTHING                        = 0x00000000,
+        [helpstring("One Audio Stream")]                                    WMENC_CONTENT_ONE_AUDIO                      = 0x00000001,
+        [helpstring("One Video Stream")]                                    WMENC_CONTENT_ONE_VIDEO                      = 0x00000010,
+        [helpstring("One Script Stream")]                                   WMENC_CONTENT_ONE_SCRIPT                     = 0x00000100,
+        [helpstring("One Audio and One Video Streams")]                     WMENC_CONTENT_ONE_AUDIO_ONE_VIDEO            = 0x00000011,
+        [helpstring("One Audio and One Script Streams")]                    WMENC_CONTENT_ONE_AUDIO_ONE_SCRIPT           = 0x00000101,
+        [helpstring("One Video and One Script Streams")]                    WMENC_CONTENT_ONE_VIDEO_ONE_SCRIPT           = 0x00000110,
+        [helpstring("One Audio, One Video and One Script Streams")]         WMENC_CONTENT_ONE_AUDIO_ONE_VIDEO_ONE_SCRIPT = 0x00000111,
+        [helpstring("One Audio and One Filetransfer Streams")]              WMENC_CONTENT_ONE_AUDIO_ONE_FILETRANSFER     = 0x00001001,
+        [helpstring("One Video and One Filetransfer Streams")]              WMENC_CONTENT_ONE_VIDEO_ONE_FILETRANSFER     = 0x00001010,
+        [helpstring("One Audio, One Video and One Filetransfer Streams")]   WMENC_CONTENT_ONE_AUDIO_ONE_VIDEO_ONE_FILETRANSFER = 0x00001011,
+        [helpstring("One Audio, One Video One Script and One Filetransfer Streams")]   WMENC_CONTENT_ONE_AUDIO_ONE_VIDEO_ONE_SCRIPT_ONE_FILETRANSFER = 0x00001111
+    } WMENC_MEDIA_CONTENT;
+
+    typedef
+    [
+        uuid(159AABD8-2242-4c96-A077-D9B32E6111E1),
+        helpstring("Enumeration type that indicates the video complexity level used."),
+    ]
+    enum WMENC_VIDEOCOMPLEXITY
+    {
+        [helpstring("Use default complexity.")]   WMENC_DEFAULT_COMPLEXITY   = -1,
+        [helpstring("Use least complexity.")]     WMENC_COMPLEXITY_LEVEL0    = 0,
+        [helpstring("Use complexity level 20.")]  WMENC_COMPLEXITY_LEVEL20   = 20,
+        [helpstring("Use complexity level 40.")]  WMENC_COMPLEXITY_LEVEL40   = 40,
+        [helpstring("Use complexity level 50.")]  WMENC_COMPLEXITY_LEVEL50   = 50,
+        [helpstring("Use complexity level 60.")]  WMENC_COMPLEXITY_LEVEL60   = 60,
+        [helpstring("Use complexity level 80.")]  WMENC_COMPLEXITY_LEVEL80   = 80,
+        [helpstring("Use highest complexity.")]   WMENC_COMPLEXITY_LEVEL100  = 100
+    } WMENC_VIDEOCOMPLEXITY;
+
+    [   
+        object,
+        uuid(5AE18C51-DB2E-11D2-A34A-006097C4E476),
+        dual,
+        helpstring("Enumerates the available source plug-ins."),
+        pointer_default(unique)
+    ]
+    interface IWMEncSourcePluginInfoManager : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of items in the source plug-in collection.")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of items in the source plug-in collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [propget, restricted, id(DISPID_NEWENUM), helpstring("Enumerates the source plug-in collection.")] 
+        HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+
+        [id(DISPID_VALUE), helpstring("Retrieves registration information for a specific source plug-in.")] 
+        HRESULT Item([in] long iIndex, [out, retval] IWMEncPluginInfo** ppPluginInfo );
+
+        [id(DISPID_SOURCEPLUGINMGR_REFRESH), helpstring("Refreshes the source plug-in collection.")] 
+        HRESULT Refresh();
+    };
+
+
+                                                                                                                  
+    [
+        object,
+        uuid(aafde109-eb40-47bc-96c3-b4fbf52a568d),
+        dual,
+        helpstring("Enumerates the Inputs on a Tuner Card"),
+        pointer_default(unique)
+    ]
+    interface IWMEncInputCollection : IDispatch
+    {
+        [id(DISPID_VALUE), helpstring("Retrieves the description of a certain input.")]
+        HRESULT Item([in] long lIndex, [out,retval] BSTR *pretval);
+    
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of items in the input collection.")] 
+        HRESULT length([out, retval] long *plCount);
+    
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of items in the input collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+    
+        [propget, restricted, id(DISPID_NEWENUM), helpstring("Enumerates the input collection.")] 
+        HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+    
+    };
+
+
+
+
+
+    [   
+        object,
+        uuid(5AE18C52-DB2E-11D2-A34A-006097C4E476),
+        dual,
+        helpstring("Enumerates the available transform plug-ins."),
+        pointer_default(unique)
+    ]
+    interface IWMEncTransformPluginInfoManager : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of items in the transform plug-in collection.")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of items in the transform plug-in collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [propget, restricted, id(DISPID_NEWENUM), helpstring("Enumerates the transform plug-in collection.")] 
+        HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+
+        [id(DISPID_VALUE), helpstring("Retrieves registration information for a specific transform plug-in.")] 
+        HRESULT Item([in] long iIndex, [out, retval] IWMEncPluginInfo** ppPluginInfo );
+
+        [id(DISPID_TRANSFORMPLUGINMGR_REFRESH), helpstring("Refreshes the transform plug-in collection.")] 
+        HRESULT Refresh();
+    };
+
+    [   
+        object,
+        uuid(5AE18C53-DB2E-11D2-A34A-006097C4E476),
+        dual,
+        helpstring("Retrieves information about registered plug-ins."),
+        pointer_default(unique)
+    ]
+    interface IWMEncPluginInfo : IDispatch
+    {
+        [propget, id(DISPID_PLUGININFO_SCHEMETYPE), helpstring("Retrieves the plug-in scheme type.")] 
+        HRESULT SchemeType([out, retval] BSTR* pbstrSchemeType );
+
+        [propget, id(DISPID_PLUGININFO_CLSID), helpstring("Retrieves the plug-in GUID.")] 
+        HRESULT CLSID([out, retval] BSTR* pbstrCLSID );
+
+        [propget, id(DISPID_PLUGININFO_NAME), helpstring("Retrieves the name of the plug-in.")] 
+        HRESULT Name([out, retval] BSTR* pbstrName );
+
+        [propget, id(DISPID_PLUGININFO_MEDIATYPE), helpstring("Retrieves the type of content supported by the plug-in.")] 
+        HRESULT MediaType([out, retval] WMENC_SOURCE_TYPE* penumMediaType );
+
+        [propget, id(DISPID_PLUGININFO_TYPE), helpstring("Retrieves the plug-in type.")] 
+        HRESULT PluginType([out, retval] WMENC_PLUGIN_TYPE* penumType );
+
+        [propget, id(DISPID_PLUGININFO_COPYRIGHT), helpstring("Retrieves plug-in copyright information.")] 
+        HRESULT Copyright([out, retval] BSTR* pbstrCopyright );
+
+        [propget, id(DISPID_PLUGININFO_INFOURL), helpstring("Retrieves a URL for additional information about the plug-in.")] 
+        HRESULT InfoURL([out, retval] BSTR* pbstrInfoURL );
+
+        [propget, id(DISPID_PLUGININFO_RESOURCES), helpstring("Indicates whether the plug-in supports resources.")] 
+        HRESULT Resources([out, retval] VARIANT_BOOL* pbResources);
+
+        [propget, id(DISPID_PLUGININFO_EXCLUSIVE), helpstring("Indicates whether the plug-in can be used more than once in a source group.")] 
+        HRESULT Exclusive([out, retval] VARIANT_BOOL* pbExclusive);
+
+        [propget, id(DISPID_PLUGININFO_PROPPAGE), helpstring("Indicates whether the plug-in supports property pages.")] 
+        HRESULT PropertyPage([out, retval] VARIANT_BOOL* pbProppage );
+
+        [propget, id(DISPID_PLUGININFO_TRANSFORMFLAGS), helpstring("Retrieves flags indicating whether the plug-in can be applied to multiple streams.")] 
+        HRESULT TransformFlags([out, retval] short* piFlags);
+
+        [propget, id(DISPID_PLUGININFO_HIDDEN), helpstring("Indicates whether the plug-in is hidden  fromin the UI.")] 
+        HRESULT Hidden([out, retval] VARIANT_BOOL* pbHidden );
+
+//???        [propget, id(DISPID_PLUGININFO_INITDATA), helpstring("property InitData")] 
+//???        HRESULT InitData([out] Byte* pVoid, [out, retval] short* piFlags);
+
+        // If Resources property return other than WMENC_PLUGIN_NO_RESOURCE, then
+        // we can get the count of the resources and get their name.
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of registered plug-ins.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [id(DISPID_VALUE), helpstring("Retrieves a resource for a plug-in.")] 
+        HRESULT Item([in] long lIndex, [out, retval] BSTR* pbstrResource );
+    };
+
+    [
+        object,
+        uuid(58441831-0B0C-4a19-AE34-542F1D393678),
+        dual,
+        helpstring("Specifies and retrieves transform plug-ins."),
+        pointer_default(unique)
+    ]
+    interface IWMEncTransform : IDispatch
+    {
+        [id(DISPID_TRANSFORM_SETINPUT), helpstring("Specifies a transform plug-in to use.")] 
+        HRESULT SetInput([in] BSTR bstrInput, [in, defaultvalue("")] BSTR bstrScheme, [in, defaultvalue("")] BSTR bstrInitData);
+        
+        [id(DISPID_TRANSFORM_GETINPUT), helpstring("Retrieves the name and scheme of a transform plug-in.")] 
+        HRESULT GetInput([out] BSTR *pbstrScheme, [out] BSTR *pbstrInitData, [out,retval] BSTR *pbstrInput);
+
+        [id(DISPID_TRANSFORM_TRANSFORMPLUGIN), helpstring("Retrieves a transform plug-in.")]
+        HRESULT GetTransformPlugin( [out, retval] IUnknown **ppUnkPlugin );
+    };
+    
+    [
+        object,
+        uuid(5AE18C54-DB2E-11D2-A34A-006097C4E476),
+        dual,
+        helpstring("Manages the collection of transform plug-ins used during the encoding session."),
+        pointer_default(unique)
+    ]
+    interface IWMEncTransformCollection : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of transform plug-ins in the collection.")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of transform plug-ins in the collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [propget, restricted, id(DISPID_NEWENUM), helpstring("Enumerates the transform plug-in collection.")] 
+        HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+
+        // The source string doesn't include "MIME_TYPE://string value".
+        [id(DISPID_VALUE), helpstring("Retrieves a specific transform plug-in.")] 
+        HRESULT Item([in] long lIndex, [out,retval] IWMEncTransform **ppTransform);
+
+        [id(DISPID_TRANSFORMS_ADD), helpstring("Adds a transform plug-in to the collection.")] 
+        HRESULT Add([out, retval] IWMEncTransform **ppTransform);
+
+        [id(DISPID_TRANSFORMS_REMOVE), helpstring("Removes a specific transform plug-in from the collection.")] 
+        HRESULT Remove([in] long lIndex);
+
+        [id(DISPID_TRANSFORMS_REMOVEALL), helpstring("Removes all plug-ins from the collection.")] 
+        HRESULT RemoveAll();
+
+        // Both variant can be index of the current position of two transform plugins,
+        // or can be the string value of the plugin sources.      
+        // This method will move varMove plugin in front of varInFrontOf plugin.
+        [id(DISPID_TRANSFORMS_MOVE), helpstring("Repositions transform plug-ins in the collection.")] 
+        HRESULT Move([in] long lMove, [in] long lInFrontOf);
+    };
+
+
+    [
+        object,
+        uuid(632B6073-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Manages information about the content being encoded."),
+        pointer_default(unique)
+    ]
+    interface IWMEncDisplayInfo : IDispatch
+    {
+        [propget, id(DISPID_DISPLAYINFO_TITLE), helpstring("Specifies and retrieves the title of the content being encoded.")] 
+        HRESULT Title([out, retval] BSTR *pbstrTitle);
+
+        [propput, id(DISPID_DISPLAYINFO_TITLE), helpstring("Specifies and retrieves the title of the content being encoded.")] 
+        HRESULT Title([in] BSTR bstrTitle);
+
+        [propget, id(DISPID_DISPLAYINFO_AUTHOR), helpstring("Specifies and retrieves the name of the content author.")] 
+        HRESULT Author([out, retval] BSTR *pbstrAuthor);
+
+        [propput, id(DISPID_DISPLAYINFO_AUTHOR), helpstring("Specifies and retrieves the name of the content author.")] 
+        HRESULT Author([in] BSTR bstrAuthor);
+
+        [propget, id(DISPID_DISPLAYINFO_COPYRIGHT), helpstring("Specifies and retrieves content copyright information.")] 
+        HRESULT Copyright([out, retval] BSTR *pbstrCopyright);
+
+        [propput, id(DISPID_DISPLAYINFO_COPYRIGHT), helpstring("Specifies and retrieves content copyright information.")] 
+        HRESULT Copyright([in] BSTR bstrCopyright);
+
+        [propget, id(DISPID_DISPLAYINFO_RATING), helpstring("Specifies and retrieves content rating information.")] 
+        HRESULT Rating([out, retval] BSTR *pbstrRating);
+
+        [propput, id(DISPID_DISPLAYINFO_RATING), helpstring("Specifies and retrieves content rating information.")] 
+        HRESULT Rating([in] BSTR bstrRating);
+
+        [propget, id(DISPID_DISPLAYINFO_DESCRIPTION), helpstring("Specifies and retrieves descriptive information about the content.")] 
+        HRESULT Description([out, retval] BSTR *pbstrDesc);
+
+        [propput, id(DISPID_DISPLAYINFO_DESCRIPTION), helpstring("Specifies and retrieves descriptive information about the content.")] 
+        HRESULT Description([in] BSTR bstrDesc);
+    };
+
+    [
+        object,
+        uuid(632B6075-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Manages a collection of name-value pairs that provide customextra information about the encoding session."),
+        pointer_default(unique)
+    ]
+    interface IWMEncAttributes : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of attributes in the collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [id(DISPID_VALUE), helpstring("Retrieves a specific attrribute from the collection.")] 
+        HRESULT Item([in] long Index, [out] BSTR *pbstrName, [out,retval] VARIANT *pVarValue );
+
+        [id(DISPID_ATTRIBUTES_ADD), helpstring("Adds an attribute to the collection.")] 
+        HRESULT Add([in] BSTR bstrName, [in] VARIANT varValue );
+
+        [id(DISPID_ATTRIBUTES_REMOVE), helpstring("Removes a specific attribute from the collection.")] 
+        HRESULT Remove([in] VARIANT var);
+
+        [id(DISPID_ATTRIBUTES_REMOVEALL), helpstring("Removes all attributes from the collection.")] 
+        HRESULT RemoveAll();
+    };
+
+   
+    [
+        object,
+        uuid(632B6078-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Retrieves descriptive information about a profile "),
+        pointer_default(unique)
+    ]
+    interface IWMEncProfile : IDispatch
+    {
+        [propget, id(DISPID_PROFILE_NAME), helpstring("Retrieves the name of a profile.")] 
+        HRESULT Name([out, retval] BSTR *bstrName);
+
+        [propget, id(DISPID_PROFILE_DESC), helpstring("Retrieves descriptive information about a profile.")] 
+        HRESULT Description([out,retval] BSTR *bstrDescription);
+
+        [propget, id(DISPID_PROFILE_MEDIACOUNT), helpstring("Retrieves the number of supported audio, video, and script streams.")] 
+        HRESULT MediaCount([in] WMENC_SOURCE_TYPE enumType, [out,retval] short* piCount);
+
+        [propget, id(DISPID_PROFILE_MBR), helpstring("Indicates whether the profile supports multiple bit rate encoded output.")] 
+        HRESULT MultipleBitrate([out,retval] VARIANT_BOOL *pbMBR );
+
+        // Return E_NOTIMPL for AudienceCollection property,
+        [propget, id(DISPID_PROFILE_AUDIENCE_COLLECTION), helpstring("Not implemented in this release.")] 
+        HRESULT AudienceCollection([out,retval] IDispatch **ppAudienceCollection );
+
+        [propget, id(DISPID_PROFILE_MAXPACKETSIZE), helpstring("Specifies and retrieves the maximum size of a data unit.")] 
+        HRESULT MaxPacketSize([out,retval] long *plMaxPacketSize );
+
+        [propput, id(DISPID_PROFILE_MAXPACKETSIZE), helpstring("Specifies and retrieves the maximum size of a data unit.")] 
+        HRESULT MaxPacketSize([in] long lMaxPacketSize );
+    };
+
+    [
+        object,
+        uuid(632B6077-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Enumerates the profiles that are available to an encoding session."),
+        pointer_default(unique)
+    ]
+    interface IWMEncProfileCollection : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of profiles in the collection.")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of profiles in the collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_DIRECTORY), helpstring("Specifies and retrieves the path of the custom profile directory.")]
+        HRESULT ProfileDirectory([out, retval] BSTR *bstrDirectory);
+
+        [propput, id(DISPID_COLLECTION_DIRECTORY), helpstring("Specifies and retrieves the path of the custom profile directory.")]
+        HRESULT ProfileDirectory([in] BSTR bstrDirectory);
+
+        [propget, restricted, id(DISPID_NEWENUM), helpstring("Enumerates the profile collection.")] 
+        HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+
+        [id(DISPID_VALUE), helpstring("Retrieves a specific profile from the collection.")] 
+        HRESULT Item([in] long Index, [out,retval] IWMEncProfile **ppProfile);
+
+        [id(DISPID_PROFILECOLLECTION_REFRESH), helpstring("Refreshes the profile collection.")] 
+        HRESULT Refresh();
+    };
+  
+    
+    [
+        object,
+        uuid(632B607B-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Manages the files used for archiving encoded content."),
+        pointer_default(unique)
+    ]
+    interface IWMEncFile : IDispatch        
+    {
+        [propget, id(DISPID_FILE_LOCALFILENAME), helpstring("Specifies and retrieves the archive file path and name on this computer.")] 
+        HRESULT LocalFileName([out, retval] BSTR *pbstrFileName);
+
+        [propput, id(DISPID_FILE_LOCALFILENAME), helpstring("Specifies and retrieves the archive file path and name on this computer.")] 
+        HRESULT LocalFileName([in] BSTR bstrFileName);
+
+        // Nemesis doesn't support archive to remote file.  Return E_NOTIMPL.
+        [propget, id(DISPID_FILE_REMOTEFILENAME), helpstring("Not implemented in this release.")] 
+        HRESULT RemoteFileName([out, retval] BSTR *pbstrFileName);
+
+        [propput, id(DISPID_FILE_REMOTEFILENAME), helpstring("Not implemented in this release.")] 
+        HRESULT RemoteFileName([in] BSTR bstrFileName);
+    };
+
+    [
+        object,
+        uuid(10CBC168-7F83-451e-90A1-75F43E2C20A0),
+        dual,
+        helpstring("Manages the files used for archiving encoded content."),
+        pointer_default(unique)
+    ]
+    interface IWMEncFile2 : IWMEncFile
+    {
+        [propget, id(DISPID_FILE_FILEDURATION), helpstring("Time after which archiving should stop.")] 
+        HRESULT FileDuration([out,retval] WMENC_LONGLONG *plTime );
+
+        [propput, id(DISPID_FILE_FILEDURATION), helpstring("Time after which archiving should stop.")] 
+        HRESULT FileDuration([in] WMENC_LONGLONG lTime );
+
+        [propget, id(DISPID_FILE_FILESIZE), helpstring("File size limit in bytes of the archived file.")] 
+        HRESULT FileSize([out,retval] WMENC_LONGLONG *pqwOutputFileSize );
+
+        [propput, id(DISPID_FILE_FILESIZE), helpstring("File size in bytes of the archived file.")] 
+        HRESULT FileSize([in] WMENC_LONGLONG qwOutputFileSize );
+    };
+
+
+
+// IWMEncBroadcast interface is defined for V4 server.  There is a very high possibility this interface 
+// won't be used by Titan.  We will define a new interface for Titan's networking sink.
+    [
+        object,
+        uuid(632B607D-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Manages broadcast options for the encoded content."),
+        pointer_default(unique)
+    ]
+    interface IWMEncBroadcast : IDispatch
+    {
+        // If port number is 0, that means this protocol is not used for broadcasting.
+        [propget, id(DISPID_BROADCAST_PORTNUMBER), helpstring("Specifies and retrieves the broadcast port number.")] 
+        HRESULT PortNumber([in] WMENC_BROADCAST_PROTOCOL enumProtocol, [out, retval] long *piPort);
+
+        [propput, id(DISPID_BROADCAST_PORTNUMBER), helpstring("Specifies and retrieves the broadcast port number.")] 
+        HRESULT PortNumber([in] WMENC_BROADCAST_PROTOCOL enumProtocol, [in] long iPort);
+    };
+
+
+    [
+        object,
+        uuid(5AE18C55-DB2E-11D2-A34A-006097C4E476),
+        dual,
+        helpstring("Manages a collection of objects used to display a stream."),
+        pointer_default(unique)
+    ]
+    interface IWMEncDataViewCollection : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of items in the collection.")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of items in the collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [id(DISPID_VALUE), helpstring("Retrieves a specific data view object from the collection.")] 
+        HRESULT Item([in] long Index, [out] IUnknown** ppDataView, [out,retval] long *plStreamCookie);
+
+        [id(DISPID_DATAVIEWCOLLECTION_ADD), helpstring("Adds a data view object to the collection.")]
+        HRESULT Add([in] IUnknown* pDataView, [out,retval] long* plStreamCookie );
+
+        [id(DISPID_DATAVIEWCOLLECTION_REMOVE), helpstring("Removes a specific data view object from the collection.")]
+        HRESULT Remove([in] long lStreamCookie );
+
+        [id(DISPID_DATAVIEWCOLLECTION_REMOVEALL), helpstring("Removes all objects from the collection.")]
+        HRESULT RemoveAll();        
+
+    };
+
+///////////////////////////////////////////////////////////////////////////////
+    [
+        object,
+        uuid(2B712593-B68C-40dc-80C3-4124BEA9216A),
+        dual,
+        helpstring("Manages a collection of the multiple-bit-rate output video streams."),
+        pointer_default(unique)
+    ]
+    interface IWMEncPostViewCollection:IWMEncDataViewCollection
+    {                
+        [propget, id(DISPID_POSTVIEWCOLLECTION_VIEWBANDWIDTH), helpstring("Specifies and retrieves the bit rate of the preview/postview stream.")] 
+        HRESULT ViewBandwidth([out, retval] long* plBandwidth );
+        
+        [propput, id(DISPID_POSTVIEWCOLLECTION_VIEWBANDWIDTH), helpstring("Specifies and retrieves the bit rate of the preview/postview stream.")] 
+        HRESULT ViewBandwidth([in] long lBandwidth );
+    };
+///////////////////////////////////////////////////////////////////////////////
+
+
+    [
+        object,
+        uuid(632B6084-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Manages an input source stream."),
+        pointer_default(unique)
+    ]
+    interface IWMEncSource : IDispatch
+    {
+        [propget, id(DISPID_SOURCE_TYPE), helpstring("Retrieves the type of the input media stream.")] 
+        HRESULT Type([out,retval] WMENC_SOURCE_TYPE *enumType);
+
+        [id(DISPID_SOURCE_SETINPUT), helpstring("Specifies the stream source.")] 
+        HRESULT SetInput([in] BSTR bstrInput, [in, defaultvalue("")] BSTR bstrScheme, [in, defaultvalue("")] BSTR bstrStreamName);
+        
+        [id(DISPID_SOURCE_GETINPUT), helpstring("Retrieves the stream source.")] 
+        HRESULT GetInput([out] BSTR *bstrStreamName, [out] BSTR *bstrScheme, [out,retval] BSTR *pbstrInput);
+
+        [propput, id(DISPID_SOURCE_REPEAT), helpstring("Specifies and retrieves the repeat property for a stream.")] 
+        HRESULT Repeat([in] VARIANT_BOOL bRepeat);
+
+        [propget, id(DISPID_SOURCE_REPEAT), helpstring("Specifies and retrieves the repeat property for a stream.")] 
+        HRESULT Repeat([out, retval] VARIANT_BOOL *pbRepeat);
+
+        // MarkIn, MarkOut time is in 1 milisecond unit.
+        [propget, id(DISPID_SOURCE_MARKIN), helpstring("Specifies and retrieves the starting point of a stream.")] 
+        HRESULT MarkIn([out, retval] long *plMarkIn);
+        
+        [propput, id(DISPID_SOURCE_MARKIN), helpstring("Specifies and retrieves the starting point of a stream.")] 
+        HRESULT MarkIn([in] long lMarkIn);
+
+        [propget, id(DISPID_SOURCE_MARKOUT), helpstring("Specifies and retrieves the end point of a stream.")] 
+        HRESULT MarkOut([out, retval] long *plMarkOut);
+        
+        [propput, id(DISPID_SOURCE_MARKOUT), helpstring("Specifies and retrieves the end point of a stream.")] 
+        HRESULT MarkOut([in] long lMarkOut);
+
+        [propget, id(DISPID_SOURCE_TRANSFORMS), helpstring("Retrieves the collection of transform plug-ins applied to the source stream.")] 
+        HRESULT TransformCollection([out, retval] IWMEncTransformCollection** ppTransformCollection );
+
+        //
+        // Caller pass in an array of IUnknown pointer and size of the array.  If the size of the array is too small,
+        // we will return S_FALSE.  If ppUnkTransformPlugins is NULL, then *pdwCount is the total number
+        // of the stream level transform plugins in the source.
+        //
+        [id(DISPID_SOURCE_TRANSFORMPLUGINCOUNT), helpstring("Retrieves the number of transform plug-ins applied to the source stream.")] 
+        HRESULT GetTransformPluginCount( [out] DWORD *pdwCount );
+
+        [id(DISPID_SOURCE_TRANSFORMPLUGIN), helpstring("This is not an Automation compliant method.")] 
+        HRESULT GetTransformPlugin( [in] DWORD dwIndex, [out] IUnknown** ppUnkTransformPlugin );
+
+        [propget, id(DISPID_SOURCE_PREVIEWS), helpstring("Retrieves a collection of preview objects for the source stream.")] 
+        HRESULT PreviewCollection([out, retval] IWMEncDataViewCollection** ppDataViewCollection );
+
+        [propget, id(DISPID_SOURCE_POSTVIEWS), helpstring("Retrieves a collection of preview objects for the source stream.")] 
+        HRESULT PostviewCollection([out, retval] IWMEncDataViewCollection** ppDataViewCollection );
+
+        [id(DISPID_SOURCE_SOURCEPLUGIN), helpstring("Retrieves the source plug-in associated with the source stream.")]
+        HRESULT GetSourcePlugin([out, retval] IUnknown** ppUnkPlugin );
+
+    };
+
+    [
+        object,
+        uuid(632B6086-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Crops the edges of a video image."),
+        pointer_default(unique)
+    ]
+    interface IWMEncVideoSource : IWMEncSource
+    {
+        [propget, id(DISPID_VIDEOSOURCE_CROPMODE), helpstring("Specifies and retrieves the cropping mode.")] 
+        HRESULT CroppingMode( [out, retval] WMENC_CROPPING_MODE *penumCroppingMode );
+
+        [propput, id(DISPID_VIDEOSOURCE_CROPMODE), helpstring("Specifies and retrieves the cropping mode.")] 
+        HRESULT CroppingMode( [in] WMENC_CROPPING_MODE enumCroppingMode );
+
+        [propget, id(DISPID_VIDEOSOURCE_CROPLEFT), helpstring("Specifies and retrieves the number of pixels to crop from the left side.")] 
+        HRESULT CroppingLeftMargin([out, retval] long *plLeft);
+        
+        [propput, id(DISPID_VIDEOSOURCE_CROPLEFT), helpstring("Specifies and retrieves the number of pixels to crop from the left side.")] 
+        HRESULT CroppingLeftMargin([in] long lLeft);
+
+        [propget, id(DISPID_VIDEOSOURCE_CROPTOP), helpstring("Specifies and retrieves the number of pixels to crop from the top.")] 
+        HRESULT CroppingTopMargin([out, retval] long *plTop);
+        
+        [propput, id(DISPID_VIDEOSOURCE_CROPTOP), helpstring("Specifies and retrieves the number of pixels to crop from the top.")] 
+        HRESULT CroppingTopMargin([in] long lTop);
+
+        [propget, id(DISPID_VIDEOSOURCE_CROPRIGHT), helpstring("Specifies and retrieves the number of pixels to crop from the right side.")] 
+        HRESULT CroppingRightMargin([out, retval] long *plRight);
+        
+        [propput, id(DISPID_VIDEOSOURCE_CROPRIGHT), helpstring("Specifies and retrieves the number of pixels to crop from the right side.")] 
+        HRESULT CroppingRightMargin([in] long lRight);
+
+        [propget, id(DISPID_VIDEOSOURCE_CROPBOTTOM), helpstring("Specifies and retrieves the number of pixels to crop from the bottom.")] 
+        HRESULT CroppingBottomMargin([out, retval] long *plBottom);
+        
+        [propput, id(DISPID_VIDEOSOURCE_CROPBOTTOM), helpstring("Specifies and retrieves the number of pixels to crop from the bottom.")] 
+        HRESULT CroppingBottomMargin([in] long lBottom);
+        
+        [propget, id(DISPID_VIDEOSOURCE_OPTIMIZATION), helpstring("Specifies and retrieves the type of video optimization.")] 
+        HRESULT Optimization( [out, retval] WMENC_VIDEO_OPTIMIZATION *penumOptimization );
+
+        [propput, id(DISPID_VIDEOSOURCE_OPTIMIZATION), helpstring("Specifies and retrieves the type of video optimization.")]
+        HRESULT Optimization( [in] WMENC_VIDEO_OPTIMIZATION enumOptimization );
+
+        [propget, id(DISPID_VIDEOSOURCE_PIXELFORMAT), helpstring("Specifies and retrieves the video pixel format.")] 
+        HRESULT PixelFormat( [out, retval] WMENC_PIXELFORMAT_VIDEO *penumPixelFormat );
+
+        [propput, id(DISPID_VIDEOSOURCE_PIXELFORMAT), helpstring("Specifies and retrieves the video pixel format.")]
+        HRESULT PixelFormat( [in] WMENC_PIXELFORMAT_VIDEO enumPixelFormat );
+    };
+
+
+    [
+        object,
+        uuid(632B6071-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Manages a source group of multimedia streams."),
+        pointer_default(unique)
+    ]
+    interface IWMEncSourceGroup : IDispatch
+    {
+        [propget, id(DISPID_SOURCEGROUP_NAME), helpstring("Specifies and retrieves the source group name.")] 
+        HRESULT Name([out, retval] BSTR *pbstrName);
+        
+        [propput, id(DISPID_SOURCEGROUP_NAME), helpstring("Specifies and retrieves the source group name.")] 
+        HRESULT Name([in] BSTR bstrName);
+        
+        [propget, id(DISPID_SOURCEGROUP_SOURCECOUNT), helpstring("Retrieves the number of streams in the source group.")]
+        HRESULT SourceCount([in] WMENC_SOURCE_TYPE enumType, [out,retval] short *iSourceCount);
+
+        [propget, id(DISPID_SOURCEGROUP_SOURCE), helpstring("Retrieves a specific media stream from the source group.")]
+        HRESULT Source([in] WMENC_SOURCE_TYPE enumType, [in] short iIndex, [out,retval] IWMEncSource **ppSource);
+
+        [id(DISPID_SOURCEGROUP_ADDSOURCE), helpstring("Adds a media stream to the source group.")] 
+        HRESULT AddSource([in] WMENC_SOURCE_TYPE enumType, [out, retval] IWMEncSource **ppSource );
+
+        [id(DISPID_SOURCEGROUP_REMOVESOURCE), helpstring("Removes a media stream from the source group.")] 
+        HRESULT RemoveSource([in] WMENC_SOURCE_TYPE enumType, [in] VARIANT var);
+
+        [propget, id(DISPID_SOURCEGROUP_PROFILE), helpstring("Specifies and retrieves the profile for the source group.")] 
+        HRESULT Profile([out, retval] IWMEncProfile **ppProfile );
+
+        [propput, id(DISPID_SOURCEGROUP_PROFILE), helpstring("Specifies and retrieves the profile for the source group.")] 
+        HRESULT Profile([in] VARIANT var );
+
+        // return E_NOTIMPL
+        [propget, id(DISPID_SOURCEGROUP_AUDIENCE_COLLECTION), helpstring("Not implemented in this release.")] 
+        HRESULT AudienceCollection([out, retval] IDispatch **ppAudienceCollection);
+
+        [propget, id(DISPID_SOURCEGROUP_AUTOARCHIVE), helpstring("Indicates whether the source group is automatically archived.")]
+        HRESULT AutoArchive([in] WMENC_ARCHIVE_TYPE enumArchiveType, [out, retval] WMENC_ARCHIVE_OPERATION *penumArchiveOp); 
+
+        [propput, id(DISPID_SOURCEGROUP_AUTOARCHIVE), helpstring("Indicates whether the source group is automatically archived.")] 
+        HRESULT AutoArchive([in] WMENC_ARCHIVE_TYPE enumArchiveType, [in] WMENC_ARCHIVE_OPERATION enumArchiveOp); 
+
+        //
+        // This method will automatically add upto 1 audio source and upto 1 video sources 
+        // to the source group.
+        //
+        [id(DISPID_SOURCEGROUP_AUTOSETFILESOURCE), helpstring("Automatically adds streams from a multimedia file to the source group.")]
+        HRESULT AutoSetFileSource([in] BSTR bstrFileName );
+
+        [id(DISPID_SOURCEGROUP_PREPARETOENCODE), helpstring("Initializes the source group.")]
+        HRESULT PrepareToEncode(VARIANT_BOOL bPrepare);
+
+        [propget, id(DISPID_SOURCEGROUP_TRANSFORMS), helpstring("Retrieves a collection of group transform plug-ins.")] 
+        HRESULT GroupTransformCollection([out, retval] IWMEncTransformCollection** ppTransformCollection );
+
+        [id(DISPID_SOURCEGROUP_TRANSFORMPLUGINCOUNT), helpstring("Retrieves the number of group level transform plug-ins that can be applied to the source group.")]
+        HRESULT GetGroupTransformPluginCount([out] DWORD *pdwCount );
+
+        [id(DISPID_SOURCEGROUP_TRANSFORMPLUGIN), helpstring("Retrieves a specific group level transform plug-in.")]
+        HRESULT GetGroupTransformPlugin([in] DWORD dwIndex, [out] IUnknown** ppUnkPlugin );
+    };
+
+    [
+        object,
+        uuid(632B608A-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Manages a source group of multimedia streams."),
+        pointer_default(unique)
+    ]
+    interface IWMEncSourceGroup2 : IWMEncSourceGroup
+    {
+        [propget, id(DISPID_SOURCEGROUP_DEVICECONTROLS), helpstring("Retrieves the device control collection for the source group.")] 
+        HRESULT DeviceControlCollection([out,retval] IWMEncDeviceControlCollection** ppDeviceControlCollection);
+
+        // 
+        // pvar will be VT_I4 as return type.  The value will be either "0", means no auto rollover,
+        // or "-1", means rollover at the end of the source group.
+        //
+        [id(DISPID_SOURCEGROUP_GETAUTOROLLOVER), helpstring("Retrieves the source group name that current source group will auto rollover to.")] 
+        HRESULT GetAutoRollover([out] VARIANT* pvar, [out,retval] BSTR* pbstrSourceGroupName );
+
+        // 
+        // lRolloverTime is "0", or bstrSourceGroupName is empty means no auto rollover is set.
+        // Otherwise, lRolloverTime is reserved to set to "-1", means auto rollover at the end of the source group.
+        //
+        [id(DISPID_SOURCEGROUP_SETAUTOROLLOVER), helpstring("Set the source group name that current source group will auto rollover to.")] 
+        HRESULT SetAutoRollover([in] long lRolloverTime, [in] BSTR bstrSourceGroupName );
+    };
+
+
+    [
+        object,
+        uuid(632B606F-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Enumerates the source groups that are available during an encoding session."),
+        pointer_default(unique)
+    ]
+    interface IWMEncSourceGroupCollection : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of source groups in the collection.")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of source groups in the collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+        
+        [propget, restricted, id(DISPID_NEWENUM), helpstring("Enumerates the source group collection.")] 
+        HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+        
+        //
+        // var can be either index, or the sourcegroup's name.  
+        // If a sourcegroup name is used, the first source group which matches the name 
+        // is returned.
+        //
+        [id(DISPID_VALUE), helpstring("Retrieves a specific source group from the collection.")] 
+        HRESULT Item([in] VARIANT var, [out, retval] IWMEncSourceGroup **ppSourceGroup);
+        
+        //
+        // bstrName has to be a non-null string.  
+        // There is no checking against the duplication of the source groups' names.  
+        // It is user's responsibility to name their source group meaningfully.
+        //
+        [id(DISPID_SOURCEGROUP_COLLECTION_ADD), helpstring("Adds a source group to the collection.")] 
+        HRESULT Add([in] BSTR bstrName, [out,retval] IWMEncSourceGroup **ppSourceGroup);
+        
+        [id(DISPID_SOURCEGROUP_COLLECTION_REMOVE), helpstring("Removes a source group from the collection.")] 
+        HRESULT Remove([in] VARIANT var);
+        
+        [id(DISPID_SOURCEGROUP_COLLECTION_MOVE), helpstring("Repositions source groups within the collection.")] 
+        HRESULT Move([in] IWMEncSourceGroup *pSourceGroup, [in] IWMEncSourceGroup *pSourceGroupInfront);
+        
+        [propget, id(DISPID_SOURCEGROUP_COLLECTION_ACTIVE), helpstring("Specifies and retrieves the active source group.")] 
+        HRESULT Active([out,retval] IWMEncSourceGroup **ppSourceGroup);
+        
+        [propput, id(DISPID_SOURCEGROUP_COLLECTION_ACTIVE), helpstring("Specifies and retrieves the active source group.")] 
+        HRESULT Active([in] IWMEncSourceGroup *pSourceGroup);
+    };
+
+    interface IWMEncStatistics;
+
+    [
+        object,
+        uuid(632B607F-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Operates the encoder engine."),
+        pointer_default(unique)
+    ]
+    interface IWMEncoder : IDispatch
+    {
+        [id(DISPID_ENCODER_LOCALEID), helpstring("Specifies the national language used by the encoder engine.")]
+        HRESULT SetLocaleID( [in] long lLocaleID );
+
+        [id(DISPID_ENCODER_LOAD), helpstring("Loads an existing configuration from a file.")] 
+        HRESULT Load([in] BSTR bstrFileName);
+
+        [id(DISPID_ENCODER_SAVE), helpstring("Saves the current configuration to a file.")] 
+        HRESULT Save([in] BSTR bstrFileName);
+
+        [id(DISPID_ENCODER_START), helpstring("Starts the encoder engine.")] 
+        HRESULT Start();
+
+        [id(DISPID_ENCODER_STOP), helpstring("Stops the encoder engine.")] 
+        HRESULT Stop();
+
+        [propget, id(DISPID_ENCODER_AUTOSTOP), helpstring("Automatically stops the encoding process at the end of a file.")] 
+        HRESULT AutoStop( [out,retval] VARIANT_BOOL *pbStop );
+
+        [propput, id(DISPID_ENCODER_AUTOSTOP), helpstring("Automatically stops the encoding process at the end of a file.")] 
+        HRESULT AutoStop( [in] VARIANT_BOOL bStop );
+
+        //
+        // Pause is only available if input source is device and output is to file.
+        //
+        [id(DISPID_ENCODER_PAUSE), helpstring("Pauses the encoder engine.")] 
+        HRESULT Pause();
+
+        // bPrepare indicates prepare or unprepare encoding session.
+        // if bPrepare is TRUE, then a new encoding session is created.
+        // if bPrepare is FALSE, then all opened sources are closed and encoding session is cleaned up.
+        [id(DISPID_ENCODER_PREPARETOENCODE), helpstring("Initializes all souce groups in the encoder engine.")] 
+        HRESULT PrepareToEncode( VARIANT_BOOL bPrepare );
+
+        //
+        // This function will reset the encoder to the state just after the object is instantiated.
+        // In other words, all the settings that set on the encoder are lost.
+        //
+        [id(DISPID_ENCODER_RESET), helpstring("Resets the encoder engine.")] 
+        HRESULT Reset();
+
+        [id(DISPID_ENCODER_ARCHIVE), helpstring("Starts or stops the archiving process.")] 
+        HRESULT Archive( [in] WMENC_ARCHIVE_TYPE enumArchiveType, [in] WMENC_ARCHIVE_OPERATION enumArchiveOp );
+
+        [id(DISPID_ENCODER_SENDSCRIPT), helpstring("Sends a script command to the encoder engine.")] 
+        HRESULT SendScript( [in] short iIndex, [in] BSTR bstrType, [in] BSTR bstrData);
+
+        [propget, id(DISPID_ENCODER_ENABLEAUTOARCHIVE), helpstring("Indicates whether encoded content will be automatically archived.")] 
+        HRESULT EnableAutoArchive( [out, retval] VARIANT_BOOL *pbEnableAutoArchive );
+
+        [propput, id(DISPID_ENCODER_ENABLEAUTOARCHIVE), helpstring("Indicates whether encoded content will be automatically archived")] 
+        HRESULT EnableAutoArchive( [in] VARIANT_BOOL bEnableAutoArchive );
+
+        [propget, id(DISPID_ENCODER_RECORDINGLEVEL), helpstring("Specifies and retrieves the recoding level of an audio stream.")] 
+        HRESULT RecordingLevel( [in] short iIndex, [out, retval] long *lLevel );
+
+        [propput, id(DISPID_ENCODER_RECORDINGLEVEL), helpstring("Specifies and retrieves the recoding level of an audio stream.")] 
+        HRESULT RecordingLevel( [in] short iIndex, [in] long lLevel );
+
+        [propget, id(DISPID_ENCODER_RECORDINGMUTE), helpstring("Indicates whether the input audio stream is muted.")] 
+        HRESULT RecordingMute( [in] short iIndex, [out, retval] VARIANT_BOOL *pbRecordMute );
+
+        [propput, id(DISPID_ENCODER_RECORDINGMUTE), helpstring("Indicates whether the input audio stream is muted.")] 
+        HRESULT RecordingMute( [in] short iIndex, [in] VARIANT_BOOL bRecordMute );
+
+        [id(DISPID_ENCODER_STATS_AUDIOLEVEL), helpstring("Retrieves the audio level of the audio source stream.")] 
+        HRESULT GetAudioLevel( [in] WMENC_AUDIOLEVEL_UNITS units, [in] short iIndex, [in, out] long *plDuration,
+                               [out] double *pdLMin, [out] double *pdLAvg, [out] double *pdLMax, 
+                               [out] double *pdRMin, [out] double *pdRAvg, [out] double *pdRMax );
+
+        [propget, id(DISPID_ENCODER_SOURCEGROUP_COLLECTION), helpstring("Retrieves the collection of source groups.")] 
+        HRESULT SourceGroupCollection( [out, retval] IWMEncSourceGroupCollection **ppSourceGroupCollection );
+
+        [propget, id(DISPID_ENCODER_SOURCEPLUGIN_MANAGER), helpstring("Retrieves source plug-in information.")] 
+        HRESULT SourcePluginInfoManager([out, retval] IWMEncSourcePluginInfoManager **ppSourcePluginInfoManager);
+
+        [propget, id(DISPID_ENCODER_TRANSFORMPLUGIN_MANAGER), helpstring("Retrieves transform plug-in information.")] 
+        HRESULT TransformPluginInfoManager([out, retval] IWMEncTransformPluginInfoManager **ppTransformPluginInfoManager);
+
+        [propget, id(DISPID_ENCODER_DISPLAYINFO), helpstring("Retrieves display information options.")] 
+        HRESULT DisplayInfo( [out, retval] IWMEncDisplayInfo **ppDisplayInfo );
+
+        [propget, id(DISPID_ENCODER_ATTRIBUTES), helpstring("Retrieves custom attribute options.")] 
+        HRESULT Attributes( [out, retval] IWMEncAttributes **ppAttributes );
+
+        [propget, id(DISPID_ENCODER_BROADCAST), helpstring("Retrieves broadcast options.")] 
+        HRESULT Broadcast( [out, retval] IWMEncBroadcast **ppBroadcast );
+
+        [propget, id(DISPID_ENCODER_FILE), helpstring("Retrieves file options.")] 
+        HRESULT File( [out, retval] IWMEncFile **ppFile );
+
+        [propget, id(DISPID_ENCODER_STATISTICS), helpstring("Retrieves statistic options.")] 
+        HRESULT Statistics( [out, retval] IWMEncStatistics **ppStatistics );
+
+        [propget, id(DISPID_ENCODER_PROFILE_COLLECTION), helpstring("Retrieves the collection of available profiles.")] 
+        HRESULT ProfileCollection( [out, retval] IWMEncProfileCollection **ppProfileCollection );
+
+        [propget, id(DISPID_ENCODER_RUNSTATE), helpstring("Indicates whether the encoder engine is running.")] 
+        HRESULT RunState( [out, retval] WMENC_ENCODER_STATE *penumState );
+
+        [propget, id(DISPID_ENCODER_ERRORSTATE), helpstring("Retrieves the error state of the encoder engine.")] 
+        HRESULT ErrorState( [out, retval] long *plResult);
+
+        [propget, id(DISPID_ENCODER_ARCHIVESTATE), helpstring("Indicates whether the archiving process is running.")] 
+        HRESULT ArchiveState( [in] WMENC_ARCHIVE_TYPE enumType, [out, retval] WMENC_ARCHIVE_STATE *penumArchiveState );
+
+        [propget, id(DISPID_ENCODER_NAME), helpstring("Specifies and retrieves the encoder engine name for remote administration.")] 
+        HRESULT Name( [out, retval] BSTR *pbstrName );
+
+        [propput, id(DISPID_ENCODER_NAME), helpstring("Specifies and retrieves the encoder engine name for remote administration.")] 
+        HRESULT Name( [in] BSTR bstrName );
+
+        [propget, id(DISPID_ENCODER_REMOTEADMIN), helpstring("Indicates whether the encoder engine can be remotely controlled.")] 
+        HRESULT RemoteAdmin( [out, retval] VARIANT_BOOL *pbRemoteAdmin );
+
+        [propput, id(DISPID_ENCODER_REMOTEADMIN), helpstring("Indicates whether the encoder engine can be remotely controlled.")] 
+        HRESULT RemoteAdmin( [in] VARIANT_BOOL bRemoteAdmin );
+
+        [id(DISPID_ENCODER_GENERATEBROADCASTINFO), helpstring("Generates the Windows Media file needed for a multicast publishing point.")] 
+        HRESULT GenerateBroadcastInfo( [in] BSTR bstrFileName );
+
+        [propget, id(DISPID_ENCODER_INDEXERSTATE), helpstring("Retrieves the state of the indexing process.")] 
+        HRESULT IndexerState( [out, retval] WMENC_INDEXER_STATE *penumIndexerState );
+
+        [propget, id(DISPID_ENCODER_AUTOINDEX), helpstring("Indicates whether the archive file will be automatically indexed.")] 
+        HRESULT AutoIndex( [out, retval] VARIANT_BOOL *pbAutoIndex );
+
+        [propput, id(DISPID_ENCODER_AUTOINDEX), helpstring("Indicates whether the archive file will be automatically indexed.")] 
+        HRESULT AutoIndex( [in] VARIANT_BOOL bAutoIndex );
+
+        [id(DISPID_ENCODER_INDEXER), helpstring("Controls the indexing process.")] 
+        HRESULT Indexer( [in] WMENC_INDEXER_OPERATION enumIndexerOp );
+    };
+
+
+    [
+        object,
+        uuid(632B6081-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Operates the Live DRM encoder engine."),
+        pointer_default(unique)
+    ]
+    interface IWMEncoder2 : IWMEncoder
+    {
+        [propget, id(DISPID_ENCODER_DEVICECONTROLPLUGIN_MANAGER), helpstring("Retrieves device control plug-in information.")] 
+        HRESULT DeviceControlPluginInfoManager([out, retval] IWMEncDeviceControlPluginInfoManager **ppDeviceControlPluginInfoManager);
+
+        [propget, id(DISPID_ENCODER_CONTENTANALYZER), helpstring("Retrieves ContentAnalyzer.")] 
+        HRESULT ContentAnalyzer( [out, retval] IWMEncContentAnalyzer** ppContentAnalyzer );
+
+        [id(DISPID_ENCODER_INSERTCLEANPOINT), helpstring("Inserts a cleanpoint in the video stream.")] 
+        HRESULT InsertCleanpoint();
+
+        //
+        // by default, synchronize operation is true.
+        //
+        [propget, id(DISPID_ENCODER_SYNCOPERATION), helpstring("Retrieves Sychronise operation setting.")] 
+        HRESULT SynchronizeOperation( [out, retval] VARIANT_BOOL* pbSyncOp );
+
+        [propput, id(DISPID_ENCODER_SYNCOPERATION), helpstring("Retrieves Sychronise operation setting.")] 
+        HRESULT SynchronizeOperation( [in] VARIANT_BOOL bSyncOp );
+
+        [propget, id(DISPID_ENCODER_DRMCONTENTAUTHOR), helpstring("Retrieves DRM Content Author.")] 
+        HRESULT EncoderDRMContentAuthor( [out, retval] IWMDRMContentAuthor** ppEncoderDRMAuthor );
+
+		// 
+		// enumSourceType can only be WMENC_AUDIO or WMENC_VIDEO.
+		// iIndex is the index of the enumSourceType source in source group.  iIndex can only be "0" for now.
+		//
+        [propget, id(DISPID_ENCODER_WATERMARKS), helpstring("Retrieves water mark information.")] 
+        HRESULT WatermarkCollection( [in] WMENC_SOURCE_TYPE enumSourceType, [out, retval] IWMEncWatermarkCollection** ppWatermarks );
+
+        [id(DISPID_ENCODER_GET_WATERMARK), helpstring("Specifies and retrieves the Watermark information.")] 
+        HRESULT GetWatermark([in] WMENC_SOURCE_TYPE enumSourceType, [in] short iIndex, [out] VARIANT* pvarConfigFile, [out] VARIANT* pvarCLSID, [out, retval] BSTR* pbstrWatermarkName );
+        
+        [id(DISPID_ENCODER_SET_WATERMARK), helpstring("Specifies and retrieves the Watermark information.")] 
+        HRESULT SetWatermark([in] WMENC_SOURCE_TYPE enumSourceType, [in] short iIndex, [in] BSTR bstrWaterMarkName, [in] BSTR bstrCLSID, [in] BSTR bstrConfigFile );
+
+        //
+        // This method should be used with Stop call.  If user uses disk as temp storage to achieve real-time sourcing,
+        // but non-real time encoding (specified in Network property page), IWMEncoder::Stop, IWMEncoder::Pause will continue 
+        // process all the samples in memory/disk.  This may take a long time if there are a lot of samples queue's up.  
+        // If user wants to abort sample processing, then they can call Flush().  
+        // Flush call itself doesn't stop sample queueing or throw samples away from sample queue.  
+        // Flush will cause Stop() and Pause() call to ignore all the samples queue'd up in memory/disk, just throw away 
+        // all the samples queue'd up in memory/disk. 
+        // Flush can be called before Stop/Pause for both sync or async Stop/Pause function.  
+        // Flush can also be called during Stop/Pause call for async Stop/Pause function.
+        //
+        [id(DISPID_ENCODER_FLUSH), helpstring("Throw away the samples queue'd up in memory and disk.")]
+        HRESULT Flush();
+
+        //
+        // This property is to specify whether timecode will be in output content and we will index with timecode or not.  
+        // This flag will cause file size bigger due to timecode data overhead and bigger timecode index object.
+        // Once this flag setting is changed, profile setting will be updated with this new data extension for output format.
+        // Announcement file for broadcast and push distribution needs to be regenerated.  
+        // This flag can't be changed when encoder is not in stopped state.
+        // By default, this flag is VARIANT_FALSE.
+        // User should set this flag to true mostly for download playback content.
+        //
+        [propget, id(DISPID_ENCODER_ENABLETIMECODE), helpstring("Retrieve enable Timecode support.")] 
+        HRESULT EnableTimecode( [out,retval] VARIANT_BOOL* pfTimecode );
+
+        [propput, id(DISPID_ENCODER_ENABLETIMECODE), helpstring("Specify enable Timecode support.")] 
+        HRESULT EnableTimecode( [in] VARIANT_BOOL fTimecode );
+
+        // 
+        // This property is to specify whether to user the original source timecode data as output timecode data, or use
+        // a relative timecode in output file.  This property is ignored if EnableTimecode is set to VARIANT_FALSE.
+        // If this property is set to VARIANT_FALSE (not preserve source timecode), by default, Encoder will generate
+        // starting timecode at 01:00:00:00.  User can use StartingTimecode property to change this value.
+        // By default, PreserveSourceTimecode is VARIANT_TRUE.
+        //
+        [propget, id(DISPID_ENCODER_PRESERVESOURCETIMECODE), helpstring("Retrieve preserve source Timecode in output content.")] 
+        HRESULT PreserveSourceTimecode( [out,retval] VARIANT_BOOL* pfSourceTimecode );
+
+        [propput, id(DISPID_ENCODER_PRESERVESOURCETIMECODE), helpstring("Specify preserve source Timecode in output content.")] 
+        HRESULT PreserveSourceTimecode( [in] VARIANT_BOOL fSourceTimecode );
+
+        //
+        // This property is to specify the starting timecode in output WMV file when original source timecode is not used.
+        // This property is ignored if EnableTimecode is VARIANT_FALSE or PreserveSourceTimecode is VARIANT_FALSE.
+        // 
+        // lTimecode should be specified in this format:
+        // This long is ANSII format of timecode:
+        // 
+        //            MSB                            LSB
+        // Byte1    Tens of hour                    hour
+        // Byte2    Tens of minute                  minute
+        // Byte3    tens of second                  second
+        // Byte4    tens of frame                   frame
+        // 
+        // For example, a timecode represents at 19 hour, 23 minutes, 45 seconds and 20 frame 
+        // should look like "0x19234520" in long and string representation should be "19:23:45:20" 
+        // (or "19:23:45;20" for NTSC dropped frame).
+        // 
+        [propget, id(DISPID_ENCODER_STARTINGTIMECODE), helpstring("Retrieve the starting timecode when new set of timecode generated in output content.")] 
+        HRESULT StartingTimecode( [out,retval] long* plTimecode );
+
+        [propput, id(DISPID_ENCODER_STARTINGTIMECODE), helpstring("Specify the starting timecode when new set of timecode generated in output content.")] 
+        HRESULT StartingTimecode( [in] long lTimecode );
+
+        //
+        // Timecode frame rates.  Only following frame rate are supported in current version.
+        //
+        // enum
+        // {
+        //  WMT_TIMECODE_FRAMERATE_30      = 0,
+        //  WMT_TIMECODE_FRAMERATE_30DROP,
+        //  WMT_TIMECODE_FRAMERATE_25,
+        //  WMT_TIMECODE_FRAMERATE_24
+        // };
+        //
+        // By default, we will default to WMT_TIMECODE_FRAMERATE_30.
+        //
+        [propget, id(DISPID_ENCODER_TIMECODEFRAMERATE), helpstring("Retrieve the timecode frame rate when timecode is generated in output content.")] 
+        HRESULT TimecodeFrameRate( [out,retval] long* plFrameRate );
+
+        [propput, id(DISPID_ENCODER_TIMECODEFRAMERATE), helpstring("Specify the timecode frame rate when timecode is generated in output content.")] 
+        HRESULT TimecodeFrameRate( [in] long lFrameRate );
+
+        [propget, id(DISPID_ENCODER_VIDEOCOMPLEXITY), helpstring("Specify and retrieve the video complexity setting.")] 
+        HRESULT VideoComplexity( [out,retval] WMENC_VIDEOCOMPLEXITY* penumVideoComplexity );
+
+        [propput, id(DISPID_ENCODER_VIDEOCOMPLEXITY), helpstring("Specify and retrieve the video complexity setting.")] 
+        HRESULT VideoComplexity( [in] WMENC_VIDEOCOMPLEXITY enumVideoComplexity );
+    };
+
+
+    [
+        object,
+        uuid(731B9D9E-6CF4-4C37-A6A9-A89B880D36EC),
+        dual,
+        helpstring("Creates an instance of the Profile Manager to edit and create profiles."),
+        pointer_default(unique)
+    ]
+    interface IWMEncProfileManager : IDispatch
+    {
+        [id(1), helpstring("Display the list of profiles.")]
+        HRESULT WMEncProfileList( [in] WMENC_MEDIA_FILTER filter, [in] long lcid );
+        
+        [id(2), helpstring("Display the list of profiles and specify the default type of new profiles.")]
+        HRESULT WMEncProfileListEx( [in] WMENC_MEDIA_FILTER filter, [in] WMENC_MEDIA_FILTER newDefault, [in] long lcid );
+
+        [id(3), helpstring("Edit a profile or create a new profile.")]
+        HRESULT WMEncProfileEdit( [in] BSTR bstrProfileName, [in] WMENC_MEDIA_FILTER lfilter, [in] long lcid );
+        
+        [id(4), helpstring("Retrieves a string containing the details of a specific profile.")]
+        HRESULT GetDetailsString( [in] BSTR bstrProfileName, [in] long lcid, [out, retval] BSTR *bstrDetailsString );
+
+        [propget, id(5), helpstring("Specifies and retrieves the path of the directory containing custom profiles.")]
+        HRESULT ProfileDirectory([out, retval] BSTR *bstrDirectory);
+
+        [propput, id(5), helpstring("Specifies and retrieves the path of the directory containing custom profiles.")]
+        HRESULT ProfileDirectory([in] BSTR bstrDirectory);
+
+        [propget, id(6), helpstring("Retrieves the name of the profile most recently created by the end user.")]
+        HRESULT LastCreatedProfile([out, retval] BSTR *bstrProfile );
+
+        [propget, id(7), helpstring("Retrieves the name of the profile most recently edited by the end user.")]
+        HRESULT LastEditedProfile([out, retval] BSTR *bstrProfile );
+    };
+
+    [
+        object,
+        uuid(632B6080-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Displays the primary user interface built into Windows Media Encoder."),
+        pointer_default(unique)
+    ]
+    interface IWMEncoderApp : IDispatch
+    {
+        [propget, id(DISPID_ENCODERAPP_ENCODER), helpstring("Retrieves the encoder engine.")] 
+        HRESULT Encoder([out, retval] IWMEncoder* *ppEncoder);
+        [propget, id(DISPID_ENCODERAPP_VISIBLE), helpstring("Specifies and retrieves the display state of the UI.")] 
+        HRESULT Visible([out, retval] VARIANT_BOOL *pVal);
+        [propput, id(DISPID_ENCODERAPP_VISIBLE), helpstring("Specifies and retrieves the display state of the UI.")] 
+        HRESULT Visible([in] VARIANT_BOOL newVal);
+        [propget, id(DISPID_ENCODERAPP_TOP), helpstring("Specifies and retrieves the top offset of the UI.")] 
+        HRESULT Top([out, retval] long *pVal);
+        [propput, id(DISPID_ENCODERAPP_TOP), helpstring("Specifies and retrieves the top offset of the UI.")] 
+        HRESULT Top([in] long newVal);
+        [propget, id(DISPID_ENCODERAPP_LEFT), helpstring("Specifies and retrieves the left offset of the UI.")] 
+        HRESULT Left([out, retval] long *pVal);
+        [propput, id(DISPID_ENCODERAPP_LEFT), helpstring("Specifies and retrieves the left offset of the UI.")] 
+        HRESULT Left([in] long newVal);
+        [propget, id(DISPID_ENCODERAPP_WIDTH), helpstring("Specifies and retrieves the width of the UI.")] 
+        HRESULT Width([out, retval] long *pVal);
+        [propput, id(DISPID_ENCODERAPP_WIDTH), helpstring("Specifies and retrieves the width of the UI.")] 
+        HRESULT Width([in] long newVal);
+        [propget, id(DISPID_ENCODERAPP_HEIGHT), helpstring("Specifies and retrieves the height of the UI.")] 
+        HRESULT Height([out, retval] long *pVal);
+        [propput, id(DISPID_ENCODERAPP_HEIGHT), helpstring("Specifies and retrieves the height of the UI.")] 
+        HRESULT Height([in] long newVal);
+        [propget, id(DISPID_ENCODERAPP_UILOCK), helpstring("Specifies and retrieves the lock state of the UI.")] 
+        HRESULT UILock([out, retval] VARIANT_BOOL *pVal);
+        [propput, id(DISPID_ENCODERAPP_UILOCK), helpstring("Specifies and retrieves the lock state of the UI.")] 
+        HRESULT UILock([in] VARIANT_BOOL newVal);
+        [propget, id(DISPID_ENCODERAPP_DISPLAYWIDTH), helpstring("Specifies and retrieves the display width.")] 
+        HRESULT DisplayWidth([in] short iIndex, [out, retval] long *pVal);
+        [propget, id(DISPID_ENCODERAPP_DISPLAYHEIGHT), helpstring("Specifies and retrieves the display width.")] 
+        HRESULT DisplayHeight([in] short iIndex, [out, retval] long *pVal);
+        [id(DISPID_ENCODERAPP_GETPROPERTY), helpstring("Retrieves the display state of a UI panel, property page, or window.")] 
+        HRESULT GetProperty([in] WMENCAPP_PROP_CLASS enumClass, [in] BSTR bstrProperty, [out, retval] VARIANT *pValue);
+        [id(DISPID_ENCODERAPP_SETPROPERTY), helpstring("Specifies the display state of a UI panel, property page, or window.")] 
+        HRESULT SetProperty([in] WMENCAPP_PROP_CLASS enumClass, [in] BSTR bstrProperty, [in] VARIANT Value);
+        [id(DISPID_ENCODERAPP_SAVEPROPERTIES), helpstring("Saves changes to the UI.")] 
+        HRESULT SaveProperties([in] WMENCAPP_PROP_CLASS enumClass);
+    };
+
+    [
+        object,
+        uuid(2BE53BA6-B726-11D2-A8EB-006097C4E476),
+        dual,
+        helpstring("Retrieves status information about the encoding session."),
+        pointer_default(unique)
+    ]
+    interface IWMEncOutputStats : IDispatch
+    {
+        [propget, id(DISPID_ENCODER_OUTSTATS_SAMPLECOUNT), helpstring("Retrieves the number of encoded samples.")] 
+        HRESULT SampleCount([out,retval] WMENC_LONGLONG *pqwSampleCount );
+
+        [propget, id(DISPID_ENCODER_OUTSTATS_BYTECOUNT), helpstring("Retrieves the number of encoded bytes.")] 
+        HRESULT ByteCount([out,retval] WMENC_LONGLONG *pqwByteCount );
+
+        [propget, id(DISPID_ENCODER_OUTSTATS_DROPPEDSAMPLECOUNT), helpstring("Retrieves the number of media samples not encoded.")] 
+        HRESULT DroppedSampleCount([out,retval] WMENC_LONGLONG *pqwDroppedSampleCount );
+
+        [propget, id(DISPID_ENCODER_OUTSTATS_DROPPEDBYTECOUNT), helpstring("Retrieves the number of bytes not encoded.")] 
+        HRESULT DroppedByteCount([out,retval] WMENC_LONGLONG *pqwDroppedByteCount );
+
+        [propget, id(DISPID_ENCODER_OUTSTATS_CURRENTBITRATE), helpstring("Retrieves the number of bits encoded per second.")] 
+        HRESULT CurrentBitrate([out,retval] long *plCurrentBitrate );
+
+        [propget, id(DISPID_ENCODER_OUTSTATS_AVERAGEBITRATE), helpstring("Retrieves the average number of bits encoded per second.")] 
+        HRESULT AverageBitrate([out,retval] long *plAverageBitrate );
+
+        [propget, id(DISPID_ENCODER_OUTSTATS_EXPECTEDBITRATE), helpstring("Retrieves the expected encoding bit rate.")] 
+        HRESULT ExpectedBitrate([out,retval] long *plExpectedBitrate );
+
+        [propget, id(DISPID_ENCODER_OUTSTATS_CURRENTSAMPLERATE), helpstring("Retrieves the number of samples encoded per second.")] 
+        HRESULT CurrentSampleRate([out,retval] long *plCurrentSampleRate );
+
+        [propget, id(DISPID_ENCODER_OUTSTATS_AVERAGESAMPLERATE), helpstring("Retrieves the average number of samples encoded per second.")] 
+        HRESULT AverageSampleRate([out,retval] long *plAverageSampleRate );
+
+        [propget, id(DISPID_ENCODER_OUTSTATS_EXPECTEDSAMPLERATE), helpstring("Retrieves the expected encoding sample rate.")] 
+        HRESULT ExpectedSampleRate([out,retval] long *plExpectedSampleRate );
+    };
+
+    [
+        object,
+        uuid(18DB3000-FFEA-4363-80C5-818AF417BC84),
+        dual,
+        helpstring("Retrieves status information about the encoding session."),
+        pointer_default(unique)
+    ]
+    interface IWMEncOutputStats2 : IWMEncOutputStats
+    {
+        //
+        // bstrProperty is one of the values listed at the top as inputs for IWMEncOutputStats2
+        // The returned variant contains values of type VT_I4
+        //
+        [propget, id(DISPID_ENCODER_OUTSTATS_PROPERTY), helpstring("Retrieves the stats property value.")] 
+        HRESULT Property([in] BSTR bstrProperty, [out,retval] VARIANT *pvValue );
+    };
+
+    [
+        object,
+        uuid(B12B5B14-F6D2-4a47-AAED-637498BD49D6),
+        dual,
+        helpstring("Retrieves information about the archive file."),
+        pointer_default(unique)
+    ]
+    interface IWMEncFileArchiveStats : IDispatch
+    {
+        [propget, id(DISPID_ENCODER_FILEARCHIVESTATS_OUTPUTFILESIZE), , helpstring("Retrieves the size, in bytes, of the archive file.")]
+        HRESULT FileSize([out, retval] WMENC_LONGLONG *pqwOutputFileSize );
+        
+        [propget, id(DISPID_ENCODER_FILEARCHIVESTATS_OUTPUTFILEDURATION), helpstring("Retrieves the duration of archive file")] 
+        HRESULT FileDuration([out, retval] WMENC_LONGLONG *pqwOutputFileDuration );    
+    };
+
+    [
+        object,
+        uuid(C23F0A1E-53DF-4f6d-B8F4-EF3242D535DE),
+        dual,
+        helpstring("Monitors the indexing process for a Windows Media file."),
+        pointer_default(unique)
+    ]
+    interface IWMEncIndexerStats : IDispatch
+    {
+        // Total number of files waiting to be indexed in the queue.
+        [propget, id(DISPID_INDEXERSTATS_FILECOUNT), helpstring("Retrieves the number of files remaining in the indexing queue.")] 
+        HRESULT FileCount([out,retval] long *plCount );
+
+        // Name of the ith file in the index queue
+        [propget, id(DISPID_INDEXERSTATS_FILENAME), helpstring("Retrieves the name of a file in the indexing queue.")] 
+        HRESULT FileName([in] long lIndex, [out,retval] BSTR *pbstrFileName );
+
+        // Percentage of indexing done on the file being indexed
+        [propget, id(DISPID_INDEXERSTATS_PERCENTCOMPLETE), helpstring("Retrieves the percentage of indexing completed for the current file.")] 
+        HRESULT PercentComplete([out,retval] long *plPercent );
+    };
+
+    [
+        object,
+        uuid(632B6082-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Retrieves status information about the encoding session."),
+        pointer_default(unique)
+    ]
+    interface IWMEncStatistics : IDispatch
+    {
+        // return current encoding session duration.
+        [propget, id(DISPID_ENCODER_STATS_ENCODINGTIME), helpstring("Retrieves the elapsed time of the encoding session.")] 
+        HRESULT EncodingTime([out,retval] WMENC_LONGLONG *plTime );
+        
+        // Overall output status.
+        [propget, id(DISPID_ENCODER_STATS_WMFOUTPUT), helpstring("Retrieves status information for the encoded output.")] 
+        HRESULT WMFOutputStats([out,retval] IDispatch **ppStats);
+        
+        // enumType is the type of the stream; 
+        // iMediaIndex is the index in the IWMEncSource interface,
+        // iStreamIndex is the index of the output MBR streams for input stream "iMediaIndex";
+        // pStats is the status for the output MBR stream.  
+        [propget, id(DISPID_ENCODER_STATS_STREAMOUTPUT), helpstring("Retrieves the encoding and broadcasting statistics for an output stream.")] 
+        HRESULT StreamOutputStats([in] WMENC_SOURCE_TYPE enumType, [in] short iMediaIndex, [in] short iStreamIndex, [out,retval] IDispatch **pStats);
+
+        [propget, id(DISPID_ENCODER_STATS_NETCONNECTION), helpstring("Retrieves a network connection object.")] 
+        HRESULT NetConnectionStats([out, retval] IDispatch** ppDispNetConnectionStats);
+
+        [propget, id(DISPID_ENCODER_STATS_FILEARCHIVE), helpstring("Retrieves an IWMEncFileArchiveStats object.")] 
+        HRESULT FileArchiveStats([out, retval] IDispatch** ppFileArchiveStats);
+
+        [propget, id(DISPID_ENCODER_STATS_STREAMOUTPUTCOUNT), helpstring("Retrieves the number of multiple bit rate output streams generated.")] 
+        HRESULT StreamOutputCount([in] WMENC_SOURCE_TYPE enumType, [in] short iMediaIndex, [out,retval] short* pStreamOutputCount);
+
+        [propget, id(DISPID_ENCODER_STATS_INDEXER), helpstring("Retrieves an IWMEncIndexerStats object.")] 
+        HRESULT IndexerStats([out,retval] IDispatch **ppIndexerStats);
+    };
+
+    [
+        object,
+        uuid(3C694BEE-BA71-4967-88EA-43F8C27ED918),
+        dual,
+        helpstring("Retrieves status information about the encoding session."),
+        pointer_default(unique)
+    ]
+    interface IWMEncStatistics2 : IWMEncStatistics
+    {
+        [propget, id(DISPID_ENCODER_STATS_PUSHDISTRIBUTION), helpstring("Retrieves push distribution stats object.")] 
+        HRESULT PushDistributionStats([out, retval] IDispatch** ppDispPushDistributionStats);
+    };
+
+    [
+        object,
+        uuid(632B6083-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Retrieves information about the clients connected to the encoder engine."),
+        pointer_default(unique)
+    ]
+    interface IWMEncNetConnectionStats : IDispatch
+    {
+        // Total number of clients that connected to encoder.
+        [propget, id(DISPID_ENCODER_NETCONNECT_CLIENTCOUNT), helpstring("Retrieves the number of clients connected to the encoder engine.")] 
+        HRESULT ClientCount([out,retval] long *plCount );
+
+        // Total number of clients that connected to encoder.
+        [propget, id(DISPID_ENCODER_NETCONNECT_CLIENTINFO), helpstring("Retrieves the protocol and IP address of a specific client.")] 
+        HRESULT ClientInfo([in] long lIndex, [out] WMENC_BROADCAST_PROTOCOL *pProtocol, [out,retval] BSTR* pbstrIP );
+    };
+
+    [
+        object,
+        uuid(52350A39-5581-4b7b-A65A-F37848F2C0F6),
+        dual,
+        helpstring("Retrieves information about the clients connected to the encoder engine."),
+        pointer_default(unique)
+    ]
+    interface IWMEncNetConnectionStats2 : IWMEncNetConnectionStats
+    {
+        // Host URL of the encoder
+        [propget, id(DISPID_ENCODER_NETCONNECT_HOSTURL), helpstring("Retrieves the host URL of the encoder.")] 
+        HRESULT HostURL([out,retval] BSTR *pbstrHostURL );
+    };
+
+    [
+        object,
+        uuid(10CBC166-7F83-451e-90A1-75F43E2C20A0),
+        dual,
+        helpstring("Manages server push distribution options for the encoded content."),
+        pointer_default(unique)
+    ]
+    interface IWMEncPushDistribution : IWMEncBroadcast
+    {
+        [propget, id(DISPID_PUSHDISTRIB_SERVERNAME), helpstring("Specifies and retrieves the server name.")] 
+        HRESULT ServerName([out, retval] BSTR *pbstrServerName);
+
+        [propput, id(DISPID_PUSHDISTRIB_SERVERNAME), helpstring("Specifies and retrieves the server name.")] 
+        HRESULT ServerName([in] BSTR bstrServerName);
+
+        [propget, id(DISPID_PUSHDISTRIB_PUBLISHING_POINT), helpstring("Specifies the publishing point name.")] 
+        HRESULT PublishingPoint([out, retval] BSTR *pbstrPublishingPoint);
+
+        [propput, id(DISPID_PUSHDISTRIB_PUBLISHING_POINT), helpstring("Specifies the publishing point name.")] 
+        HRESULT PublishingPoint([in] BSTR bstrPublishingPoint);
+
+        [propget, id(DISPID_PUSHDISTRIB_TEMPLATE), helpstring("Specifies the publishing template name.")] 
+        HRESULT Template([out, retval] BSTR *pbstrTemplate);
+
+        [propput, id(DISPID_PUSHDISTRIB_TEMPLATE), helpstring("Specifies the publishing template name.")] 
+        HRESULT Template([in] BSTR bstrTemplate);
+
+        [propget, id(DISPID_PUSHDISTRIB_AUTOREMOVE), helpstring("Indicates whether the publishing point will be automatically destroyed after encode.")] 
+        HRESULT AutoRemovePublishingPoint([out, retval] VARIANT_BOOL *pbAutoRemove);
+
+        [propput, id(DISPID_PUSHDISTRIB_AUTOREMOVE), helpstring("Indicates whether the publishing point will be automatically destroyed after encode.")] 
+        HRESULT AutoRemovePublishingPoint([in] VARIANT_BOOL bAutoRemove);
+
+        [id(DISPID_PUSHDISTRIB_MULTICASTINFO), helpstring("Generates multicast info file for the given publishing point.")] 
+        HRESULT GenerateMulticastInfoFile([in] BSTR bstrNSCFileName);
+
+        [id(DISPID_PUSHDISTRIB_ANNOUNCEMENT), helpstring("Generates ASX file for the given publishing point given the NSC URL.")] 
+        HRESULT GenerateAnnouncementFile([in] BSTR bstrNSCURL, [in] BSTR bstrASXFileName);
+    };
+
+
+
+    [
+        object,
+        uuid(632B6087-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Device Control Manager."),
+        pointer_default(unique)
+    ]
+    interface IWMEncDeviceControlPluginInfoManager : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of items in the Device Control collection.")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of items in the Device Control collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [propget, restricted, id(DISPID_NEWENUM), helpstring("Enumerates the device control collection.")] 
+        HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+
+        [id(DISPID_VALUE), helpstring("Retrieves registration information for a specific Device Control.")] 
+        HRESULT Item([in] long iIndex, [out, retval] IWMEncPluginInfo** ppPluginInfo );
+
+        [id(DISPID_DEVICECONTROLMGR_REFRESH), helpstring("Refreshes the device control collection.")] 
+        HRESULT Refresh();
+
+    };
+
+    [
+        object,
+        uuid(632B6089-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Specifies and retrieves device control."),
+        pointer_default(unique)
+    ]
+    interface IWMEncDeviceControl : IDispatch
+    {
+        [id(DISPID_DEVICECONTROL_SETINPUT), helpstring("Specifies a transform plug-in to use.")] 
+        HRESULT SetInput([in] BSTR bstrInput, [in, defaultvalue("")] BSTR bstrScheme, [in, defaultvalue("")] BSTR bstrInitData);
+        
+        [id(DISPID_DEVICECONTROL_GETINPUT), helpstring("Retrieves the name and scheme of a transform plug-in.")] 
+        HRESULT GetInput([out] VARIANT *pbstrScheme, [out] VARIANT *pbstrInitData, [out,retval] BSTR *pbstrInput);
+
+        [id(DISPID_DEVICECONTROL_DEVICECONTROLPLUGIN), helpstring("Retrieves a device control plug-in.")]
+        HRESULT GetDeviceControlPlugin( [out, retval] IUnknown **ppUnkPlugin );
+    };
+    
+    [
+        object,
+        uuid(632B608C-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Specifies and retrieves Device Control Collection."),
+        pointer_default(unique)
+    ]
+    interface IWMEncDeviceControlCollection : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of transform plug-ins in the collection.")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of transform plug-ins in the collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [propget, restricted, id(DISPID_NEWENUM), helpstring("Enumerates the transform plug-in collection.")] 
+        HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+
+        // The source string doesn't include "MIME_TYPE://string value".
+        [id(DISPID_VALUE), helpstring("Retrieves a specific transform plug-in.")] 
+        HRESULT Item([in] long lIndex, [out,retval] IWMEncDeviceControl **ppDeviceControl);
+
+        [id(DISPID_DEVICECONTROLS_ADD), helpstring("Adds a device control object to the collection.")] 
+        HRESULT Add([out, retval] IWMEncDeviceControl **ppDeviceControl);
+
+        [id(DISPID_DEVICECONTROLS_REMOVE), helpstring("Removes a specific device control object from the collection.")] 
+        HRESULT Remove([in] long lIndex);
+
+        [id(DISPID_DEVICECONTROLS_REMOVEALL), helpstring("Removes all device control objects from the collection.")] 
+        HRESULT RemoveAll();
+    };
+
+    [
+        object,
+        uuid(221ADE1A-3CF9-4ba2-841C-E580C588766A),
+        dual,
+        helpstring("ContentAnalyzer."),
+        pointer_default(unique)
+    ]
+    interface IWMEncContentAnalyzer : IDispatch
+    {
+        [propget, id(DISPID_CONTENTANALYZER_SOURCEGROUP), helpstring("Specifies the sourcegroup that is to be anaylzed.")] 
+        HRESULT SourceGroup( [out, retval] IWMEncSourceGroup** ppSourceGroup );
+
+        [propput, id(DISPID_CONTENTANALYZER_SOURCEGROUP), helpstring("Specifies the sourcegroup that is to be anaylzed.")] 
+        HRESULT SourceGroup( [in] IWMEncSourceGroup* pSourceGroup );
+
+        [id(DISPID_CONTENTANALYZER_START), helpstring("Starts the content analyzer.")] 
+        HRESULT Start();
+
+        [id(DISPID_CONTENTANALYZER_STOP), helpstring("Stops the content analyzer.")] 
+        HRESULT Stop();
+        
+        [id(DISPID_CONTENTANALYZER_PROPERTY), helpstring("Get property of source with index iIndex from the source group.")] 
+        HRESULT Property( [in] WMENC_SOURCE_TYPE enumType, [in] short iIndex, [in] BSTR bstrProperty, [out,retval] VARIANT* pvarValue );
+    };
+
+    [
+        object,
+        uuid(22A65C28-F99D-4c0d-8070-5F86FE6EC555),
+        dual,
+        helpstring("BasicEdit interface."),
+        pointer_default(unique)
+    ]
+    interface IWMEncBasicEdit : IDispatch
+    {
+        [propget, id(DISPID_BASICEDIT_MEDIA), helpstring("Specifies the name of the media file to be edited.")] 
+        HRESULT MediaFile( [out, retval] BSTR* pbstrMediaFileName );
+
+        [propput, id(DISPID_BASICEDIT_MEDIA), helpstring("Specifies the name of the media file to be edited.")] 
+        HRESULT MediaFile( [in] BSTR bstrMediaFileName );
+
+        [propget, id(DISPID_BASICEDIT_OUTPUT), helpstring("Specifies the name of the ouptut file. If not specified the input file is modified")] 
+        HRESULT OutputFile( [out, retval] BSTR* pbstrOutputFileName );
+
+        [propput, id(DISPID_BASICEDIT_OUTPUT), helpstring("Specifies the name of the media file.. If not specified the input file is modified")] 
+        HRESULT OutputFile( [in] BSTR bstrOutputFileName );
+
+        [propget, id(DISPID_BASICEDIT_CONFIG), helpstring("Specifies the name of the xml file containing config data.")] 
+        HRESULT ConfigFile( [out, retval] BSTR* pbstrConfigXMLFileName );
+
+        [propput, id(DISPID_BASICEDIT_CONFIG), helpstring("Specifies the name of the xml file containing config data.")] 
+        HRESULT ConfigFile( [in] BSTR bstrConfigXMLFileName );
+
+        // MarkIn, MarkOut time is in 1 milisecond unit.
+        [propget, id(DISPID_BASICEDIT_MARKIN), helpstring("Specifies and retrieves the starting point of a stream.")] 
+        HRESULT MarkIn([out, retval] WMENC_LONGLONG  *pllMarkIn);
+        
+        [propput, id(DISPID_BASICEDIT_MARKIN), helpstring("Specifies and retrieves the starting point of a stream.")] 
+        HRESULT MarkIn([in] WMENC_LONGLONG llMarkIn);
+
+        [propget, id(DISPID_BASICEDIT_MARKOUT), helpstring("Specifies and retrieves the end point of a stream.")] 
+        HRESULT MarkOut([out, retval] WMENC_LONGLONG *pllMarkOut);
+        
+        [propput, id(DISPID_BASICEDIT_MARKOUT), helpstring("Specifies and retrieves the end point of a stream.")] 
+        HRESULT MarkOut([in] WMENC_LONGLONG llMarkOut);
+
+        [propget, id(DISPID_BASICEDIT_INDEX), helpstring("Indicates if the stream is to be indexed.")] 
+        HRESULT Index([out, retval] VARIANT_BOOL *pfIndex);
+        
+        [propput, id(DISPID_BASICEDIT_INDEX), helpstring("Indicates if the stream is to be indexed.")] 
+        HRESULT Index([in] VARIANT_BOOL pfIndex);
+
+        [id(DISPID_BASICEDIT_SAVECONFIG), helpstring("Saves all attributes of currently loaded media file into a new config file.")] 
+        HRESULT SaveConfigFile( [in] BSTR bstrConfigXMLFileName );
+
+        [id(DISPID_BASICEDIT_SAVEPROFILE), helpstring("Saves the profile of currently loaded media file.")] 
+        HRESULT SaveProfile( [in] BSTR bstrProfileFileName );
+        
+        [propget, id(DISPID_BASICEDIT_PROFILE), helpstring("Retrieves the profile used by the currently loaded media file.")] 
+        HRESULT Profile( [out, retval] IWMEncProfile2** ppIWMEncProfile2 );
+        
+        [id(DISPID_BASICEDIT_START), helpstring("Does modifications to the media file as specified by config file.")] 
+        HRESULT Start();
+
+        [id(DISPID_BASICEDIT_STOP), helpstring("Stops the edit process.")] 
+        HRESULT Stop();
+
+        [propget, id(DISPID_BASICEDIT_RUNSTATE), helpstring("Indicates whether the edit engine is running.")] 
+        HRESULT RunState( [out, retval] WMENC_BASICEDIT_STATE *penumState );
+
+        [propget, id(DISPID_BASICEDIT_DURATION), helpstring("Returns Duration.")] 
+        HRESULT Duration( [out, retval] WMENC_LONGLONG *pllDuration );
+
+        [propget, id(DISPID_BASICEDIT_ERRORSTATE), helpstring("Retrieves the error state of the basicedit engine.")] 
+        HRESULT ErrorState( [out, retval] long *plResult);
+
+        [propget, id(DISPID_BASICEDIT_PROGRESS_PERCENT), helpstring("Retrieves the percent complete statistic.")] 
+        HRESULT ProgressPercent( [out, retval] long* plProgressPercent );
+    };
+
+    [
+        object,
+        uuid(C0973771-5F87-456a-B31B-5171C28AC01E),
+        dual,
+        helpstring("Additional properties for video source."),
+        pointer_default(unique)
+    ]
+    interface IWMEncVideoSource2 : IWMEncVideoSource
+    {
+        [propget, id(DISPID_VIDEOSOURCE_WIDTH), helpstring("Specifies and retrieves the video width used for clipping in case of live device.")] 
+        HRESULT Width([out, retval] long *plWidth);
+        
+        [propput, id(DISPID_VIDEOSOURCE_WIDTH), helpstring("Specifies and retrieves the video width used for clipping in case of live device.")] 
+        HRESULT Width([in] long lWidth);
+
+        [propget, id(DISPID_VIDEOSOURCE_HEIGHT), helpstring("Specifies and retrieves the video height used for clipping in case of live device.")] 
+        HRESULT Height([out, retval] long *plHeight);
+        
+        [propput, id(DISPID_VIDEOSOURCE_HEIGHT), helpstring("Specifies and retrieves the video height used for clipping in case of live device.")] 
+        HRESULT Height([in] long lHeight);
+
+        [propget, id(DISPID_VIDEOSOURCE_PIXEL_ASPECT_RATIOX), helpstring("Specifies and retrieves the video pixel aspect ratio X.")] 
+        HRESULT PixelAspectRatioX([out, retval] short *piRatioX);
+        
+        [propput, id(DISPID_VIDEOSOURCE_PIXEL_ASPECT_RATIOX), helpstring("Specifies and retrieves the video pixel aspect ratio X.")] 
+        HRESULT PixelAspectRatioX([in] short iRatioX);
+
+        [propget, id(DISPID_VIDEOSOURCE_PIXEL_ASPECT_RATIOY), helpstring("Specifies and retrieves the video pixel aspect ratio Y.")] 
+        HRESULT PixelAspectRatioY([out, retval] short *piRatioY);
+        
+        [propput, id(DISPID_VIDEOSOURCE_PIXEL_ASPECT_RATIOY), helpstring("Specifies and retrieves the video pixel aspect ratio Y.")] 
+        HRESULT PixelAspectRatioY([in] short iRatioY);
+
+        [propget, id(DISPID_VIDEOSOURCE_PREPROCESS_PASS), helpstring("Specifies and retrieves the pre-process pass count.")] 
+        HRESULT PreProcessPass([out, retval] short *piPassesCount);
+        
+        [propput, id(DISPID_VIDEOSOURCE_PREPROCESS_PASS), helpstring("Specifies and retrieves the pre-process pass count.")] 
+        HRESULT PreProcessPass([in] short iPassesCount);
+
+        [id(DISPID_VIDEOSOURCE_ENUMERATEINPUTS), helpstring("Retrieves an enumerator to the Tuner Inputs available.")]
+        HRESULT EnumerateInputs([out,retval] IWMEncInputCollection** ppInputCol);
+                          
+        [propput, id(DISPID_VIDEOSOURCE_SELECTINPUT), helpstring("Specifies and retrieves a Tuner input.")]
+        HRESULT Input ([in] short iSourceID);
+        
+        [propput, id(DISPID_VIDEOSOURCE_SELECTCHANNEL), helpstring ("Specifies and retrieves a TV Channel.")]
+        HRESULT Channel([in] short iChannelNum);
+        
+        [propput, id(DISPID_VIDEOSOURCE_SELECTCOUNTRY), helpstring ("Specifies and retrieves the Country to the TV Tuner.")]
+        HRESULT Country   ([in] long lCountry);
+        
+        [propput, id(DISPID_VIDEOSOURCE_SELECTTVTYPE), helpstring ("Specifies and retrieves the TV Type to be either Cable or Antenna.")]
+        HRESULT TVType    ([in] short iTunerInputType);
+        
+        [propput, id(DISPID_VIDEOSOURCE_SELECTTVFORMAT), helpstring ("Specifies and retrieves the TV Format to NTSC or PAL , etc...")]
+        HRESULT TVFormat  ([in] long lAnalogVideoStandard);
+        
+        [propget, id(DISPID_VIDEOSOURCE_SELECTINPUT), helpstring("Specifies and retrieves a Tuner input.")]
+        HRESULT Input ([out, retval] short *piSourceID);
+        
+        [propget, id(DISPID_VIDEOSOURCE_SELECTCHANNEL), helpstring ("Specifies and retrieves a TV Channel.")]
+        HRESULT Channel([out, retval] short *piChannelNum);
+        
+        [propget, id(DISPID_VIDEOSOURCE_SELECTCOUNTRY), helpstring ("Specifies and retrieves the Country to the TV Tuner.")]
+        HRESULT Country   ([out, retval] long *plCountry);
+        
+        [propget, id(DISPID_VIDEOSOURCE_SELECTTVTYPE), helpstring ("Specifies and retrieves the TV Type to be either Cable or Antenna.")]
+        HRESULT TVType    ([out, retval] short *piTunerInputType);
+        
+        [propget, id(DISPID_VIDEOSOURCE_SELECTTVFORMAT), helpstring ("Specifies and retrieves the TV Format to NTSC or PAL , etc...")]
+        HRESULT TVFormat  ([out, retval] long *plAnalogVideoStandard);
+    
+        [propget, id(DISPID_VIDEOSOURCE_GETCHANNELMIN), helpstring ("Retrieves the lowest channel available on the TV Tuner.")]
+        HRESULT ChannelMin([retval, out] long* plChannelMin);
+
+        [propget, id(DISPID_VIDEOSOURCE_GETCHANNELMAX), helpstring ("Retrieves the highest channel available on the TV Tuner.")]
+        HRESULT ChannelMax([retval, out] long* plChannelMax);
+
+        [propget, id(DISPID_SOURCE_DURATION), helpstring ("Retrieves the duration of the source in milliseconds")]
+        HRESULT Duration([out, retval] long *plDuration);
+    };
+
+    [
+        object,
+        uuid(C0973772-5F87-456a-B31B-5171C28AC01E),
+        dual,
+        helpstring("Manages an audio input source stream."),
+        pointer_default(unique)
+    ]
+    interface IWMEncAudioSource : IWMEncSource
+    {
+        [propget, id(DISPID_AUDIOSOURCE_CONTENTMODE), helpstring("Specifies and retrieves the audio content mode for speech codec.")] 
+        HRESULT ContentMode([out,retval] WMENC_CONTENT_MODE* penumMode );
+
+        [propput, id(DISPID_AUDIOSOURCE_CONTENTMODE), helpstring("Specifies and retrieves the audio content mode for speech codec.")] 
+        HRESULT ContentMode([in] WMENC_CONTENT_MODE enumMode );
+
+        [propget, id(DISPID_AUDIOSOURCE_CONTENTEDL), helpstring("Specifies and retrieves the EDL for speech codec.")] 
+        HRESULT ContentEDL([out,retval] BSTR* pbstrEDL );
+
+        [propput, id(DISPID_AUDIOSOURCE_CONTENTEDL), helpstring("Specifies and retrieves the EDL for speech codec.")] 
+        HRESULT ContentEDL([in] BSTR bstrEDL );
+
+        [propget, id(DISPID_AUDIOSOURCE_PREPROCESS_PASS), helpstring("Specifies and retrieves the pre-process pass count.")] 
+        HRESULT PreProcessPass([out, retval] short *piPassesCount);
+        
+        [propput, id(DISPID_AUDIOSOURCE_PREPROCESS_PASS), helpstring("Specifies and retrieves the pre-process pass count.")] 
+        HRESULT PreProcessPass([in] short iPassesCount);
+
+        [propget, id(DISPID_SOURCE_DURATION), helpstring ("Retrieves the duration of the source in milliseconds")]
+        HRESULT Duration([out, retval] long *plDuration);
+    };
+
+    [
+        object,
+        uuid(252F3333-53D0-47d9-94C6-C38736F1BA6A),
+        dual,
+        helpstring("Retrieves information about the server used for push distribution."),
+        pointer_default(unique)
+    ]
+    interface IWMEncPushDistributionStats : IDispatch
+    {
+        //
+        // bstrProperty is one of the values listed above as WMENC_STATS_PUSH_*
+        // WMENC_STATS_PUSH_PEAK_STARTTIME is VT_DATE, the rest are of type VT_I4
+        //
+        [propget, id(DISPID_PUSHDISTRIBUTION_PROPERTY), helpstring("Retrieves stats about push distribution server.")] 
+        HRESULT Property([in] BSTR bstrProperty, [out,retval] VARIANT* pvarProperty );
+    };
+
+    [   
+        object,
+        uuid(BB494815-9432-47f2-979D-94E4AE6C96CF),
+        dual,
+        helpstring("WMEncAudience object."),
+        pointer_default(unique)
+    ]
+    interface IWMEncAudienceObj : IDispatch
+    {
+        //
+        // Flag which specifies whether the current audience is selcted or not. If this flags is true, then when you 
+        // SaveProfileToFile or SaveProfileToMemory, this audience will be saved into the profile. If false then it is not.
+        //
+        [propget, id(DISPID_AOBJ_SELECTED), helpstring("Specifies and retrieves the selected property of the audience.")] 
+        HRESULT Selected( [out, retval] VARIANT_BOOL *pfSelected );
+
+        [propput, id(DISPID_AOBJ_SELECTED), helpstring("Specifies and retrieves the selected property of the audience.")] 
+        HRESULT Selected( [in] VARIANT_BOOL fSelected );
+
+        //
+        // Total bitrate of the audience
+        //
+        [propget, id(DISPID_AOBJ_BITRATE), helpstring("Retrieves the total bitrate of the audience.")] 
+        HRESULT TotalBitrate( [out, retval] long *plBitrate );
+
+        [propget, id(DISPID_AOBJ_PEAKBITRATE), helpstring("Retrieves the total peak bitrate of the audience.")] 
+        HRESULT TotalPeakBitrate( [out, retval] long *plPeakBitrate );
+
+        //
+        // Audio settings
+        //
+
+        //
+        // In all the cases below iIndex represents the index of the render site in case you have more
+        // than one rendering sites
+        //
+        //
+        // Get/Set the audio codec used by the current audio setting
+        //
+        [propget, id(DISPID_AOBJ_AUDIO_CODEC), helpstring("Specifies and retrieves the audio codec.")] 
+        HRESULT AudioCodec( [in] short iRenderSiteIndex, [out, retval] long *plCodecIndex );
+
+        [propput, id(DISPID_AOBJ_AUDIO_CODEC), helpstring("Specifies and retrieves the audio codec.")] 
+        HRESULT AudioCodec( [in] short iRenderSiteIndex, [in] long lCodecIndex );
+
+        [propget, id(DISPID_AOBJ_AUDIO_BITRATE), helpstring("Retrieves the audiobitrate of the audience.")] 
+        HRESULT AudioBitrate( [in] short iRenderSiteIndex, [out, retval] long *plBitrate );
+
+        [propget, id(DISPID_AOBJ_AUDIO_FORMAT), helpstring("Specifies and retrieves the audio format.")] 
+        HRESULT AudioFormat( [in] short iRenderSiteIndex, [out, retval] long *plFormatIndex );
+
+        [propput, id(DISPID_AOBJ_AUDIO_FORMAT), helpstring("Specifies and retrieves the audio format.")] 
+        HRESULT AudioFormat( [in] short iRenderSiteIndex, [in] long lFormatIndex );
+
+        [id(DISPID_AOBJ_AUDIO_CONFIG), helpstring("Specifies and retrieves the settings for the audio format.")] 
+        HRESULT SetAudioConfig( [in] short iRenderSiteIndex, [in] short nChannels, [in] long nSamplesPerSec, 
+                                [in] long lBitrate, [in] short wBitsPerSample );
+
+        [propget, id(DISPID_AOBJ_AUDIO_PEAKBITRATE), helpstring("Specifies and retrieves the video peak bitrate.")] 
+        HRESULT AudioPeakBitrate( [in] short iRenderSiteIndex, [out, retval] long *plBitrate );
+
+        [propput, id(DISPID_AOBJ_AUDIO_PEAKBITRATE), helpstring("Specifies and retrieves the video peak bitrate.")] 
+        HRESULT AudioPeakBitrate( [in] short iRenderSiteIndex, [in] long lBitrate );
+
+        [propget, id(DISPID_AOBJ_AUDIO_BUFFERMAX), helpstring("Specifies and retrieves the video buffer max.")] 
+        HRESULT AudioBufferMax( [in] short iRenderSiteIndex, [out, retval] long *plBMax );
+
+        [propput, id(DISPID_AOBJ_AUDIO_BUFFERMAX), helpstring("Specifies and retrieves the video buffer max.")] 
+        HRESULT AudioBufferMax( [in] short iRenderSiteIndex, [in] long lBMax );
+
+        //
+        // Video settings
+        //
+        [propget, id(DISPID_AOBJ_VIDEO_CODEC), helpstring("Specifies and retrieves the video codec.")] 
+        HRESULT VideoCodec( [in] short iRenderSiteIndex, [out, retval] long *plCodecIndex );
+
+        [propput, id(DISPID_AOBJ_VIDEO_CODEC), helpstring("Specifies and retrieves the video codec.")] 
+        HRESULT VideoCodec( [in] short iRenderSiteIndex, [in] long lCodecIndex );
+
+        [propget, id(DISPID_AOBJ_VIDEO_BITRATE), helpstring("Specifies and retrieves the video bitrate.")] 
+        HRESULT VideoBitrate( [in] short iRenderSiteIndex, [out, retval] long *plBitrate );
+
+        [propput, id(DISPID_AOBJ_VIDEO_BITRATE), helpstring("Specifies and retrieves the video bitrate.")] 
+        HRESULT VideoBitrate( [in] short iRenderSiteIndex, [in] long lBitrate );
+
+        [propget, id(DISPID_AOBJ_VIDEO_PEAKBITRATE), helpstring("Specifies and retrieves the video peak bitrate.")] 
+        HRESULT VideoPeakBitrate( [in] short iRenderSiteIndex, [out, retval] long *plBitrate );
+
+        [propput, id(DISPID_AOBJ_VIDEO_PEAKBITRATE), helpstring("Specifies and retrieves the video peak bitrate.")] 
+        HRESULT VideoPeakBitrate( [in] short iRenderSiteIndex, [in] long lBitrate );
+
+        [propget, id(DISPID_AOBJ_VIDEO_WIDTH), helpstring("Specifies and retrieves the video width.")] 
+        HRESULT VideoWidth( [in] short iRenderSiteIndex, [out, retval] long *plWidth );
+
+        [propput, id(DISPID_AOBJ_VIDEO_WIDTH), helpstring("Specifies and retrieves the video width.")] 
+        HRESULT VideoWidth( [in] short iRenderSiteIndex, [in] long lWidth );
+
+        [propget, id(DISPID_AOBJ_VIDEO_HEIGHT), helpstring("Specifies and retrieves the video height.")] 
+        HRESULT VideoHeight( [in] short iRenderSiteIndex, [out, retval] long *plHeight );
+
+        [propput, id(DISPID_AOBJ_VIDEO_HEIGHT), helpstring("Specifies and retrieves the video height.")] 
+        HRESULT VideoHeight( [in] short iRenderSiteIndex, [in] long lHeight );
+
+        [propget, id(DISPID_AOBJ_VIDEO_FPS), helpstring("Specifies and retrieves the video framerate.")] 
+        HRESULT VideoFPS( [in] short iRenderSiteIndex, [out, retval] long *plFPS );
+
+        [propput, id(DISPID_AOBJ_VIDEO_FPS), helpstring("Specifies and retrieves the video framerate.")] 
+        HRESULT VideoFPS( [in] short iRenderSiteIndex, [in] long lFPS );
+
+        [propget, id(DISPID_AOBJ_VIDEO_KEYFRAME_DISTANCE), helpstring("Specifies and retrieves the video keyframe setting.")] 
+        HRESULT VideoKeyFrameDistance( [in] short iRenderSiteIndex, [out, retval] WMENC_LONGLONG *pllKFS );
+
+        [propput, id(DISPID_AOBJ_VIDEO_KEYFRAME_DISTANCE), helpstring("Specifies and retrieves the video keyframe setting.")] 
+        HRESULT VideoKeyFrameDistance( [in] short iRenderSiteIndex, [in] WMENC_LONGLONG llKFS );
+
+        [propget, id(DISPID_AOBJ_VIDEO_IMAGESHARPNESS), helpstring("Specifies and retrieves the video image quality.")] 
+        HRESULT VideoImageSharpness( [in] short iRenderSiteIndex, [out, retval] long *plIQuality );
+
+        [propput, id(DISPID_AOBJ_VIDEO_IMAGESHARPNESS), helpstring("Specifies and retrieves the video image quality.")] 
+        HRESULT VideoImageSharpness( [in] short iRenderSiteIndex, [in] long lIQuality );
+
+        [propget, id(DISPID_AOBJ_VIDEO_CCOMPRESSION_QUALITY), helpstring("Specifies and retrieves the video codec quality.")] 
+        HRESULT VideoCompressionQuality( [in] short iRenderSiteIndex, [out, retval] long *plCQuality );
+
+        [propput, id(DISPID_AOBJ_VIDEO_CCOMPRESSION_QUALITY), helpstring("Specifies and retrieves the video codec quality.")] 
+        HRESULT VideoCompressionQuality( [in] short iRenderSiteIndex, [in] long lCQuality );
+
+        [propget, id(DISPID_AOBJ_VIDEO_BUFFERSIZE), helpstring("Specifies and retrieves the video buffer size.")] 
+        HRESULT VideoBufferSize( [in] short iRenderSiteIndex, [out, retval] long *plBS );
+
+        [propput, id(DISPID_AOBJ_VIDEO_BUFFERSIZE), helpstring("Specifies and retrieves the video buffer size.")] 
+        HRESULT VideoBufferSize( [in] short iRenderSiteIndex, [in] long lBS );
+
+        [propget, id(DISPID_AOBJ_VIDEO_BUFFERMAX), helpstring("Specifies and retrieves the video buffer max.")] 
+        HRESULT VideoBufferMax( [in] short iRenderSiteIndex, [out, retval] long *plBMax );
+
+        [propput, id(DISPID_AOBJ_VIDEO_BUFFERMAX), helpstring("Specifies and retrieves the video buffer max.")] 
+        HRESULT VideoBufferMax( [in] short iRenderSiteIndex, [in] long lBMax );
+
+        //
+        // Script setttings
+        //
+        [propget, id(DISPID_AOBJ_SCRIPT_BITRATE), helpstring("Specifies and retrieves the script bitrate.")] 
+        HRESULT ScriptBitrate( [in] short iRenderSiteIndex, [out, retval] long *plBitrate );
+
+        [propput, id(DISPID_AOBJ_SCRIPT_BITRATE), helpstring("Specifies and retrieves the script bitrate.")] 
+        HRESULT ScriptBitrate( [in] short iRenderSiteIndex, [in] long lBitrate );
+
+        //
+        // For extensibility, not yet implemented
+        //
+        [propget, id(DISPID_AOBJ_STREAM_BITRATE), helpstring("Specifies and retrieves the bitrate for stream with media type enumSrcType.")] 
+        HRESULT StreamBitrate( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSiteIndex, [out, retval] long *plBitrate );
+
+        [propput, id(DISPID_AOBJ_STREAM_BITRATE), helpstring("Specifies and retrieves the bitrate for stream with media type enumSrcType.")] 
+        HRESULT StreamBitrate( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSiteIndex, [in] long lBitrate );
+
+        [propget, id(DISPID_AOBJ_STREAM_PROPERTY), helpstring("Specifies and retrieves the value of a named property for a particular stream.")] 
+        HRESULT Property( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSiteIndex, [in] BSTR bstrProperty, [out, retval] VARIANT *pvarProperty );
+
+        [propput, id(DISPID_AOBJ_STREAM_PROPERTY), helpstring("Specifies and retrieves the value of a named property for a particular stream.")] 
+        HRESULT Property( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSiteIndex, [in] BSTR bstrProperty, [in] VARIANT varProperty );
+    };
+
+
+    [   
+        object,
+        uuid(C70E1CAC-32D2-4e22-A0FF-3A32E315D095),
+        dual,
+        helpstring("WMEncProfile2 object."),
+        pointer_default(unique)
+    ]
+    interface IWMEncProfile2 : IWMEncProfile
+    {
+        //
+        // Get/Set content values. This will set the content type of all the new audiences added.
+        // 
+        //
+        [propget, id(DISPID_PROFILE2_CONTENTTYPE), helpstring("Specifies and retrieves the content type of the profile.")] 
+        HRESULT ContentType( [out, retval] long* plSrcType );
+
+        [propput, id(DISPID_PROFILE2_CONTENTTYPE), helpstring("Specifies and retrieves the content type of the profile.")] 
+        HRESULT ContentType( [in] long lSrcType );
+
+        [id(DISPID_PROFILE2_LOAD_PROFILE), helpstring("Load profile from IWMProfile.")] 
+        HRESULT LoadFromIWMProfile( [in] IUnknown *pUnkProfile );
+
+        [id(DISPID_PROFILE2_LOAD_FROM_FILE), helpstring("Load profile from a prx file.")] 
+        HRESULT LoadFromFile( [in] BSTR bstrFileName );
+
+        [id(DISPID_PROFILE2_LOAD_FROM_MEMORY), helpstring("Load profile from bstr which contains the profile data.")] 
+        HRESULT LoadFromMemory( [in] BSTR bstrData );
+
+        //
+        // Save
+        //
+        [id(DISPID_PROFILE2_SAVE_PROFILE), helpstring("Save the profileobj to IWMProfile.")] 
+        HRESULT SaveToIWMProfile( [out, retval] IUnknown **pUnkProfile );
+
+        [id(DISPID_PROFILE2_SAVE_TO_FILE), helpstring("Save the profileobj to a file.")] 
+        HRESULT SaveToFile( [in] BSTR bstrFileName );
+
+        [id(DISPID_PROFILE2_SAVE_TO_MEMORY), helpstring("Save the profileobj to a BSTR.")] 
+        HRESULT SaveToMemory( [out, retval] BSTR *pbstrData );
+
+        //
+        // Audience ops
+        //
+        [id(DISPID_PROFILE2_CLONE), helpstring("Makes the current profile a copy of the profile object passed in.")] 
+        HRESULT Clone( [in] IWMEncProfile2* pObj );
+
+        [id(DISPID_PROFILE2_CLEAR), helpstring("Removes all the audiences from the profile object.")] 
+        HRESULT Clear();
+
+        //
+        // Audience operations
+        //
+        [propget, id(DISPID_PROFILE2_AUDIENCE_COUNT), helpstring("Retrieves the number of items in audience collection.")] 
+        HRESULT AudienceCount( [out, retval] long* plCount );
+
+        [propget, id(DISPID_PROFILE2_AUDIENCE), helpstring("Retrieves a specific audience.")] 
+        HRESULT Audience( [in] long lIndex, [out, retval] IWMEncAudienceObj **ppAudience );
+
+        [id(DISPID_PROFILE2_ADD_AUDIENCE), helpstring("Adds a new audience to the audience collection.")] 
+        HRESULT AddAudience( [in] long lBitrate, [out, retval] IWMEncAudienceObj **ppAudience );
+
+        [id(DISPID_PROFILE2_DELETE_AUDIENCE), helpstring("Removes an audience from the audience collection.")] 
+        HRESULT DeleteAudience( [in] long lIndex );
+
+        //
+        // If validate mode is true then all puts are validated immediately. For example if validate mode
+        // is true and compatibility is v8 and you try to turn on VBR, it will return an error.
+        //
+        [propget, id(DISPID_PROFILE2_VALIDATEMODE), helpstring("Specifies and retrieves validate mode.")] 
+        HRESULT ValidateMode( [out, retval] VARIANT_BOOL *pfValidate );
+
+        [propput, id(DISPID_PROFILE2_VALIDATEMODE), helpstring("Specifies and retrieves strict mode.")] 
+        HRESULT ValidateMode( [in] VARIANT_BOOL fValidate );
+
+        //
+        // Validation: validate whole profile, firing error messages
+        //
+        [id(DISPID_PROFILE2_VALIDATE), helpstring("Validates the current profile.")] 
+        HRESULT Validate();
+
+        //
+        // Compatibility
+        //
+        [propget, id(DISPID_PROFILE2_COMPATIBILITY), helpstring("Specifies and retrieves the compatibility mode of the profile.")] 
+        HRESULT CompatibilityMode( [out, retval] WMENC_PROFILE_COMPATIBILITY *penumCompat );
+
+        [propput, id(DISPID_PROFILE2_COMPATIBILITY), helpstring("Specifies and retrieves the compatibility mode of the profile.")] 
+        HRESULT CompatibilityMode( [in] WMENC_PROFILE_COMPATIBILITY enumCompat );
+
+        //
+        // VBR (set by Load or User, used during Save)
+        //
+        [propget, id(DISPID_PROFILE2_VBRMODE), helpstring("Specifies and retrieves the VBR mode of the profile.")] 
+        HRESULT VBRMode( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSite, [out, retval] WMENC_PROFILE_VBR_MODE *penumVBR );
+
+        [propput, id(DISPID_PROFILE2_VBRMODE), helpstring("Specifies and retrieves the VBR mode of the profile.")] 
+        HRESULT VBRMode( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSite, [in] WMENC_PROFILE_VBR_MODE enumVBR );
+
+        //
+        // Name
+        //
+        [propput, id(DISPID_PROFILE2_NAME), helpstring("Specifies and retrieves the name of the profile.")] 
+        HRESULT ProfileName( [in] BSTR bstrName );
+
+        [propget, id(DISPID_PROFILE2_NAME), helpstring("Specifies and retrieves the name of the profile.")] 
+        HRESULT ProfileName( [out,retval] BSTR* pbstrName );
+
+        //
+        // Description
+        //
+        [propput, id(DISPID_PROFILE2_DESCRIPTION), helpstring("Specifies and retrieves the description of the profile.")] 
+        HRESULT ProfileDescription( [in] BSTR bstrDescription );
+
+        [propget, id(DISPID_PROFILE2_DESCRIPTION), helpstring("Specifies and retrieves the description of the profile.")] 
+        HRESULT ProfileDescription( [out,retval] BSTR* pbstrDescription );
+
+        [propget, id(DISPID_PROFILE2_AUDIOCODEC_COUNT), helpstring("Specifies and retrieves the number of audio codecs.")] 
+        HRESULT AudioCodecCount( [out, retval] long* plAudioCodecCount );
+
+        //
+        // EnumAudioCodec returns HRESULT_FROM_WIN32( ERROR_NO_MORE_ITEMS ) if nIndex >= codec count
+        //
+        [id(DISPID_PROFILE2_ENUM_AUDIOCODEC), helpstring("Enumerates the audio codecs supported.")] 
+        HRESULT EnumAudioCodec( [in] long lCodecIndex, [out] VARIANT *pvarName, [out, retval] long *lFormatTag );
+
+        [propget, id(DISPID_PROFILE2_AUDIOFORMAT_COUNT), helpstring("Specifies and retrieves the number of audio formats.")] 
+        HRESULT AudioFormatCount( [in] long lCodecIndex, [out, retval] long* plAudioFormatCount );
+
+        //
+        // EnumAudioFormat returns HRESULT_FROM_WIN32( ERROR_NO_MORE_ITEMS ) if nIndex >= codec count
+        //
+        [id(DISPID_PROFILE2_ENUM_AUDIOFORMAT), helpstring("Enumerates the audio formats supported by specified codec.")] 
+        HRESULT EnumAudioFormat( [in] long lCodecIndex, [in] long lFormatIndex, [out] VARIANT *pvarName, [out] VARIANT *pvarSamplingRate, 
+                                 [out] VARIANT *pvarNChannels, [out] VARIANT *pvarBitsPerSample, [out, retval] long* plBitrate );
+
+        [propget, id(DISPID_PROFILE2_VIDEOCODEC_COUNT), helpstring("Specifies and retrieves the number of video codecs.")] 
+        HRESULT VideoCodecCount( [out, retval] long* plVideoCodecCount );
+
+        //
+        // EnumVideoCodec returns HRESULT_FROM_WIN32( ERROR_NO_MORE_ITEMS ) if nIndex >= codec count
+        //
+        [id(DISPID_PROFILE2_ENUM_VIDEOCODEC), helpstring("Enumerates the video codecs supported.")] 
+        HRESULT EnumVideoCodec( [in] long lCodecIndex, [out] VARIANT *pvarName, [out, retval] long *lFourCC );
+
+        [id(DISPID_PROFILE2_GET_CODECINDEX), helpstring("Retrieves the codec index given its fourcc value.")] 
+        HRESULT GetCodecIndexFromFourCC( [in] WMENC_SOURCE_TYPE enumSrcType, [in] long lFourCC, [out, retval] long* plIndex );
+
+        [id(DISPID_PROFILE2_GET_CODECGUID), helpstring("Retrieves the fourcc value of the codec givn its index.")] 
+        HRESULT GetCodecFourCCFromIndex( [in] WMENC_SOURCE_TYPE enumSrcType, [in] long lIndex, [out, retval] long *plFourCC );
+
+        //
+        // Get the languages in current profile
+        //
+        [propget, id(DISPID_PROFILE2_LANGUAGE_COUNT), helpstring("Retrieves the number of languages given a render site.")] 
+        HRESULT LanguageCount( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSite, [out, retval] long* plLanguageCount );
+
+        [propget, id(DISPID_PROFILE2_LANGUAGE), helpstring("Enumerates the languages supported.")] 
+        HRESULT Language( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSite, [in] long lLanguageIndex, 
+                          [out, retval] long* lcidLanguage );
+
+        [id(DISPID_PROFILE2_ADD_LANGUAGE), helpstring("Add a language to the profile.")] 
+        HRESULT AddLanguage( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSite, [in] long lcidLanguage );
+
+        [id(DISPID_PROFILE2_REMOVE_LANGUAGE), helpstring("Add a language to the profile.")] 
+        HRESULT RemoveLanguage( [in] WMENC_SOURCE_TYPE enumSrcType, [in] short iRenderSite, [in] long lcidLanguage );
+
+        //
+        // Apply broadcast mode. This function is useful to change NTSC profiles into PAL profiles and viceversa.
+        // 
+        //
+        [propget, id(DISPID_PROFILE2_BROADCAST_MODE), helpstring("Detects the broadcast mode of the current profile.")] 
+        HRESULT BroadcastMode( [out, retval] WMENC_PROFILE_BROADCAST_MODE *penumBroadcastMode );
+
+        [propput, id(DISPID_PROFILE2_BROADCAST_MODE), helpstring("Applies the broadcast mode specified to the profile.")] 
+        HRESULT BroadcastMode( [in] WMENC_PROFILE_BROADCAST_MODE enumBroadcastMode );
+
+        //
+        // Detect functions
+        //
+        [id(DISPID_PROFILE2_DETECT_COMPATIBILITY), helpstring("Detects the compatibility mode of current profile.")] 
+        HRESULT DetectCompatibility( [out, retval] WMENC_PROFILE_COMPATIBILITY *penumCompat );
+
+
+        //
+        // Append functions. These functions are used to merge two profiles with different media types
+        //
+        [id(DISPID_PROFILE2_MERGE), helpstring("Merges the audiences from input profile with current profile.")] 
+        HRESULT Merge( [in] IWMEncProfile2* pWMEncProfileObj );
+
+        //
+        // Compare profiles
+        //
+        [id(DISPID_PROFILE2_COMPARE), helpstring("Compares two profiles.")] 
+        HRESULT Compare( [in] IWMEncProfile2 *pCompObj, [out] VARIANT_BOOL *pfSubset, [out, retval] VARIANT_BOOL *pfEqual );
+
+        //
+        // Interlace mode 
+        //
+        [propget, id(DISPID_PROFILE2_INTERLACE_MODE), helpstring("Specifies and retrieves the interlace mode of the profile.")] 
+        HRESULT InterlaceMode( [in] short iRenderSiteIndex, [out, retval] VARIANT_BOOL *pfInterlaceMode );
+
+        [propput, id(DISPID_PROFILE2_INTERLACE_MODE), helpstring("Specifies and retrieves the interlace mode of the profile.")] 
+        HRESULT InterlaceMode( [in] short iRenderSiteIndex, [in] VARIANT_BOOL fInterlaceMode );
+
+        [propget, id(DISPID_PROFILE2_NONSQUAREPIXEL_MODE), helpstring("Specifies and retrieves the non-square pixel mode of the profile.")] 
+        HRESULT NonSquarePixelMode( [in] short iRenderSiteIndex, [out, retval] VARIANT_BOOL *pfNonSquarePixelMode );
+
+        [propput, id(DISPID_PROFILE2_NONSQUAREPIXEL_MODE), helpstring("Specifies and retrieves the non-square pixel of the profile.")] 
+        HRESULT NonSquarePixelMode( [in] short iRenderSiteIndex, [in] VARIANT_BOOL fNonSquarePixelMode );
+
+        [propget, id(DISPID_PROFILE2_TIMECODE), helpstring("Specifies and retrieves the property that determines if timecode is to be added.")] 
+        HRESULT EnableTimecode( [in] short iRenderSiteIndex, [out, retval] VARIANT_BOOL *pfTimecode );
+
+        [propput, id(DISPID_PROFILE2_TIMECODE), helpstring("Specifies and retrieves the property that determines if timecode is to be added.")] 
+        HRESULT EnableTimecode( [in] short iRenderSiteIndex, [in] VARIANT_BOOL fTimecode );
+
+        [propget, id(DISPID_PROFILE2_MINPACKETSIZE), helpstring("Specifies and retrieves the minimum size of a data unit.")] 
+        HRESULT MinPacketSize([out,retval] long *plMinPacketSize );
+
+        [propput, id(DISPID_PROFILE2_MINPACKETSIZE), helpstring("Specifies and retrieves the minimum size of a data unit.")] 
+        HRESULT MinPacketSize([in] long lMinPacketSize );
+    };
+
+    [
+        object,
+        uuid(252F3335-53D0-47d9-94C6-C38736F1BA6A),
+        dual,
+        helpstring("Retrieves information about Watermark on the system."),
+        pointer_default(unique)
+    ]
+    interface IWMEncWatermarkCollection : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of items in the watermark collection.")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of items in the watermark collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [id(DISPID_VALUE), helpstring("Retrieves Watermark information.")] 
+        HRESULT Item([in] long iIndex, [out] VARIANT* pvarCLSID, [out, retval] BSTR* pbstrName );
+    };
+
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //
+    // This is the interface for the streaming html data group. Each DataGroup consists of the main HTML page and
+    // its associated images, videos and side pages. Each entry in the collection has a filename eg (c:\data\mainpage.html)
+    // and its associated URL ( eg. http://mysite.com/mainpage.html
+    //
+    [   
+        object,
+        uuid(54B54844-4F93-458e-AC10-45FFED1D1816),
+        dual,
+        helpstring("FileTransfer source file set."),
+        pointer_default(unique)
+    ]
+    interface IWMEncFileSet : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of files in the collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [id(DISPID_VALUE), helpstring("Retrieves a specific file in the collection.")] 
+        HRESULT Item([in] long lIndex, [out] VARIANT* pvarFileName, [out, retval] BSTR* pbstrFileURL );
+
+        [id(DISPID_FILESET_ADD), helpstring("Adds a file to the current collection.")] 
+        HRESULT Add( [in] BSTR bstrFileName, [in] BSTR bstrFileURL );
+
+        [id(DISPID_FILESET_REMOVE), helpstring("Removes a specific file from the collection.")] 
+        HRESULT Remove([in] long lIndex);
+
+        [id(DISPID_FILESET_REMOVEALL), helpstring("Removes all files from the collection.")] 
+        HRESULT RemoveAll();
+
+        [id(DISPID_FILESET_MOVE), helpstring("Repositions files in the fileset collection.")] 
+        HRESULT Move([in] long lMove, [in] long lInFrontOf);
+
+        [id(DISPID_FILESET_SETINPUT), helpstring("Repositions files in the fileset collection.")] 
+        HRESULT SetInput([in] long lIndex, [in] BSTR bstrFileName, [in] BSTR bstrURL);
+
+        //
+        // If the source plugin is not in userdriven mode then it will use the sendtime specified here as
+        // the time at which to send this HTML datagroup. Time is in milliseconds.
+        //
+        [propget, id(DISPID_FILESET_SENDTIME), helpstring("Specifies and retrieves the send time of this entry.")] 
+        HRESULT Time([out,retval] WMENC_LONGLONG *pllSendTime );
+
+        [propput, id(DISPID_FILESET_SENDTIME), helpstring("Specifies and retrieves the send time of this entry.")] 
+        HRESULT Time([in] WMENC_LONGLONG llMsSendTime );
+    };
+
+    ///////////////////////////////////////////////////////////////////////////////
+    [
+        object,
+        uuid( 8E452E5A-B739-452f-A4D2-5D84FD524916 ),
+        helpstring( "IWMEncFileTransferSource Interface"),
+        pointer_default(unique),
+        local
+    ]
+    interface IWMEncFileTransferSource : IDispatch
+    {
+        //
+        // Functions for modifying FileSet entries
+        //
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of dataentries in the collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [id(DISPID_VALUE), helpstring("Retrieves a specific dataentry.")] 
+        HRESULT Item([in] long lIndex, [out,retval] IWMEncFileSet **ppEntry);
+
+        [id(DISPID_FILETRANSFER_ADD), helpstring("Adds a dataentry to the collection.")] 
+        HRESULT Add([out, retval] IWMEncFileSet **ppHTMLDataGroup);
+
+        [id(DISPID_FILETRANSFER_REMOVE), helpstring("Removes a specific dataentry from the collection.")] 
+        HRESULT Remove([in] long lIndex);
+
+        [id(DISPID_FILETRANSFER_REMOVEALL), helpstring("Removes all data entries from the collection.")] 
+        HRESULT RemoveAll();
+
+        [id(DISPID_FILETRANSFER_MOVE), helpstring("Repositions fileset in the collection.")] 
+        HRESULT Move([in] long lMove, [in] long lInFrontOf);
+
+        //
+        // If the UserDrivenMode is TRUE then the SourcePlugin is in user driven mode, ie the user calls the Send
+        // command and the plugin will deliver the data to the engine.
+        // If UserDriven mode is FALSE then the sourceplugin uses its own timer to find if the current time in engine equals
+        // the time specified for any of the html entries in the list and if it does then it will automatically send
+        // over the html data to the encoder engine.
+        //
+        [propget, id(DISPID_FILETRANSFER_USERMODE), helpstring("Specifies and retrieves the send mode.")] 
+        HRESULT UserDrivenMode( [out, retval] VARIANT_BOOL* pfSendMode );
+
+        [propput, id(DISPID_FILETRANSFER_USERMODE), helpstring("Specifies and retrieves the send mode.")] 
+        HRESULT UserDrivenMode( [in] VARIANT_BOOL fSendMode );
+
+        //
+        // This will send out all the files specified in the HTML data entry to the encoder engine. Input time is in ms
+        //
+        [id(DISPID_FILETRANSFER_SEND), helpstring("Sends the HTML data specified in the entry to the file or net.")] 
+        HRESULT Send( [in] IWMEncFileSet* pIWMEncFileSet );
+
+        //
+        // This will abort the current Send HTML data operation.
+        //
+        [id(DISPID_FILETRANSFER_ABORT), helpstring("Aborts the current send operation of HTML data.")] 
+        HRESULT Abort();
+
+        [propget, id(DISPID_FILETRANSFER_STATE), helpstring("Retrieves the state of the html source plugin.")] 
+        HRESULT State( [out, retval] WMENC_SOURCE_STATE* penumSourceState );
+
+        [propget, id(DISPID_FILETRANSFER_ACTIVE), helpstring("Retrieves the active filetransfer set.")] 
+        HRESULT Active([out,retval] IWMEncFileSet **ppIWMEncFileSet);
+        
+    };
+
+    //
+    // The Stream edit api is used by apps which want a fine control over how the streams
+    // are configured for eg. StreamStripper app. In this case the user specifies an output file that
+    // will usually be blank and keeps adding streams to it using the AddStream api. When Start is called
+    // the component will create a profile and generate the outputfile by combining the streams from the 
+    // various inputs.	
+    // eg. if you want to generate a new file with audio from file1.wma and video from file2.wmv then the following
+    // steps will be required.
+    // put_OutputFile( output.wmv );
+    // AddStream( file1.wma, WMENC_AUDIO, 0, 0, NULL, 0, 0, NULL )
+    // AddStream( file2.wmv, WMENC_VIDEO, 0, 0, NULL, 0, 0, NULL )
+    // Start
+    //
+    [   
+        object,
+        uuid(5AE18C57-DB2E-11D2-A34A-006097C4E476),
+        dual,
+        helpstring("Stream edit api."),
+        pointer_default(unique)
+    ]
+    interface IWMEncStreamEdit : IDispatch
+    {
+        [propget, id(DISPID_STREAMEDIT_OUTPUT), helpstring("Specifies and retrieves the output file.")] 
+        HRESULT OutputFile( [out, retval] BSTR* pbstrOutputFile );
+
+        [propput, id(DISPID_STREAMEDIT_OUTPUT), helpstring("Specifies and retrieves the output file.")] 
+        HRESULT OutputFile( [in] BSTR bstrOutputFile );
+
+        //
+        // Adds a stream of type enumSrcType from audience lAudienceBitrate in bstrInputFile to the output file.
+        //
+        [id(DISPID_STREAMEDIT_ADDSTREAM), helpstring("Adds a stream of type enumSrcType from file InputFile to the output File.")] 
+        HRESULT AddStream( [in] BSTR bstrInputFile, [in] WMENC_SOURCE_TYPE enumSrcType, [in] long lInputAudienceIndex, 
+	                       [in] short iInputRenderSite, [in] long lInputLangId, [in] long lOutputAudienceIndex,
+					       [in] short iOutputRenderSite );
+
+        [id(DISPID_STREAMEDIT_REMOVEALLSTREAMS), helpstring("Removes all streams that were added using AddStream.")] 
+        HRESULT RemoveAllStreams();
+
+        [id(DISPID_STREAMEDIT_VALIDATE), helpstring("Validates the current setting from AddStream.")] 
+        HRESULT Validate();
+
+        [id(DISPID_STREAMEDIT_START), helpstring("Does all the modifications as specified by AddStream.")] 
+        HRESULT Start();
+
+        [id(DISPID_STREAMEDIT_STOP), helpstring("Stops the advedit process.")] 
+        HRESULT Stop();
+
+        [propget, id(DISPID_STREAMEDIT_OUTPUT_PROFILE), helpstring("Generates output profile based on streams added using AddStream.")] 
+        HRESULT OutputProfile([out, retval] IWMEncProfile2** ppIWMEncProfile2 );
+
+        [propget, id(DISPID_STREAMEDIT_RUNSTATE), helpstring("Indicates whether the advedit engine is running.")] 
+        HRESULT RunState( [out, retval] WMENC_BASICEDIT_STATE *penumState );
+
+        [id(DISPID_STREAMEDIT_GET_STREAM), helpstring("Retrieves the streams added using AddStream.")] 
+        HRESULT GetStream( [in] WMENC_SOURCE_TYPE enumSrcType, [in] long lOutputAudienceIndex, [in] short iOutputRenderSite,
+                           [in] long lcidLang, [out] VARIANT* pvarInputFile, [out] VARIANT* pvarInputAudienceIndex, 
+                           [out, retval] short* piInputRenderSite );
+
+        [propget, id(DISPID_STREAMEDIT_PROGRESS_PERCENT), helpstring("Retrieves the percent complete statistic.")] 
+        HRESULT ProgressPercent( [out, retval] long* plProgressPercent );
+    };
+
+[
+    uuid(632B6060-BBC6-11D2-A329-006097C4E476),
+    version(1.0),
+    helpstring("Windows Media Encoder")
+]
+library WMEncoderLib
+{    
+    importlib("stdole32.tlb");
+    importlib("stdole2.tlb");
+
+    interface IWMEncVideoSource;
+    interface IWMEncNetConnectionStats;
+    interface IWMEncOutputStats;
+    interface IWMEncFileArchiveStats;
+    interface IWMEncIndexerStats;
+    interface IWMEncPostViewCollection;
+    interface IWMEncPushDistribution;
+    interface IWMEncoder2;
+    interface IWMEncFile2;
+    interface IWMEncSourceGroup2;
+    interface IWMEncOutputStats2;
+    interface IWMEncVideoSource2;
+    interface IWMEncAudioSource;
+    interface IWMEncPushDistributionStats;
+    interface IWMEncStatistics2;
+    interface IWMEncAudienceObj;
+    interface IWMEncFileSet;
+    interface IWMEncFileTransferSource;
+    interface IWMEncNetConnectionStats2;
+    interface IWMEncInputCollection;
+    
+
+    [
+        uuid(632B6062-BBC6-11D2-A329-006097C4E476),
+        helpstring("Receives Windows Media Encoder event notifications.")
+    ]
+    dispinterface _IWMEncoderEvents
+    {
+        properties:
+        methods:
+        [id(DISPID_ENCODEREVENT_STATECHANGE), helpstring("Indicates whether the encoder engine has been started or stopped.")] 
+        HRESULT OnStateChange([in] WMENC_ENCODER_STATE enumState);
+        [id(DISPID_ENCODEREVENT_ERROR), helpstring("Receives run-time error events from the encoder engine.")] 
+        HRESULT OnError([in] long hResult);
+        [id(DISPID_ENCODEREVENT_ARCHIVESTATECHANGE), helpstring("Indicates a change in the archiving state.")] 
+        HRESULT OnArchiveStateChange([in] WMENC_ARCHIVE_TYPE enumArchive, [in] WMENC_ARCHIVE_STATE enumState );
+        [id(DISPID_ENCODEREVENT_CONFIGCHANGE), helpstring("Indicates a change in the configuration of the encoder.")] 
+        HRESULT OnConfigChange([in] long hResult, [in] BSTR bstr);
+        [id(DISPID_ENCODEREVENT_CLIENTCONNECT), helpstring("Indicates that a client has connected to the encoder.")] 
+        HRESULT OnClientConnect([in] WMENC_BROADCAST_PROTOCOL protocol, [in] BSTR bstr);
+        [id(DISPID_ENCODEREVENT_CLIENTDISCONNECT), helpstring("Indicates that a client has disconnected from the encoder.")] 
+        HRESULT OnClientDisconnect([in] WMENC_BROADCAST_PROTOCOL protocol, [in] BSTR bstr);
+        
+        [id(DISPID_ENCODEREVENT_SRCSTATECHANGE), helpstring("Indicates a change in state of an input source.")] 
+        HRESULT OnSourceStateChange([in] WMENC_SOURCE_STATE enumState, [in] WMENC_SOURCE_TYPE enumType, [in] short iIndex,
+                                    [in] BSTR bstrSourceGroup );
+
+        [id(DISPID_ENCODEREVENT_DEVCONTROLSTATECHANGE), helpstring("Indicates a change in state of a device control.")] 
+        HRESULT OnDeviceControlStateChange([in] WMENC_DEVICECONTROL_STATE enumState, [in] BSTR bstrName, [in] BSTR bstrScheme );
+
+        [id(DISPID_ENCODEREVENT_INDEXERSTATECHANGE), helpstring("Indicates whether an index is being created for a Windows Media file.")] 
+        HRESULT OnIndexerStateChange([in] WMENC_INDEXER_STATE enumIndexerState, [in] BSTR bstrFile );
+        [id(DISPID_ENCODEREVENT_ACQUIRECREDENTIALS), helpstring("Get user name and password for connecting to a publishing point on server.")] 
+        HRESULT OnAcquireCredentials([in] BSTR bstrRealm, [in] BSTR bstrSite, 
+                                     [in,out] VARIANT* pvarUser, [in,out] VARIANT* pvarPassword, 
+                                     [in,out] VARIANT* plFlags );
+        [id(DISPID_ENCODEREVENT_CLIENTNAMERESOLVED), helpstring("Returns the dns name of the client connected to the encoder.")] 
+        HRESULT OnClientDNSNameResolved([in] BSTR bstrIpAddr, [in] BSTR bstrDNSName );
+    };
+
+    [
+        uuid(AB5AF3CC-9347-4dc1-92E3-B96537B8C446),
+        helpstring("Receives Basic Edit event notifications")
+    ]
+    dispinterface _IWMEncBasicEditEvents
+    {
+        properties:
+        methods:
+        [id(DISPID_BASICEDITEVENT_STATECHANGE), helpstring("Indicates whether the edit engine has been started or stopped.")] 
+        HRESULT OnStateChange([in] WMENC_BASICEDIT_STATE enumState);
+
+        [id(DISPID_BASICEDITEVENT_ERROR), helpstring("Receives runtime error events.")] 
+        HRESULT OnError([in] long hResult);
+    };
+
+    [
+        uuid(32B8ECC9-2901-11D3-8FB8-00C04F6109B7),
+        helpstring("_IWMEncoderAppEvents Interface")
+    ]
+    dispinterface _IWMEncoderAppEvents
+    {
+        properties:
+        methods:
+    };
+
+    [
+        uuid(632B606A-BBC6-11D2-A329-006097C4E476),
+        helpstring("Runs the encoder engine.")
+    ]
+    coclass WMEncoder
+    {
+        [default] interface IWMEncoder2;
+        [default, source] dispinterface _IWMEncoderEvents;
+    };
+
+    [
+        uuid(632B606B-BBC6-11D2-A329-006097C4E476),
+        helpstring("Creates a pre-defined user interface and retrives the encoder engine.")
+    ]
+    coclass WMEncoderApp
+    {
+        [default] interface IWMEncoderApp;
+        [default , source] dispinterface _IWMEncoderAppEvents;
+    };
+
+    [
+        uuid(247161C5-995C-4097-9FF4-655DC6D12DB5),
+        helpstring("Standard UI property page to manage input source streams.")
+    ]
+    coclass WMEncSourcesPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(95F57411-9A21-4846-B131-450ADBEAE753),
+        helpstring("Alternative UI property page to manage input source streams.")
+    ]
+    coclass WMEncSourcesAltPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(4178CE3B-11B1-46DD-A36D-BBCD36A5425A),
+        helpstring("Standard UI property page to display information about content.")
+    ]
+    coclass WMEncDisplayInfoPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(0037AC54-E32B-4ACA-9864-09F869AA82FE),
+        helpstring("Standard UI property page to list and edit user-defined name-value pairs.")
+    ]
+    coclass WMEncAttributesPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(FF8F1D65-AD2B-47F1-9E71-66B7D35E3852),
+        helpstring("Standard UI property page to manage profiles.")
+    ]
+    coclass WMEncProfilePage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(447AC255-CE81-43AD-9827-AFDDB1561B07),
+        helpstring("Standard UI property page containing broadcast information.")
+    ]
+    coclass WMEncOutputPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(D5DC4B7F-786B-42b7-B83B-FE1B5FC15E2C),
+        helpstring("Standard UI property page containing advanced options.")
+    ]
+    coclass WMEncAdvancedPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(94E15FA1-68AF-4281-A67C-7D5A086169F2),
+        helpstring("Standard UI property page for setting video size.")
+    ]
+    coclass WMEncVideoSizePage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(12594540-9B58-4fe9-A7EA-8A10F641B049),
+        helpstring("Standard UI property page for setting processing options.")
+    ]
+    coclass WMEncProcessingPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(A9B377B6-7D6F-4f37-B208-2AF6DC85E608),
+        helpstring("Standard UI property page for setting plugins.")
+    ]
+    coclass WMEncPluginsPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(FCC970B8-86D5-4a30-AC33-B76679BDF970),
+        helpstring("Standard UI property page for setting DRM.")
+    ]
+    coclass WMEncDRMPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(DF0AD8E0-F91C-4109-AE46-1EAA5CD8AB08),
+        helpstring("Main property page for the monitoring panel.")
+    ]
+    coclass WMEncMonMainPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(A7E9EBC4-4B2D-44F4-8DDC-28BE73911E0A),
+        helpstring("Monitoring panel property page describing the content.")
+    ]
+    coclass WMEncMonDisplayInfoPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(8D52AA2E-40BE-46D7-8F36-DB7B0F636824),
+        helpstring("Monitoring panel property page containing network connection statistics.")
+    ]
+    coclass WMEncMonConnectionsPage
+    {
+        interface IUnknown;
+    };
+
+    [
+        uuid(A8D3AD02-7508-4004-B2E9-AD33F087F43C),
+        helpstring("Creates the Profile Manager to edit and create profiles.")
+    ]
+    coclass WMEncProfileManager
+    {
+        [default] interface IWMEncProfileManager;
+    };
+
+    [
+        uuid(9571D958-9BCF-4e19-A374-FC2F321C8F61),
+        helpstring("BasicEdit api object.")
+    ]
+    coclass WMEncBasicEdit
+    {
+        [default] interface IWMEncBasicEdit;
+        [default, source] dispinterface _IWMEncBasicEditEvents;
+    };
+
+    [
+        uuid(216D96AA-9109-472e-8CDD-821C952C4D6E),
+        helpstring("StreamEdit api object.")
+    ]
+    coclass WMEncStreamEdit
+    {
+        [default] interface IWMEncStreamEdit;
+        [default, source] dispinterface _IWMEncBasicEditEvents;
+    };
+
+    [
+        uuid(A5AC04E7-3E13-48CE-A43F-9FBA59DB1544),
+        helpstring("Encoder Profile Object.")
+    ]
+    coclass WMEncProfile2
+    {
+        [default] interface IWMEncProfile2;
+    };
+
+};
+

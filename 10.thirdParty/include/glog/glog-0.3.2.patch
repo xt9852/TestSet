@@ -1,0 +1,43 @@
++++此库是在glog-0.3.2基础修改的
+
++src\windows\glog\loging.h:1260
+//--------------------------------------------
+// XT+20120702
+GOOGLE_GLOG_DLL_DECL std::string GetFileName (LogSeverity severity);
+//--------------------------------------------
+
++src\logging.cc:325
+//--------------------------------------------
+// XT+20120702
+static string GetFileName(LogSeverity severity);
+//--------------------------------------------
+
++src\logging.cc:401
+//--------------------------------------------
+// XT+20120702
+inline std::string LogDestination::GetFileName(LogSeverity severity)
+{
+	assert(severity >= 0 && severity < NUM_SEVERITIES);
+	MutexLock l(&log_mutex);
+	return log_destination(severity)->fileobject_.getFilename();
+}
+//--------------------------------------------
+
++src\logging.cc:722
+  //----------------------------------------------
+  // XT+20130801
+
+  string_filename += ".log";
+
+  filename_ = string_filename;
+
+  //----------------------------------------------
+
++src\logging.cc:1423
+//--------------------------------------------
+// XT+20120702
+string GetFileName(LogSeverity severity)
+{
+	return LogDestination::GetFileName(severity);
+}
+//--------------------------------------------

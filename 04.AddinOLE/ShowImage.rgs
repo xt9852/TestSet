@@ -1,0 +1,34 @@
+HKCR
+{
+	AddinOLE.ShowImage.1 = s 'AddinOLE Class'
+	{
+		CLSID = s '{1D6E8FF5-C00D-4A14-A767-80168C019ADA}'
+	}
+	AddinOLE.ShowImage = s 'AddinOLE Class'
+	{
+		CLSID = s '{1D6E8FF5-C00D-4A14-A767-80168C019ADA}'
+		CurVer = s 'AddinOLE.ShowImage.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {1D6E8FF5-C00D-4A14-A767-80168C019ADA} = s 'ShowImage Class'
+		{
+			ProgID = s 'AddinOLE.ShowImage.1'
+			VersionIndependentProgID = s 'AddinOLE.ShowImage'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			val AppID = s '%APPID%'
+			ForceRemove 'Control'
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 102'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{FDB2B619-4F8E-4AF2-9B9E-BCC13997E900}'
+			'Version' = s '1.0'
+		}
+	}
+}

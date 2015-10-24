@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{1628c657-78ce-4635-9813-6ca7caca96ef}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\apps">
+      <UniqueIdentifier>{f117a7a3-a251-4127-b7ff-ae6094737505}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\private_mib">
+      <UniqueIdentifier>{44560a07-9d40-4cfc-9e09-e7f32583048a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\test.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\chargen\chargen.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\tcpecho_raw\echo.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\httpserver_raw\fs.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\httpserver_raw\fsdata.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\httpserver_raw\httpd.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\httpserver\httpserver-netconn.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\netbios\netbios.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\netio\netio.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\ping\ping.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\rtp\rtp.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\shell\shell.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\smtp\smtp.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\sntp\sntp.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\socket_examples\socket_examples.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\tcpecho\tcpecho.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\udpecho\udpecho.c">
+      <Filter>Source Files\apps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\apps\snmp_private_mib\lwip_prvmib.c">
+      <Filter>Source Files\private_mib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\apps\chargen\chargen.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\tcpecho_raw\echo.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\httpserver_raw\fs.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\httpserver_raw\fsdata.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\httpserver_raw\httpd.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\httpserver\httpserver-netconn.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\netbios\netbios.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\netio\netio.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\ping\ping.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\rtp\rtp.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\shell\shell.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\smtp\smtp.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\sntp\sntp.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\socket_examples\socket_examples.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\tcpecho\tcpecho.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\udpecho\udpecho.h">
+      <Filter>Source Files\apps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\apps\snmp_private_mib\private_mib.h">
+      <Filter>Source Files\private_mib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="readme.txt" />
+  </ItemGroup>
+</Project>

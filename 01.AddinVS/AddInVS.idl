@@ -1,0 +1,26 @@
+// AddInVS.idl : 外接程序的 IDL 源
+//
+
+// 此文件将由 MIDL 工具处理以
+// 产生类型库(AddInVS.tlb)和封送处理代码。
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	uuid(4D6DEBA5-C684-44D4-BB0E-3D29980537A1),
+	version(1.0),
+	helpstring("MyAddinVS 1.0 Type Library")
+]
+library MyAddinVSLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(541E7AC5-97FF-4DEE-B582-8B18EF8DB098),
+		helpstring("Connect Class")
+	]
+	coclass Connect
+	{
+		[default] interface IUnknown;
+	};
+};

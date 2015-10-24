@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{0389af67-d725-4982-b291-be899e8c8bd7}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{9bf48f8e-decd-4059-a78b-bd05ffa5620e}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d331920e-34dd-4fcc-900f-08dc97316f7e}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;r;odl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{081154ac-612a-4185-9df0-3041d4c0b2c8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AtlEdit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AddinVSEx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Terminal.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AddinWnd.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TerminalWnd.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BrowseWnd.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\01.AddinVS\src\SshConfig.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\08.TestSet\src\11.Common\StrConver.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\08.TestSet\src\04.UI\Ctrl\XTDC.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\08.TestSet\src\04.UI\PNG.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\08.TestSet\src\03.Network\ssh2\sftp.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\08.TestSet\src\03.Network\ssh2\ssh2.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\08.TestSet\src\03.Network\ssh2\direct_tcpip.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\08.TestSet\src\08.Algorithm\base\XTXml.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AddinVSEx.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AtlEdit.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="AddinVSEx.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="icon.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="drag_hz.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="drag_copy.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Environment\res\image\002.png">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AtlEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Terminal.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AddinWnd.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SubWnd.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TerminalWnd.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BrowseWnd.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\01.AddinVS\src\SshConfig.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\08.TestSet\src\11.Common\StrConver.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\08.TestSet\src\04.UI\Ctrl\XTDC.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\08.TestSet\src\04.UI\PNG.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\08.TestSet\src\03.Network\ssh2\sftp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\08.TestSet\src\03.Network\ssh2\ssh2.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\08.TestSet\src\03.Network\ssh2\direct_tcpip.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\08.TestSet\src\08.Algorithm\base\XTXml.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="AddinVSEx.idl">
+      <Filter>Source Files</Filter>
+    </Midl>
+  </ItemGroup>
+</Project>

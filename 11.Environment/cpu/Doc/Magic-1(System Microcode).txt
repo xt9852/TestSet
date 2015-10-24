@@ -1,0 +1,791 @@
+
+System Microcode
+
+
+This page is actually the source code for the M-1 microcode to be used in the microcode-level simulator, as well as the actual bits to be burned into the proms.  It is processed by extracting the text and processing with cpp and a Perl script (see the Software page for more details).  The created files are:
+
+ mcode.h - Description of the fields within the microinstruction word. 
+ mcode.c - An initialized array representing the microcode image. 
+ mcdefs.h - #defines for microcode fields. 
+ prombits.h - The initialization declaration for the 512 56-bit microinstruction words. 
+ prom0.hex .. prom4.hex - Hex images of the slices of the microcode store to be fed into the PROM programmer. 
+ opcodes.h - Opcode strings. 
+
+//=====================================================
+// BEGIN mcode.h
+/* Define for micro instruction word.  Assume I'll be using 512x8 bipolar
+ * PROMs.  This version is quite a bit more compact than previous ones,
+ * but at the cost of having addition field decoding logic.  Initial plan
+ * is to send these signals across the backplane and do decoding on the
+ * appropriate card.
+ *
+ * Note that the encoding here is getting pretty ugly.  I'm trying hard to
+ * keep the microcode store down to 5 PROMS - 16 bits for enable signals, 
+ * 16 bits for latch signals and 8 bits for the next field. 
+ */
+typedef struct {
+	unsigned next:8;	// Next micro-op to exec. 0x00 means
+				// use output of priority encoder, 0xff
+				// means use IR[0..7].  Also a significant
+				// bit of !(IR[0..7]==0xff) to give the full
+				// 9-bit microcode address.
+	unsigned latch:4;	// Register latch signal. Value:
+				// 0x0 : none
+				// 0x1 : MSW (flag nibble only, from Z)
+				// 0x2 : C
+				// 0x3 : PC
+				// 0x4 : DP
+				// 0x5 : SP
+				// 0x6 : A
+				// 0x7 : B
+				// 0x8 : MDR (from Z)
+				// 0x9 : PTB
+				// 0xa : [A low placeholder]
+				// 0xb : [A high placeholder]
+				// 0xc : [B low placeholder]
+				// 0xd : [C low placeholder]
+				// 0xe : [SSP placeholder]
+				// 0xf : IR_REG (IR[5..7])
+	unsigned lmar:1;	// Latch MAR
+	unsigned lmdrlo:1;	// Latch MDR(lo) from dbus
+	unsigned lmdrhi:1;	// Latch MDR(hi) from dbus
+	unsigned emdrlo:1;	// Drive dbus with MDR(lo)
+	unsigned emdrhi:1;	// Drive dbus with MDR(hi)
+	unsigned priv:1;	// Priviliged instruction
+	unsigned lmode:1;	// Latch (M)ode bit in MSW
+	unsigned lpaging:1;	// Latch (P)aging enable bit in MSW
+	unsigned misc:4;	// Controls signals which never occur at the
+				// same time:
+				// 0x0 : none
+				// 0x1 : 
+				// 0x2 : halt
+				// 0x3 : 
+				// 0x4 : trap on overflow
+				// 0x5 : latch PTE
+				// 0x6 : set flags (from alu op)
+				// 0x7 : init_inst (clear MDR, PC->TPC, latch IR)
+				// 0x8 : right shift alu output
+				// 0x9 : DMA acknowledge
+				// 0xa : latch MSW[ie] (Interrupt Enable)
+				// 0xb : do branch
+				// 0xc : latch MSW[in_trap]
+				// 0xd : commit state
+				// 0xe : 
+				// 0xf : 
+	unsigned e_l:4;		// Enable L bus
+				// 0x0 : MAR
+				// 0x1 : MSW
+				// 0x2 : C
+				// 0x3 : PC
+				// 0x4 : DP
+				// 0x5 : SP
+				// 0x6 : A
+				// 0x7 : B
+				// 0x8 : MDR
+				// 0x9 : PTB
+				// 0xa : SSP
+				// 0xb : TPC
+				// 0xc : 
+				// 0xd : 
+				// 0xe :
+				// 0xf : IR_BASE (4+IR[6..7])
+	unsigned e_r:2;		// Enable R bus
+				// 0x0 : MDR
+				// 0x1 : Immediate
+				// 0x2 : Fault code/encoder
+				// 0x3 :
+	unsigned immval:2;	// Immediate value
+				// 0x0 : 0
+				// 0x1 : 1
+				// 0x2 : -2
+				// 0x3 : -1
+	unsigned aluop_size:1;	// 0x0 -> 16 bits, 0x1 -> 8 bits
+	unsigned aluop:2;	// Which alu operation to perform
+				// 0x0 : IR[1..3]
+				// 0x1 : AND
+				// 0x2 : SUB
+				// 0x3 : ADD
+	unsigned carry:1;	// 0x0 -> 0, 0x1 -> MSW[c]
+	unsigned l_size:1;	// 0x0 -> latch byte, 0x1 -> latch word
+	unsigned br_sense:1;	// 0x0 -> don't negate, 0x1 -> negate
+				// Non-negated branch conditions are:
+				// 	0x0 : eq
+				// 	0x1 : eq
+				// 	0x2 : lt
+				// 	0x3 : le
+				// 	0x4 : ltu
+				// 	0x5 : leu
+				// 	0x6 : eq
+				// 	0x7 : ne
+	unsigned user_ptb:1;	// User page table base override
+	unsigned code_ptb:1;	// 0 to select data region of PTB, 1 for code
+} mcode_rec_t;
+extern mcode_rec_t mcode_store[512];
+// END mcode.h
+//=====================================================
+// BEGIN mcode.c
+//
+#include "mcode.h"
+mcode_rec_t mcode_store[512] = {
+#include "prombits.h"
+};
+// END mcode.c
+//=====================================================
+// PREPROCESS prombits.h
+// BEGIN mcdefs.h
+// Register defines for LATCH() and EL() 
+#define	R_MSW	1
+#define	R_C	2
+#define	R_PC	3
+#define	R_DP	4
+#define	R_SP	5
+#define	R_A	6
+#define	R_B	7
+#define	R_MDR	8
+#define	R_PTB	9
+#define	R_SSP	10
+// Register defines for LATCH()-only
+#define	R_NONE	0
+#define	R_IR_REG	15
+// Register defines for EL()-only
+#define	R_MAR	0
+#define	R_TPC	11
+#define R_FCODE	12
+#define	R_IR_BASE	15
+// Register defines for ER()
+#define	ER_MDR	0
+#define	ER_IMM	1
+#define	ER_FAULT	2
+// Defines for IMMVAL()
+#define	IMM_0	0
+#define	IMM_1	1
+#define	IMM_NEG1	3
+#define	IMM_NEG2	2
+// Defines for MISC()
+#define	M_NONE	0
+#define M_SYSCALL 1
+#define	M_HALT	2
+#define M_BKPT 3
+#define	M_TRAPO	4
+#define	M_LPTE	5
+#define	M_SET_FLAGS	6
+#define	M_INIT_INST	7
+#define	M_RSHIFT	8
+#define	M_DMA_ACK	9
+#define	M_LEI	10
+#define	M_DO_BRANCH	11
+#define M_CLR_TRAP	12
+#define M_COMMIT 13
+// Defines for ALUOP(op,size,carry)
+#define	OP_IR13	0
+#define	OP_AND	1
+#define	OP_SUB	2
+#define	OP_ADD	3
+#define	WORD	0
+#define	BYTE	1
+#define	LWORD	1
+#define	LBYTE	0
+#define	NO_CARRY	0
+#define	CARRY_IN	1
+// Defines for CBR()
+#define	B_NORMAL	0
+#define	B_NEGATED	1
+// END mcdefs.h
+#define NEXT_POS	 0
+#define LATCH_POS	 1
+#define LMAR_POS	 2
+#define LMDRLO_POS	 3
+#define LMDRHI_POS	 4
+#define EMDRLO_POS	 5
+#define EMDRHI_POS	 6
+#define PRIV_POS	 7
+#define LMODE_POS	 8
+#define LPAGING_POS	 9
+#define MISC_POS	 10
+#define E_L_POS		 11
+#define E_R_POS		 12
+#define IMMVAL_POS	 13
+#define ALUOP_SIZE_POS	 14
+#define ALUOP_POS	 15
+#define CARRY_POS	 16
+#define L_SIZE_POS	 17
+#define BR_SENSE_POS	 18
+#define USER_PTB_POS	 19
+#define CODE_PTB_POS	 20
+#define NEXT(VAL)	INIT(NEXT_POS,VAL)
+#define LATCH(VAL)	INIT(LATCH_POS,VAL)
+#define LMAR(VAL)	INIT(LMAR_POS,VAL)
+#define LMDRLO(VAL)	INIT(LMDRLO_POS,VAL)
+#define LMDRHI(VAL)	INIT(LMDRHI_POS,VAL)
+#define EMDRLO(VAL)	INIT(EMDRLO_POS,VAL)
+#define EMDRHI(VAL)	INIT(EMDRHI_POS,VAL)
+#define PRIV(VAL)	INIT(PRIV_POS,VAL)
+#define LMODE(VAL)	INIT(LMODE_POS,VAL)
+#define LPAGING(VAL)	INIT(LPAGING_POS,VAL)
+#define MISC(VAL)	INIT(MISC_POS,VAL)
+#define E_L(VAL)	INIT(E_L_POS,VAL)
+#define E_R(VAL)	INIT(E_R_POS,VAL)
+#define IMMVAL(VAL)	INIT(IMMVAL_POS,VAL)
+#define ALUOP_SIZE(VAL)	INIT(ALUOP_SIZE_POS,VAL)
+#define ALUOP(VAL)	INIT(ALUOP_POS,VAL)
+#define CARRY(VAL)	INIT(CARRY_POS,VAL)
+#define L_SIZE(VAL)	INIT(L_SIZE_POS,VAL)
+#define BR_SENSE(VAL)	INIT(BR_SENSE_POS,VAL)
+#define USER_PTB(VAL)	INIT(USER_PTB_POS,VAL)
+#define CODE_PTB(VAL)	INIT(CODE_PTB_POS,VAL)
+#define CBR(SENSE,TGT)	MISC(M_DO_BRANCH),BR_SENSE(SENSE),NEXT(TGT)
+#define L(REG,SIZE)	LATCH(REG),L_SIZE(SIZE)
+#define	USE_IR	0xff
+#define READLO LMDRLO(1)
+#define READHI LMDRHI(1)
+#define READEXT LMDRLO(1),LMDRHI(1)
+#define WRITELO EMDRLO(1)
+#define WRITEHI EMDRHI(1)
+#define INC_TO_Z(REG) E_L(REG),E_R(ER_IMM),IMMVAL(IMM_1),ALU(OP_ADD,WORD,NO_CARRY)
+#define INC2_TO_Z(REG) E_L(REG),E_R(ER_IMM),IMMVAL(IMM_NEG2),ALU(OP_SUB,WORD,NO_CARRY)
+#define DEC_TO_Z(REG) E_L(REG),E_R(ER_IMM),IMMVAL(IMM_NEG1),ALU(OP_ADD,WORD,NO_CARRY)
+#define ZERO_TO_Z E_L(R_MDR),E_R(ER_IMM),IMMVAL(IMM_0),ALU(OP_AND,WORD,NO_CARRY)
+#define NEG1_TO_Z E_L(R_MDR),E_R(ER_IMM),IMMVAL(IMM_NEG1),ALU(OP_ADD,WORD,NO_CARRY)
+#define TO_Z(REG) E_L(REG),E_R(ER_IMM),IMMVAL(IMM_NEG1),ALU(OP_AND,WORD,NO_CARRY)
+#define TO_Z8(REG) E_L(REG),E_R(ER_IMM),IMMVAL(IMM_NEG1),ALU(OP_AND,BYTE,NO_CARRY)
+#define LDHI READHI,INC_TO_Z(R_MAR),LMAR(1)
+#define LDLO READLO,TO_Z(R_PC),LMAR(1) 
+#define STHI WRITEHI,INC_TO_Z(R_MAR),LMAR(1)
+#define STLO WRITELO,TO_Z(R_PC),LMAR(1)
+#define LDIMMHI CODE_PTB(1),READHI,L(R_PC,LWORD),INC_TO_Z(R_PC),LMAR(1)
+#define LDIMMLO CODE_PTB(1),READLO,L(R_PC,LWORD),INC_TO_Z(R_PC),LMAR(1)
+#define LDIMMEXT CODE_PTB(1),READEXT,L(R_PC,LWORD),INC_TO_Z(R_PC),LMAR(1)
+#define GEN_ADDR(BASE) E_L(BASE),E_R(ER_MDR),ALU(OP_ADD,WORD,NO_CARRY)
+#define COMPARE_0(REG) E_L(REG),E_R(ER_IMM),IMMVAL(IMM_0),ALU(OP_SUB,WORD,NO_CARRY)
+#define COMPARE8_0(REG) E_L(REG),E_R(ER_IMM),IMMVAL(IMM_0),ALU(OP_SUB,BYTE,NO_CARRY)
+#define ALU(OP,SZ,CRY) ALUOP(OP),ALUOP_SIZE(SZ),CARRY(CRY)
+#define FETCH_OP CODE_PTB(1),READLO,MISC(M_INIT_INST),INC_TO_Z(R_MAR),L(R_PC,LWORD),LMAR(1),NEXT(UNUSABLE)
+#define PUSHLO WRITELO,DEC_TO_Z(R_MAR),LMAR(1)
+#define PUSHHI WRITEHI,DEC_TO_Z(R_MAR),LMAR(1)
+#define POPLO READLO,INC_TO_Z(R_MAR),LMAR(1)
+#define POPHI READHI,INC_TO_Z(R_MAR),LMAR(1)
+#define TO_MDR(REG) TO_Z(REG),L(R_MDR,LWORD)
+#define FROM_MDR(REG) TO_Z(R_MDR),L(REG,LWORD)
+
+Bottom half of PROM -  (starting point of each instruction, using opcode as direct index)
+0x00 halt ; MISC(M_HALT),DEC_TO_Z(R_PC),L(R_PC,LWORD),LMAR(1),NEXT(Fetch) 
+0x01 ld.8 A,#u16_u8_10(SP) ; LDIMMHI,NEXT(Lda8_16) 
+0x02 push C ; TO_Z(R_C),L(R_MDR,LWORD),NEXT(Push16) 
+0x03 push PC ; TO_Z(R_TPC),L(R_MDR,LWORD),NEXT(Push16) 
+0x04 push DP ; TO_Z(R_DP),L(R_MDR,LWORD),NEXT(Push16) 
+0x05 ld.8 B,#u16_u8_10(SP) ; LDIMMHI,NEXT(Ldb8_16) 
+0x06 push A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(Push16) 
+0x07 push B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Push16) 
+0x08 br.ne #d16 ; LDIMMHI,NEXT(BrNegated) 
+0x09 pop MSW ; TO_Z(R_SP),LMAR(1),NEXT(Pop16) 
+0x0a pop C ; TO_Z(R_SP),LMAR(1),NEXT(Pop16) 
+0x0b pop PC ; TO_Z(R_SP),LMAR(1),NEXT(Pop16) 
+0x0c pop DP ; TO_Z(R_SP),LMAR(1),NEXT(Pop16) 
+0x0d pop SP ; TO_Z(R_SP),LMAR(1),NEXT(Pop16) 
+0x0e pop A ; TO_Z(R_SP),LMAR(1),NEXT(Pop16) 
+0x0f pop B ; TO_Z(R_SP),LMAR(1),NEXT(Pop16) 
+0x10 ld.8 A,#u16(DP) ; LDIMMHI,NEXT(Lda8_16) 
+0x11 ld.8 A,#u8(SP) ; LDIMMLO,NEXT(Lda8_8) 
+0x12 ld.8 A,#u8(A) ; LDIMMLO,NEXT(Lda8_8) 
+0x13 ld.8 A,#u8(B) ; LDIMMLO,NEXT(Lda8_8) 
+0x14 ld.8 B,#u16(DP) ; LDIMMHI,NEXT(Ldb8_16) 
+0x15 ld.8 B,#u8(SP) ; LDIMMLO,NEXT(Ldb8_8) 
+0x16 ld.8 B,#u8(A) ; LDIMMLO,NEXT(Ldb8_8) 
+0x17 ld.8 B,#u8(B) ; LDIMMLO,NEXT(Ldb8_8) 
+0x18 ld.16 A,#u16(DP) ; LDIMMHI,NEXT(Lda16_16) 
+0x19 ld.16 A,#u16_u8_68(SP) ; LDIMMHI,NEXT(Lda16_16) 
+0x1a ld.16 A,#u8(A) ; LDIMMLO,NEXT(Lda16_8) 
+0x1b ld.16 A,#u8(B) ; LDIMMLO,NEXT(Lda16_8) 
+0x1c ld.16 B,#u16(DP) ; LDIMMHI,NEXT(Ldb16_16) 
+0x1d ld.16 B,#u16_u8_68(SP) ; LDIMMHI,NEXT(Ldb16_16) 
+0x1e ld.16 B,#u8(A) ; LDIMMLO,NEXT(Ldb16_8) 
+0x1f ld.16 B,#u8(B) ; LDIMMLO,NEXT(Ldb16_8) 
+0x20 sub.8 A,#u16(DP) ; LDIMMHI,NEXT(Aluop8_indir16) 
+0x21 sub.8 A,#u8(SP) ; LDIMMLO,NEXT(Aluop8_indir) 
+0x22 push MSW ; TO_Z(R_MSW),L(R_MDR,LWORD),NEXT(Push16) 
+0x23 sub.8 A,#u8(B) ; LDIMMLO,NEXT(Aluop8_indir) 
+0x24 sub.8 A,#i8_1 ; LDIMMLO,NEXT(Aluop8) 
+0x25 sub.8 A,#1 ; INC_TO_Z(R_MDR),L(R_MDR,LWORD),NEXT(Aluop8) 
+0x26 push SP ; TO_Z(R_SP),L(R_MDR,LWORD),NEXT(Push16) 
+0x27 sub.8 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Aluop8) 
+0x28 sub.16 A,#u16(DP) ; LDIMMHI,NEXT(Aluop16_indir16) 
+0x29 sub.16 A,#u8(SP) ; LDIMMLO,NEXT(Aluop16_indir) 
+0x2a nop0 ; NEXT(Fetch) 
+0x2b sub.16 A,#u8(B) ; LDIMMLO,NEXT(Aluop16_indir) 
+0x2c sub.16 A,#i16_exti8 ; LDIMMHI,NEXT(Aluop16_16) 
+0x2d sub.16 A,#exti8 ; LDIMMEXT,NEXT(Aluop16) 
+0x2e wcpte A,(B) ; PRIV(1),TO_Z(R_B),LMAR(1),NEXT(Wcpte) 
+0x2f sub.16 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Aluop16) 
+0x30 add.8 A,#u16(DP) ; LDIMMHI,NEXT(Aluop8_indir16) 
+0x31 add.8 A,#u8(SP) ; LDIMMLO,NEXT(Aluop8_indir) 
+0x32 br A ; TO_Z(R_A),L(R_PC,LWORD),LMAR(1),NEXT(Fetch) 
+0x33 add.8 A,#u8(B) ; LDIMMLO,NEXT(Aluop8_indir) 
+0x34 add.8 A,#i8_1 ; LDIMMLO,NEXT(Aluop8) 
+0x35 add.8 A,#1 ; INC_TO_Z(R_MDR),L(R_MDR,LWORD),NEXT(Aluop8) 
+0x36 add.8 A,A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(Aluop8) 
+0x37 add.8 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Aluop8) 
+0x38 add.16 A,#u16(DP) ; LDIMMHI,NEXT(Aluop16_indir16) 
+0x39 add.16 A,#u8(SP) ; LDIMMLO,NEXT(Aluop16_indir) 
+0x3a syscall #sys_num8 ; LDIMMLO,NEXT(Syscall) 
+0x3b add.16 A,#u8(B) ; LDIMMLO,NEXT(Aluop16_indir) 
+0x3c add.16 A,#i16_exti8 ; LDIMMHI,NEXT(Aluop16_16) 
+0x3d add.16 A,#exti8 ; LDIMMEXT,NEXT(Aluop16) 
+0x3e add.16 A,A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(Aluop16) 
+0x3f add.16 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Aluop16) 
+0x40 cmp.8 A,#u16(DP) ; LDIMMHI,NEXT(Cmp8_indir16) 
+0x41 cmp.8 A,#u8(SP) ; LDIMMLO,NEXT(Cmp8_indir) 
+0x42 copy C,B ; TO_Z(R_B),L(R_C,LWORD),NEXT(Fetch) 
+0x43 cmp.8 A,#u8(B) ; LDIMMLO,NEXT(Cmp8_indir) 
+0x44 cmp.8 A,#i8_0 ; LDIMMLO,NEXT(Cmp8) 
+0x45 cmp.8 A,#0 ; E_L(R_A),E_R(ER_MDR),ALU(OP_SUB,BYTE,NO_CARRY),MISC(M_SET_FLAGS),NEXT(Fetch) 
+0x46 xor.16 A,A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(Aluop16) 
+0x47 cmp.8 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmp8) 
+0x48 cmp.16 A,#u16(DP) ; LDIMMHI,NEXT(Cmp16_indir16) 
+0x49 cmp.16 A,#u8(SP) ; LDIMMLO,NEXT(Cmp16_indir) 
+0x4a sh0add B,A,B ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(LeaB1) 
+0x4b cmp.16 A,#u8(B) ; LDIMMLO,NEXT(Cmp16_indir) 
+0x4c cmp.16 A,#i16_exti8_0 ; LDIMMHI,NEXT(Cmp16_16) 
+0x4d cmp.16 A,#exti8_0 ; LDIMMEXT,NEXT(Cmp16) 
+0x4e cmp.16 A,#0 ; E_L(R_A),E_R(ER_MDR),ALU(OP_SUB,WORD,NO_CARRY),MISC(M_SET_FLAGS),NEXT(Fetch) 
+0x4f cmp.16 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmp16) 
+0x50 or.8 A,#u16(DP) ; LDIMMHI,NEXT(Aluop8_indir16) 
+0x51 or.8 A,#u8(SP) ; LDIMMLO,NEXT(Aluop8_indir) 
+0x52 sex A ; TO_Z8(R_A),L(R_A,LWORD),NEXT(Fetch) 
+0x53 or.8 A,#u8(B) ; LDIMMLO,NEXT(Aluop8_indir) 
+0x54 or.8 A,#i8_1 ; LDIMMLO,NEXT(Aluop8) 
+0x55 or.8 A,#1 ; INC_TO_Z(R_MDR),L(R_MDR,LWORD),NEXT(Aluop8) 
+0x56 br.leu #d16 ; LDIMMHI,NEXT(BrNormal) 
+0x57 or.8 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Aluop8) 
+0x58 or.16 A,#u16(DP) ; LDIMMHI,NEXT(Aluop16_indir16) 
+0x59 or.16 A,#u8(SP) ; LDIMMLO,NEXT(Aluop16_indir) 
+0x5a sh1add A,B,A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(LeaABA2) 
+0x5b or.16 A,#u8(B) ; LDIMMLO,NEXT(Aluop16_indir) 
+0x5c or.16 A,#i16_exti8 ; LDIMMHI,NEXT(Aluop16_16) 
+0x5d or.16 A,#exti8 ; LDIMMEXT,NEXT(Aluop16) 
+0x5e br.gtu #d16 ; LDIMMHI,NEXT(BrNegated) 
+0x5f or.16 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Aluop16) 
+0x60 and.8 A,#u16(DP) ; LDIMMHI,NEXT(Aluop8_indir16) 
+0x61 and.8 A,#u8(SP) ; LDIMMLO,NEXT(Aluop8_indir) 
+0x62 sh1add B,A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(LeaBAB2) 
+0x63 and.8 A,#u8(B) ; LDIMMLO,NEXT(Aluop8_indir) 
+0x64 and.8 A,#i8_1 ; LDIMMLO,NEXT(Aluop8) 
+0x65 and.8 A,#1 ; INC_TO_Z(R_MDR),L(R_MDR,LWORD),NEXT(Aluop8) 
+0x66 nop1 ; NEXT(Fetch) 
+0x67 and.8 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Aluop8) 
+0x68 and.16 A,#u16(DP) ; LDIMMHI,NEXT(Aluop16_indir16) 
+0x69 and.16 A,#u8(SP) ; LDIMMLO,NEXT(Aluop16_indir) 
+0x6a sh1add B,B,A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(LeaBBA2) 
+0x6b and.16 A,#u8(B) ; LDIMMLO,NEXT(Aluop16_indir) 
+0x6c and.16 A,#i16_exti8 ; LDIMMHI,NEXT(Aluop16_16) 
+0x6d and.16 A,#exti8 ; LDIMMEXT,NEXT(Aluop16) 
+0x6e strcopy ; TO_Z(R_B),LMAR(1),NEXT(Strcopy) 
+0x6f and.16 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Aluop16) 
+0x70 lea A,#u16(DP) ; LDIMMHI,NEXT(LdaA_16) 
+0x71 lea A,#u16(SP) ; LDIMMHI,NEXT(LdaA_16) 
+0x72 lea A,#u16(A) ; LDIMMHI,NEXT(LdaA_16) 
+0x73 lea A,#u16(B) ; LDIMMHI,NEXT(LdaA_16) 
+0x74 lea B,#u16(DP) ; LDIMMHI,NEXT(LdaB_16) 
+0x75 lea B,#u16(SP) ; LDIMMHI,NEXT(LdaB_16) 
+0x76 lea B,#u16(A) ; LDIMMHI,NEXT(LdaB_16) 
+0x77 lea B,#u16(B) ; LDIMMHI,NEXT(LdaB_16) 
+0x78 ld.8 A,#u8 ; LDIMMLO,NEXT(LdiA8) 
+0x79 ld.8 B,#u8 ; LDIMMLO,NEXT(LdiB8) 
+0x7a ld.16 A,#exti8_u16 ; LDIMMEXT,NEXT(LdiA16) 
+0x7b ld.16 B,#exti8_u16 ; LDIMMEXT,NEXT(LdiB16) 
+0x7c ld.16 A,#u16 ; LDIMMHI,NEXT(LdiA16_lo) 
+0x7d ld.16 B,#u16 ; LDIMMHI,NEXT(LdiB16_lo) 
+0x7e adc.16 A,A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(Adc16) 
+0x7f adc.16 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Adc16) 
+0x80 call #d16 ; INC2_TO_Z(R_PC),L(R_MDR,LWORD),NEXT(CallImm) 
+0x81 ld.16 A,#u8(SP) ; LDIMMLO,NEXT(Lda16_8) 
+0x82 call A ; TO_Z(R_PC),L(R_MDR,LWORD),NEXT(CallA) 
+0x83 br #d16_d8 ; LDIMMHI,NEXT(RelBrLo) 
+0x84 sbr #d8 ; LDIMMEXT,NEXT(RelBr) 
+0x85 ld.16 B,#u8(SP) ; LDIMMLO,NEXT(Ldb16_8) 
+0x86 lea A,#u16(PC) ; LDIMMHI,NEXT(LeaPC) 
+0x87 lea B,#u16(PC) ; LDIMMHI,NEXT(LeaPC) 
+0x88 copy A,MSW ; TO_Z(R_MSW),L(R_A,LWORD),NEXT(Fetch) 
+0x89 br.eq #d16 ; LDIMMHI,NEXT(BrNormal) 
+0x8a reti ; PRIV(1),NEXT(Reti) 
+0x8b trapo ; MISC(M_TRAPO),NEXT(Fetch) 
+0x8c bset.8 A,#mask8,#d8 ; LDIMMLO,NEXT(Bset8) 
+0x8d bclr.8 A,#mask8,#d8 ; LDIMMLO,NEXT(Bclr8) 
+0x8e bset.16 A,#mask16,#d8 ; LDIMMHI,NEXT(Bset16) 
+0x8f bclr.16 A,#mask16,#d8 ; LDIMMHI,NEXT(Bclr16) 
+0x90 cmpb.eq.8 A,#u16(DP),#d8 ; LDIMMHI,NEXT(Cmpb8_indir16) 
+0x91 cmpb.eq.8 A,#u8(SP),#d8 ; LDIMMLO,NEXT(Cmpb8_indir) 
+0x92 copy B,A ; TO_Z(R_A),L(R_B,LWORD),NEXT(Fetch) 
+0x93 cmpb.eq.8 A,#u8(B),#d8 ; LDIMMLO,NEXT(Cmpb8_indir) 
+0x94 cmpb.eq.8 A,#i8_0,#d8 ; LDIMMLO,NEXT(Cmpb8) 
+0x95 cmpb.eq.8 A,#0,#d8 ; TO_Z(R_MDR),L(R_MDR,LWORD),NEXT(Cmpb8) 
+0x96 copy C,A ; TO_Z(R_A),L(R_C,LWORD),NEXT(Fetch) 
+0x97 cmpb.eq.8 A,B,#d8 ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmpb8) 
+0x98 cmpb.eq.16 A,#u16(DP),#d8 ; LDIMMHI,NEXT(Cmpb16_indir16) 
+0x99 cmpb.eq.16 A,#u8(SP),#d8 ; LDIMMLO,NEXT(Cmpb16_indir) 
+0x9a copy A,B ; TO_Z(R_B),L(R_A,LWORD),NEXT(Fetch) 
+0x9b cmpb.eq.16 A,#u8(B),#d8 ; LDIMMLO,NEXT(Cmpb16_indir) 
+0x9c cmpb.eq.16 A,#i16_exti8_0,#d8 ; LDIMMHI,NEXT(Cmpb16_16) 
+0x9d cmpb.eq.16 A,#exti8_0,#d8 ; LDIMMEXT,NEXT(Cmpb16) 
+0x9e cmpb.eq.16 A,#0,#d8 ; TO_Z(R_MDR),L(R_MDR,LWORD),NEXT(Cmpb16) 
+0x9f cmpb.eq.16 A,B,#d8 ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmpb16) 
+0xa0 cmpb.lt.8 A,#u16(DP),#d8 ; LDIMMHI,NEXT(Cmpb8_indir16) 
+0xa1 cmpb.lt.8 A,#u8(SP),#d8 ; LDIMMLO,NEXT(Cmpb8_indir) 
+0xa2 sh0add A,A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(LeaA1) 
+0xa3 cmpb.lt.8 A,#u8(B),#d8 ; LDIMMLO,NEXT(Cmpb8_indir) 
+0xa4 cmpb.lt.8 A,#i8_0,#d8 ; LDIMMLO,NEXT(Cmpb8) 
+0xa5 cmpb.lt.8 A,#0,#d8 ; TO_Z(R_MDR),L(R_MDR,LWORD),NEXT(Cmpb8) 
+0xa6 br.lt #d16 ; LDIMMHI,NEXT(BrNormal) 
+0xa7 cmpb.lt.8 A,B,#d8 ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmpb8) 
+0xa8 cmpb.lt.16 A,#u16(DP),#d8 ; LDIMMHI,NEXT(Cmpb16_indir16) 
+0xa9 cmpb.lt.16 A,#u8(SP),#d8 ; LDIMMLO,NEXT(Cmpb16_indir) 
+0xaa sh1add A,A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(LeaAAB2) 
+0xab cmpb.lt.16 A,#u8(B),#d8 ; LDIMMLO,NEXT(Cmpb16_indir) 
+0xac cmpb.lt.16 A,#i16_exti8,#d8 ; LDIMMHI,NEXT(Cmpb16_16) 
+0xad cmpb.lt.16 A,#exti8,#d8 ; LDIMMEXT,NEXT(Cmpb16) 
+0xae br.ge #d16 ; LDIMMHI,NEXT(BrNegated) 
+0xaf cmpb.lt.16 A,B,#d8 ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmpb16) 
+0xb0 cmpb.le.8 A,#u16(DP),#d8 ; LDIMMHI,NEXT(Cmpb8_indir16) 
+0xb1 cmpb.le.8 A,#u8(SP),#d8 ; LDIMMLO,NEXT(Cmpb8_indir) 
+0xb2 sex B ; TO_Z8(R_B),L(R_B,LWORD),NEXT(Fetch) 
+0xb3 cmpb.le.8 A,#u8(B),#d8 ; LDIMMLO,NEXT(Cmpb8_indir) 
+0xb4 cmpb.le.8 A,#i8,#d8 ; LDIMMLO,NEXT(Cmpb8) 
+0xb5 br.le #d16 ; LDIMMHI,NEXT(BrNormal) 
+0xb6 copy DP,A ; TO_Z(R_A),L(R_DP,LWORD),NEXT(Fetch) 
+0xb7 cmpb.le.8 A,B,#d8 ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmpb8) 
+0xb8 cmpb.le.16 A,#u16(DP),#d8 ; LDIMMHI,NEXT(Cmpb16_indir16) 
+0xb9 cmpb.le.16 A,#u8(SP),#d8 ; LDIMMLO,NEXT(Cmpb16_indir) 
+0xba copy A,DP ; TO_Z(R_DP),L(R_A,LWORD),NEXT(Fetch) 
+0xbb cmpb.le.16 A,#u8(B),#d8 ; LDIMMLO,NEXT(Cmpb16_indir) 
+0xbc cmpb.le.16 A,#i16_exti8,#d8 ; LDIMMHI,NEXT(Cmpb16_16) 
+0xbd cmpb.le.16 A,#exti8,#d8 ; LDIMMEXT,NEXT(Cmpb16) 
+0xbe br.gt #d16 ; LDIMMHI,NEXT(BrNegated) 
+0xbf cmpb.le.16 A,B,#d8 ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmpb16) 
+0xc0 br.geu #d16 ; LDIMMHI,NEXT(BrNegated) 
+0xc1 st.8 #u16_u8_10(SP),A ; LDIMMHI,NEXT(Sta8_16) 
+0xc2 shl.16 A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(Shla16) 
+0xc3 shr.16 A ; TO_Z(R_A),MISC(M_RSHIFT),L(R_A,LWORD),NEXT(Fetch) 
+0xc4 shl.16 B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Shlb16) 
+0xc5 st.8 #u16_u8_10(SP),B ; LDIMMHI,NEXT(Stb8_16) 
+0xc6 shr.16 B ; TO_Z(R_B),MISC(M_RSHIFT),L(R_B,LWORD),NEXT(Fetch) 
+0xc7 xor.16 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Aluop16) 
+0xc8 copy PTB,A ; PRIV(1),TO_Z(R_A),L(R_PTB,LWORD),NEXT(Fetch) 
+0xc9 st.16 #u16_u8_10(SP),A ; LDIMMHI,NEXT(Sta16_16) 
+0xca copy MSW,A ; PRIV(1),NEXT(CopyMSWA) 
+0xcb copy SP,A ; TO_Z(R_A),L(R_SP,LWORD),NEXT(Fetch) 
+0xcc ld.16 C,#exti8_u16 ; LDIMMEXT,NEXT(LdiC16) 
+0xcd st.16 #u16_u8_10(SP),B ; LDIMMHI,NEXT(Stb16_16) 
+0xce ld.16 C,#u16 ; LDIMMHI,NEXT(LdiC16_lo) 
+0xcf br.ltu #d16 ; LDIMMHI,NEXT(BrNormal) 
+0xd0 st.8 #u16(DP),A ; LDIMMHI,NEXT(Sta8_16) 
+0xd1 st.8 #u8(SP),A ; LDIMMLO,NEXT(Sta8_8) 
+0xd2 st.8 #u8(A),A ; LDIMMLO,NEXT(Sta8_8) 
+0xd3 st.8 #u8(B),A ; LDIMMLO,NEXT(Sta8_8) 
+0xd4 st.8 #u16(DP),B ; LDIMMHI,NEXT(Stb8_16) 
+0xd5 st.8 #u8(SP),B ; LDIMMLO,NEXT(Stb8_8) 
+0xd6 st.8 #u8(A),B ; LDIMMLO,NEXT(Stb8_8) 
+0xd7 st.8 #u8(B),B ; LDIMMLO,NEXT(Stb8_8) 
+0xd8 st.16 #u16(DP),A ; LDIMMHI,NEXT(Sta16_16) 
+0xd9 st.16 #u8(SP),A ; LDIMMLO,NEXT(Sta16_8) 
+0xda st.16 #u8(A),A ; LDIMMLO,NEXT(Sta16_8) 
+0xdb st.16 #u8(B),A ; LDIMMLO,NEXT(Sta16_8) 
+0xdc st.16 #u16(DP),B ; LDIMMHI,NEXT(Stb16_16) 
+0xdd st.16 #u8(SP),B ; LDIMMLO,NEXT(Stb16_8) 
+0xde st.16 #u8(A),B ; LDIMMLO,NEXT(Stb16_8) 
+0xdf st.16 #u8(B),B ; LDIMMLO,NEXT(Stb16_8) 
+0xe0 ldcode.8 A,(B) ; TO_Z(R_B),LMAR(1),NEXT(Ldcode8) 
+0xe1 nop2 ; NEXT(Fetch) 
+0xe2 stcode.8 (B),A ; TO_Z(R_B),LMAR(1),NEXT(Stcode8) 
+0xe3 nop3 ; NEXT(Fetch) 
+0xe4 enter #fsize16_8 ; LDIMMHI,NEXT(Enter) 
+0xe5 enter #fsize8 ; NEG1_TO_Z,LATCH(R_MDR),NEXT(Enter) 
+0xe6 vshl.16 A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(Vshl) 
+0xe7 vshl.16 B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Vshl) 
+0xe8 memcopy ; COMPARE_0(R_C),MISC(M_SET_FLAGS),NEXT(Bcopy) 
+0xe9 tosys ; PRIV(1),COMPARE_0(R_C),MISC(M_SET_FLAGS),NEXT(ToSys) 
+0xea fromsys ; PRIV(1),COMPARE_0(R_C),MISC(M_SET_FLAGS),NEXT(FromSys) 
+0xeb ldclr.8 A,(B) ; TO_Z(R_B),LMAR(1),NEXT(LdClr) 
+0xec wdpte A,(B) ; PRIV(1),TO_Z(R_B),LMAR(1),NEXT(Wdpte) 
+0xed sbc.16 A,B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Sbc16) 
+0xee vshr.16 A ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(Vshr) 
+0xef vshr.16 B ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Vshr) 
+0xf0 cmpb.ne.8 A,#u16(DP),#d8 ; LDIMMHI,NEXT(Cmpb8_indir16) 
+0xf1 cmpb.ne.8 A,#u8(SP),#d8 ; LDIMMLO,NEXT(Cmpb8_indir) 
+0xf2 copy A,C ; TO_Z(R_C),L(R_A,LWORD),NEXT(Fetch) 
+0xf3 cmpb.ne.8 A,#u8(B),#d8 ; LDIMMLO,NEXT(Cmpb8_indir) 
+0xf4 cmpb.ne.8 A,#i8_0,#d8 ; LDIMMLO,NEXT(Cmpb8) 
+0xf5 cmpb.ne.8 A,#0,#d8 ; TO_Z(R_MDR),L(R_MDR,LWORD),NEXT(Cmpb8) 
+0xf6 copy A,SP ; TO_Z(R_SP),L(R_A,LWORD),NEXT(Fetch) 
+0xf7 cmpb.ne.8 A,B,#d8 ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmpb8) 
+0xf8 cmpb.ne.16 A,#u16(DP),#d8 ; LDIMMHI,NEXT(Cmpb16_indir16) 
+0xf9 cmpb.ne.16 A,#u8(SP),#d8 ; LDIMMLO,NEXT(Cmpb16_indir) 
+0xfa bkpt ; MISC(M_BKPT),NEXT(Unreachable) 
+0xfb cmpb.ne.16 A,#u8(B),#d8 ; LDIMMLO,NEXT(Cmpb16_indir) 
+0xfc cmpb.ne.16 A,#i16_exti8_0,#d8 ; LDIMMHI,NEXT(Cmpb16_16) 
+0xfd cmpb.ne.16 A,#exti8_0,#d8 ; LDIMMEXT,NEXT(Cmpb16) 
+0xfe cmpb.ne.16 A,#0,#d8 ; TO_Z(R_MDR),L(R_MDR,LWORD),NEXT(Cmpb16) 
+0xff cmpb.ne.16 A,B,#d8 ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(Cmpb16) 
+
+Top half of PROM - continuation microcode.
+0x100 Fetch ; FETCH_OP 
+0x101 IRQ5 ; TO_Z(R_MAR),MISC(M_COMMIT),NEXT(Fault) 
+0x102 IRQ4 ; TO_Z(R_MAR),MISC(M_COMMIT),NEXT(Fault) 
+0x103 IRQ3 ; TO_Z(R_MAR),MISC(M_COMMIT),NEXT(Fault) 
+0x104 IRQ2 ; TO_Z(R_MAR),MISC(M_COMMIT),NEXT(Fault) 
+0x105 IRQ1 ; TO_Z(R_MAR),MISC(M_COMMIT),NEXT(Fault) 
+0x106 IRQ0 ; TO_Z(R_MAR),MISC(M_COMMIT),NEXT(Fault) 
+0x107 DMA_req ; MISC(M_DMA_ACK),NEXT(Fetch) 
+0x108 Fault_syscall ; TO_Z(R_MAR),MISC(M_COMMIT),NEXT(Fault) 
+0x109  ;  
+0x10a Fault_ovflo ; TO_Z(R_MAR),L(R_PC,LWORD),NEXT(Fault) 
+0x10b Fault_priv ; TO_Z(R_MAR),L(R_PC,LWORD),NEXT(Fault) 
+0x10c Fault_bkpt ; TO_Z(R_MAR),L(R_PC,LWORD),NEXT(Fault) 
+0x10d Fault_nw ; TO_Z(R_MAR),L(R_PC,LWORD),NEXT(Fault) 
+0x10e Fault_np ; TO_Z(R_MAR),L(R_PC,LWORD),NEXT(Fault) 
+0x10f  ;  
+0x110 Aluop8_indir ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x111  ; LDLO,NEXT(FALLTHRU) 
+0x112 Aluop8 ; E_L(R_A),E_R(ER_MDR),ALU(OP_IR13,BYTE,NO_CARRY),L(R_A,LBYTE),MISC(M_SET_FLAGS),NEXT(Fetch) 
+0x113 Aluop8_indir16 ; LDIMMLO,NEXT(Aluop8_indir) 
+0x114 Aluop16_indir ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x115  ; LDHI,NEXT(FALLTHRU) 
+0x116  ; LDLO,NEXT(FALLTHRU) 
+0x117 Aluop16 ; E_L(R_A),E_R(ER_MDR),ALU(OP_IR13,WORD,NO_CARRY),L(R_A,LWORD),MISC(M_SET_FLAGS),NEXT(Fetch) 
+0x118 Aluop16_indir16 ; LDIMMLO,NEXT(Aluop16_indir) 
+0x119 Cmp8_indir ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x11a  ; LDLO,NEXT(FALLTHRU) 
+0x11b Cmp8 ; E_L(R_A),E_R(ER_MDR),ALU(OP_SUB,BYTE,NO_CARRY),MISC(M_SET_FLAGS),NEXT(Fetch) 
+0x11c Cmp8_indir16 ; LDIMMLO,NEXT(Cmp8_indir) 
+0x11d Cmp16_indir ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x11e  ; LDHI,NEXT(FALLTHRU) 
+0x11f  ; LDLO,NEXT(FALLTHRU) 
+0x120 Cmp16 ; E_L(R_A),E_R(ER_MDR),ALU(OP_SUB,WORD,NO_CARRY),MISC(M_SET_FLAGS),NEXT(Fetch) 
+0x121 Cmp16_indir16 ; LDIMMLO,NEXT(Cmp16_indir) 
+0x122 Cmpb8_indir ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x123  ; LDLO,NEXT(FALLTHRU) 
+0x124 Cmpb8 ; E_L(R_A),E_R(ER_MDR),ALU(OP_SUB,BYTE,NO_CARRY),MISC(M_SET_FLAGS),NEXT(CheckBr) 
+0x125 Cmpb8_indir16 ; LDIMMLO,NEXT(Cmpb8_indir) 
+0x126 Cmpb16_indir ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x127  ; LDHI,NEXT(FALLTHRU) 
+0x128  ; LDLO,NEXT(FALLTHRU) 
+0x129 Cmpb16 ; E_L(R_A),E_R(ER_MDR),ALU(OP_SUB,WORD,NO_CARRY),MISC(M_SET_FLAGS),NEXT(CheckBr) 
+0x12a Cmpb16_indir16 ; LDIMMLO,NEXT(Cmpb16_indir) 
+0x12b CheckBr ; LDIMMEXT,CBR(B_NORMAL,TakenBr) 
+0x12c TakenBr ; E_L(R_PC),E_R(ER_MDR),ALU(OP_ADD,WORD,NO_CARRY),L(R_PC,LWORD),LMAR(1),NEXT(Fetch) 
+0x12d BrNormal ; LDIMMLO,CBR(B_NORMAL,TakenBr) 
+0x12e BrNegated ; LDIMMLO,CBR(B_NEGATED,TakenBr) 
+0x12f Bset8 ; E_L(R_A),E_R(ER_MDR),ALU(OP_AND,BYTE,NO_CARRY),MISC(M_SET_FLAGS),NEXT(CheckBrNeg) 
+0x130 CheckBrNeg ; LDIMMEXT,CBR(B_NEGATED,TakenBr) 
+0x131 Bclr8 ; E_L(R_A),E_R(ER_MDR),ALU(OP_AND,BYTE,NO_CARRY),MISC(M_SET_FLAGS),NEXT(CheckBr) 
+0x132 Bset16 ; LDIMMLO,NEXT(FALLTHRU) 
+0x133  ; E_L(R_A),E_R(ER_MDR),ALU(OP_AND,WORD,NO_CARRY),MISC(M_SET_FLAGS),NEXT(CheckBrNeg) 
+0x134 Bclr16 ; LDIMMLO,NEXT(FALLTHRU) 
+0x135  ; E_L(R_A),E_R(ER_MDR),ALU(OP_AND,WORD,NO_CARRY),MISC(M_SET_FLAGS),NEXT(CheckBr) 
+0x136 Push16 ; DEC_TO_Z(R_SP),LMAR(1),NEXT(FALLTHRU) 
+0x137  ; WRITELO,DEC_TO_Z(R_MAR),LMAR(1),L(R_SP,LWORD),NEXT(FALLTHRU) 
+0x138  ; WRITEHI,TO_Z(R_PC),LMAR(1),NEXT(Fetch) 
+0x139 Pop16 ; LDHI,NEXT(FALLTHRU) 
+0x13a  ; READLO,INC_TO_Z(R_MAR),L(R_SP,LWORD),LMAR(1),NEXT(FALLTHRU) 
+0x13b  ; TO_Z(R_MDR),L(R_IR_REG,LWORD),NEXT(FALLTHRU) 
+0x13c  ; TO_Z(R_PC),LMAR(1),NEXT(Fetch) 
+0x13d Lda8_8 ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x13e  ; LDLO,NEXT(FALLTHRU) 
+0x13f  ; TO_Z(R_MDR),L(R_A,LBYTE),NEXT(Fetch) 
+0x140 Lda8_16 ; LDIMMLO,NEXT(Lda8_8) 
+0x141 Ldb8_8 ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x142  ; LDLO,NEXT(FALLTHRU) 
+0x143  ; TO_Z(R_MDR),L(R_B,LBYTE),NEXT(Fetch) 
+0x144 Ldb8_16 ; LDIMMLO,NEXT(Ldb8_8) 
+0x145 Lda16_8 ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x146  ; LDHI,NEXT(FALLTHRU) 
+0x147  ; LDLO,NEXT(FALLTHRU) 
+0x148  ; TO_Z(R_MDR),L(R_A,LWORD),NEXT(Fetch) 
+0x149 Lda16_16 ; LDIMMLO,NEXT(Lda16_8) 
+0x14a Ldb16_8 ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x14b  ; LDHI,NEXT(FALLTHRU) 
+0x14c  ; LDLO,NEXT(FALLTHRU) 
+0x14d  ; TO_Z(R_MDR),L(R_B,LWORD),NEXT(Fetch) 
+0x14e Ldb16_16 ; LDIMMLO,NEXT(Ldb16_8) 
+0x14f Sta8_8 ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x150  ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(FALLTHRU) 
+0x151 StaLo ; STLO,NEXT(Fetch) 
+0x152 Sta8_16 ; LDIMMLO,NEXT(Sta8_8) 
+0x153 Sta16_8 ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x154  ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(FALLTHRU) 
+0x155  ; STHI,NEXT(StaLo) 
+0x156 Sta16_16 ; LDIMMLO,NEXT(Sta16_8) 
+0x157 Stb8_8 ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x158  ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(FALLTHRU) 
+0x159 StbLo ; STLO,NEXT(Fetch) 
+0x15a Stb8_16 ; LDIMMLO,NEXT(Stb8_8) 
+0x15b Stb16_8 ; GEN_ADDR(R_IR_BASE),LMAR(1),NEXT(FALLTHRU) 
+0x15c  ; TO_Z(R_B),L(R_MDR,LWORD),NEXT(FALLTHRU) 
+0x15d  ; STHI,NEXT(StbLo) 
+0x15e Stb16_16 ; LDIMMLO,NEXT(Stb16_8) 
+0x15f Sbc16 ; E_L(R_A),E_R(ER_MDR),ALU(OP_SUB,WORD,CARRY_IN),L(R_A,LWORD),MISC(M_SET_FLAGS),NEXT(Fetch) 
+0x160 Adc16 ; E_L(R_A),E_R(ER_MDR),ALU(OP_ADD,WORD,CARRY_IN),L(R_A,LWORD),MISC(M_SET_FLAGS),NEXT(Fetch) 
+0x161 LdaA_16 ; LDIMMLO,NEXT(LdaA) 
+0x162 LdaA ; GEN_ADDR(R_IR_BASE),L(R_A,LWORD),NEXT(Fetch) 
+0x163 LdaB_16 ; LDIMMLO,NEXT(LdaB) 
+0x164 LdaB ; GEN_ADDR(R_IR_BASE),L(R_B,LWORD),NEXT(Fetch) 
+0x165 LdiA8 ; TO_Z(R_MDR),L(R_A,LBYTE),NEXT(Fetch) 
+0x166 LdiB8 ; TO_Z(R_MDR),L(R_B,LBYTE),NEXT(Fetch) 
+0x167 LdiA16_lo ; LDIMMLO,NEXT(LdiA16) 
+0x168 LdiA16 ; TO_Z(R_MDR),L(R_A,LWORD),NEXT(Fetch) 
+0x169 LdiB16_lo ; LDIMMLO,NEXT(LdiB16) 
+0x16a LdiB16 ; TO_Z(R_MDR),L(R_B,LWORD),NEXT(Fetch) 
+0x16b LdiC16_lo ; LDIMMLO,NEXT(LdiC16) 
+0x16c LdiC16 ; TO_Z(R_MDR),L(R_C,LWORD),NEXT(Fetch) 
+0x16d RelBrLo ; LDIMMLO,NEXT(RelBr) 
+0x16e RelBr ; GEN_ADDR(R_PC),L(R_PC,LWORD),LMAR(1),NEXT(Fetch) 
+0x16f CallImm ; DEC_TO_Z(R_SP),LMAR(1),NEXT(FALLTHRU) 
+0x170  ; WRITELO,DEC_TO_Z(R_MAR),LMAR(1),L(R_SP,LWORD),NEXT(FALLTHRU) 
+0x171  ; WRITEHI,TO_Z(R_PC),LMAR(1),NEXT(FALLTHRU) 
+0x172  ; LDIMMHI,NEXT(FALLTHRU) 
+0x173  ; LDIMMLO,NEXT(FALLTHRU) 
+0x174  ; GEN_ADDR(R_PC),L(R_PC,LWORD),LMAR(1),NEXT(Fetch) 
+0x175 CallA ; DEC_TO_Z(R_SP),LMAR(1),NEXT(FALLTHRU) 
+0x176  ; WRITELO,DEC_TO_Z(R_MAR),LMAR(1),L(R_SP,LWORD),NEXT(FALLTHRU) 
+0x177  ; WRITEHI,TO_Z(R_A),L(R_PC,LWORD),LMAR(1),NEXT(Fetch) 
+0x178 LdClr ; READLO,NEXT(FALLTHRU) 
+0x179  ; TO_Z(R_MDR),L(R_A,LBYTE),NEXT(FALLTHRU) 
+0x17a  ; WRITEHI,TO_Z(R_PC),LMAR(1),NEXT(Fetch) 
+0x17b Wcpte ; USER_PTB(1),CODE_PTB(1),E_L(R_A),MISC(M_LPTE),NEXT(PCtoMAR) 
+0x17c Enter ; LDIMMLO,NEXT(FALLTHRU) 
+0x17d  ; GEN_ADDR(R_SP),LMAR(1),NEXT(FALLTHRU) 
+0x17e  ; TO_Z(R_SP),L(R_MDR,LWORD),NEXT(FALLTHRU) 
+0x17f  ; DEC_TO_Z(R_MAR),LMAR(1),NEXT(FALLTHRU) 
+0x180  ; WRITELO,DEC_TO_Z(R_MAR),LMAR(1),L(R_SP,LWORD),NEXT(FALLTHRU) 
+0x181  ; WRITEHI,TO_Z(R_MAR),L(R_SP,LWORD),NEXT(FALLTHRU) 
+0x182  ; TO_Z(R_PC),LMAR(1),NEXT(Fetch) 
+0x183 Bcopy ; CBR(B_NEGATED,FALLTHRU) 
+0x184  ; TO_Z(R_B),LMAR(1),NEXT(FALLTHRU) 
+0x185  ; READLO,TO_Z(R_A),LMAR(1),NEXT(Bcopy0) 
+0x186 ToSys ; PRIV(1),CBR(B_NEGATED,FALLTHRU) 
+0x187  ; TO_Z(R_B),LMAR(1),NEXT(FALLTHRU) 
+0x188  ; USER_PTB(1),READLO,TO_Z(R_A),LMAR(1),NEXT(FALLTHRU) 
+0x189 Bcopy0 ; WRITELO,INC_TO_Z(R_MAR),L(R_A,LWORD),NEXT(FALLTHRU) 
+0x18a Bcopy1 ; INC_TO_Z(R_B),L(R_B,LWORD),NEXT(FALLTHRU) 
+0x18b   ; DEC_TO_Z(R_C),L(R_C,LWORD),NEXT(FALLTHRU) 
+0x18c BackupPC ; DEC_TO_Z(R_PC),L(R_PC,LWORD),LMAR(1),NEXT(Fetch) 
+0x18d FromSys ; PRIV(1),CBR(B_NEGATED,FALLTHRU) 
+0x18e  ; TO_Z(R_B),LMAR(1),NEXT(FALLTHRU) 
+0x18f  ; READLO,TO_Z(R_A),LMAR(1),NEXT(FALLTHRU) 
+0x190  ; USER_PTB(1),WRITELO,INC_TO_Z(R_MAR),L(R_A,LWORD),NEXT(Bcopy1) 
+0x191 Fault ; DEC_TO_Z(R_SSP),LMAR(1),NEXT(FALLTHRU) 
+0x192  ; TO_MDR(R_MSW),NEXT(FALLTHRU) 
+0x193  ; ZERO_TO_Z,MISC(M_LEI),LMODE(1),NEXT(FALLTHRU) 
+0x194  ; PUSHLO,NEXT(FALLTHRU) 
+0x195  ; PUSHHI,NEXT(FALLTHRU) 
+0x196  ; TO_MDR(R_SP),NEXT(FALLTHRU) 
+0x197  ; PUSHLO,NEXT(FALLTHRU) 
+0x198  ; PUSHHI,NEXT(FALLTHRU) 
+0x199  ; TO_MDR(R_TPC),NEXT(FALLTHRU) 
+0x19a  ; PUSHLO,NEXT(FALLTHRU) 
+0x19b  ; PUSHHI,NEXT(FALLTHRU) 
+0x19c  ; TO_MDR(R_A),NEXT(FALLTHRU) 
+0x19d  ; PUSHLO,NEXT(FALLTHRU) 
+0x19e  ; PUSHHI,NEXT(FALLTHRU) 
+0x19f  ; TO_MDR(R_B),NEXT(FALLTHRU) 
+0x1a0  ; PUSHLO,NEXT(FALLTHRU) 
+0x1a1  ; PUSHHI,NEXT(FALLTHRU) 
+0x1a2  ; TO_MDR(R_C),NEXT(FALLTHRU) 
+0x1a3  ; PUSHLO,NEXT(FALLTHRU) 
+0x1a4  ; PUSHHI,NEXT(FALLTHRU) 
+0x1a5  ; TO_MDR(R_DP),NEXT(FALLTHRU) 
+0x1a6  ; PUSHLO,L(R_SP,LWORD),NEXT(FALLTHRU) 
+0x1a7  ; PUSHHI,NEXT(FALLTHRU) 
+0x1a8  ; TO_Z(R_PC),L(R_A,LWORD),NEXT(FALLTHRU) 
+0x1a9  ; TO_Z(R_FCODE),LMAR(1),NEXT(FALLTHRU) 
+0x1aa  ; POPHI,NEXT(FALLTHRU) 
+0x1ab  ; POPLO,NEXT(FALLTHRU) 
+0x1ac   ; FROM_MDR(R_PC),LMAR(1),MISC(M_CLR_TRAP),NEXT(Fetch) 
+0x1ad Reti ; TO_Z(R_SP),LMAR(1),NEXT(FALLTHRU) 
+0x1ae  ; POPHI,NEXT(FALLTHRU) 
+0x1af  ; POPLO,NEXT(FALLTHRU) 
+0x1b0  ; FROM_MDR(R_DP),NEXT(FALLTHRU) 
+0x1b1  ; POPHI,NEXT(FALLTHRU) 
+0x1b2  ; POPLO,NEXT(FALLTHRU) 
+0x1b3  ; FROM_MDR(R_C),NEXT(FALLTHRU) 
+0x1b4  ; POPHI,NEXT(FALLTHRU) 
+0x1b5  ; POPLO,NEXT(FALLTHRU) 
+0x1b6  ; FROM_MDR(R_B),NEXT(FALLTHRU) 
+0x1b7  ; POPHI,NEXT(FALLTHRU) 
+0x1b8  ; POPLO,NEXT(FALLTHRU) 
+0x1b9  ; FROM_MDR(R_A),NEXT(FALLTHRU) 
+0x1ba  ; POPHI,NEXT(FALLTHRU) 
+0x1bb  ; POPLO,NEXT(FALLTHRU) 
+0x1bc  ; FROM_MDR(R_PC),NEXT(FALLTHRU) 
+0x1bd  ; POPHI,NEXT(FALLTHRU) 
+0x1be  ; POPLO,NEXT(FALLTHRU) 
+0x1bf  ; TO_Z(R_MDR),MISC(M_COMMIT),NEXT(FALLTHRU) 
+0x1c0  ; POPHI,NEXT(FALLTHRU) 
+0x1c1  ; READLO,INC_TO_Z(R_MAR),L(R_SP,LWORD),NEXT(FALLTHRU) 
+0x1c2  ; TO_Z(R_MDR),L(R_MSW,LWORD),LMODE(1),LPAGING(1),MISC(M_LEI),NEXT(FALLTHRU) 
+0x1c3  ; TO_Z(R_TPC),L(R_SP,LWORD),NEXT(FALLTHRU) 
+0x1c4   ; TO_Z(R_PC),LMAR(1),NEXT(Fetch) 
+0x1c5 Syscall ; TO_Z(R_MDR),L(R_A,LWORD),NEXT(FALLTHRU) 
+0x1c6  ; MISC(M_SYSCALL),NEXT(Unreachable) 
+0x1c7 Ldcode8 ; CODE_PTB(1),LDLO,NEXT(FALLTHRU) 
+0x1c8  ; TO_Z(R_MDR),L(R_A,LBYTE),NEXT(Fetch) 
+0x1c9 Stcode8 ; TO_Z(R_A),L(R_MDR,LWORD),NEXT(Stcodelo) 
+0x1ca Stcodelo ; CODE_PTB(1),STLO,NEXT(Fetch) 
+0x1cb Wdpte ; USER_PTB(1),E_L(R_A),MISC(M_LPTE),NEXT(PCtoMAR) 
+0x1cc Shlb16 ; E_L(R_B),E_R(ER_MDR),ALU(OP_ADD,WORD,NO_CARRY),L(R_B,LWORD),NEXT(Fetch) 
+0x1cd Shla16 ; E_L(R_A),E_R(ER_MDR),ALU(OP_ADD,WORD,NO_CARRY),L(R_A,LWORD),NEXT(Fetch) 
+0x1ce Aluop16_16 ; LDIMMLO,NEXT(Aluop16) 
+0x1cf Cmpb16_16 ; LDIMMLO,NEXT(Cmpb16) 
+0x1d0 Cmp16_16 ; LDIMMLO,NEXT(Cmp16) 
+0x1d1 PCtoMAR ; TO_Z(R_PC),LMAR(1),NEXT(Fetch) 
+0x1d2 Vshl ; COMPARE_0(R_C),MISC(M_SET_FLAGS),NEXT(FALLTHRU) 
+0x1d3   ; CBR(B_NEGATED,FALLTHRU) 
+0x1d4   ; COMPARE_0(R_MDR),MISC(M_SET_FLAGS),NEXT(FALLTHRU) 
+0x1d5   ; CBR(B_NEGATED,FALLTHRU) 
+0x1d6   ; E_L(R_MDR),E_R(ER_MDR),ALU(OP_ADD,WORD,NO_CARRY),L(R_IR_REG,LWORD),NEXT(Bcopy1) 
+0x1d7 Vshr ; COMPARE_0(R_C),MISC(M_SET_FLAGS),NEXT(FALLTHRU) 
+0x1d8   ; CBR(B_NEGATED,FALLTHRU) 
+0x1d9  ; COMPARE_0(R_MDR),MISC(M_SET_FLAGS),NEXT(FALLTHRU) 
+0x1da  ; CBR(B_NEGATED,FALLTHRU) 
+0x1db  ; TO_Z(R_MDR),MISC(M_RSHIFT),L(R_IR_REG,LWORD),NEXT(Bcopy1) 
+0x1dc LeaPC ; LDIMMLO,NEXT(FALLTHRU) 
+0x1dd  ; GEN_ADDR(R_PC),L(R_IR_REG,LWORD),NEXT(Fetch) 
+0x1de LeaAAB2 ; E_R(ER_MDR),E_L(R_MDR),ALU(OP_ADD,WORD,NO_CARRY),L(R_MDR,LWORD),NEXT(FALLTHRU) 
+0x1df LeaA1 ; E_R(ER_MDR),E_L(R_A),ALU(OP_ADD,WORD,NO_CARRY),L(R_A,LWORD),NEXT(Fetch) 
+0x1e0 LeaBBA2 ; E_R(ER_MDR),E_L(R_MDR),ALU(OP_ADD,WORD,NO_CARRY),L(R_MDR,LWORD),NEXT(FALLTHRU) 
+0x1e1 LeaB1 ; E_R(ER_MDR),E_L(R_B),ALU(OP_ADD,WORD,NO_CARRY),L(R_B,LWORD),NEXT(Fetch) 
+0x1e2 LeaABA2 ; E_R(ER_MDR),E_L(R_MDR),ALU(OP_ADD,WORD,NO_CARRY),L(R_MDR,LWORD),NEXT(FALLTHRU) 
+0x1e3  ; E_R(ER_MDR),E_L(R_B),ALU(OP_ADD,WORD,NO_CARRY),L(R_A,LWORD),NEXT(Fetch) 
+0x1e4 LeaBAB2 ; E_R(ER_MDR),E_L(R_MDR),ALU(OP_ADD,WORD,NO_CARRY),L(R_MDR,LWORD),NEXT(FALLTHRU) 
+0x1e5  ; E_R(ER_MDR),E_L(R_A),ALU(OP_ADD,WORD,NO_CARRY),L(R_B,LWORD),NEXT(Fetch) 
+0x1e6 CopyMSWA ; TO_Z(R_A),L(R_MSW,LWORD),LMODE(1),LPAGING(1),MISC(M_LEI),NEXT(FALLTHRU) 
+0x1e7  ; NEXT(Fetch) 
+0x1e8 Strcopy ; READLO,TO_Z(R_A),LMAR(1),NEXT(FALLTHRU) 
+0x1e9   ; WRITELO,COMPARE8_0(R_MDR),MISC(M_SET_FLAGS),NEXT(FALLTHRU) 
+0x1ea   ; TO_Z(R_PC),LMAR(1),NEXT(FALLTHRU) 
+0x1eb   ; INC_TO_Z(R_A),L(R_A,LWORD),NEXT(FALLTHRU) 
+0x1ec  ; INC_TO_Z(R_B),L(R_B,LWORD),CBR(B_NEGATED,BackupPC) 
+0x1ed       
+0x1ee       
+0x1ef       
+0x1f0       
+0x1f1       
+0x1f2  ;  
+0x1f3  ;  
+0x1f4  ;  
+0x1f5  ;  
+0x1f6  ;  
+0x1f7  ;  
+0x1f8  ;  
+0x1f9  ;  
+0x1fa  ;  
+0x1fb   ;   
+0x1fc   ;   
+0x1fd  ;  
+0x1fe Unreachable ; NEXT(Unreachable) 
+0x1ff UNUSABLE ;  
+
+// ENDPREPROCESS prombits.h
+
+
+
+ 
+ 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="GB2312" ?>
+<XmlRoot>
+    <temp path=".\temp" />
+    <server addr="10.99.106.31" port="22" username="root" password="lenovolim" >
+      <port type="0" local="57" remote="3306" /> <!-- 在本地监听local,连接远端remote -->
+      <port type="1" local="3306" remote="57" /> <!-- 在远端监听remote,连接本地local -->
+    </server>
+    <server addr="10.99.106.56" port="22" username="root" password="lenovolim" />
+    <server addr="10.99.236.58" port="22" username="root" password="lenovo" />
+    <project name="tests" remotePath="/home/zht/01.trunk/src/lim_unit_test/vsprojects" serverId="1" />
+    <project name="libglog_static" remotePath="/home/zht/01.trunk/thirdparty/sources/glog-0.3.2/vsprojects/libglog_static" serverId="1" />
+    <project name="limlog" remotePath="/home/zht/01.trunk/src/libs/log" serverId="1" />
+</XmlRoot>

@@ -1,0 +1,49 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb2312">
+<TITLE>对象 FileTrans 的 ATL 7.0 测试页</TITLE>
+</HEAD>
+<BODY>
+
+    <div align="center">
+	<script type="text/javascript">
+   		function Fun1()
+    		{		
+        		var a=FileTrans.LoadFileTrans(	document.getElementById('TextBox_input1').value,
+							document.getElementById('TextBox_input2').value,
+							document.getElementById('TextBox_input3').value);
+    		}
+		function Fun2()
+    		{		
+        		var a=FileTrans.SetFileTrans(	document.getElementById('TextBox_input1').value,
+							document.getElementById('TextBox_input2').value,
+							document.getElementById('TextBox_input3').value);
+    		}
+		function Fun3()
+    		{		
+        		var a=FileTrans.LoadGif(	document.getElementById('TextBox_input1').value);
+    		}
+	</script>
+    
+	<object id="FileTrans" name="FileTrans" 
+		width="500px" height="500px"
+		classid="clsid:1D6E8FF5-C00D-4A14-A767-80168C019ADA" VIEWASTEXT>
+	</object>
+        
+    </div>
+    
+    <div>
+	<input id="TextBox_input1" name="TextBox_input1" type="text" value="D:\TestSet\TestSet\Debug\res\image\1002.gif" />
+	<input id="TextBox_input2" name="TextBox_input2" type="text" value="123345" />
+	<input id="TextBox_input3" name="TextBox_input3" type="text" value="D:\TestSet\TestSet\Debug\res\image\Contact0.ico" />
+	<input id="TextBox_input4" name="TextBox_input4" type="text" value="" />
+    <div>
+    </div>
+        <input id="button_test1"  type="button" onclick="Fun1();" value="LoadFileTrans" />
+	<input id="button_test2"  type="button" onclick="Fun2();" value="SetFileTrans" />
+	<input id="button_test3"  type="button" onclick="Fun3();" value="LoadGif" />
+    </div>
+
+
+</BODY>
+</HTML>

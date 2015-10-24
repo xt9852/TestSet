@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Template|Win32">
+      <Configuration>Template</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>8.TestSet</ProjectName>
+    <ProjectGuid>{3AA65DBC-54AA-41EE-9278-6AE2A37EF4DC}</ProjectGuid>
+    <RootNamespace>TestSet</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TestSet</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Message>SubWCRev.exe  $(SolutionDir)  $(SolutionDir)TestSet\src\Common\VersionTemplate.h  $(SolutionDir)Version.h</Message>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.\;..\;.\src;.\src\08.Algorithm;..\10.thirdParty\include;..\10.thirdParty\include\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_OODEBUGC;_COMPACT;GOOGLE_GLOG_DLL_DECL=	;GLOG_NO_ABBREVIATED_SEVERITIES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4018;4244;4996</DisableSpecificWarnings>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0804</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\10.thirdparty\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib;libcmtd.lib</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Message>SubWCRev.exe  $(SolutionDir)  $(SolutionDir)TestSet\src\Common\VersionTemplate.h  $(SolutionDir)Version.h</Message>
+      <Command>SubWCRev.exe  $(SolutionDir)  $(SolutionDir)TestSet\src\Common\VersionTemplate.h  $(SolutionDir)Version.h</Command>
+    </PreBuildEvent>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>.\;.\src;..\;..\3rdParty;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_OOINFO;_COMPACT;GOOGLE_GLOG_DLL_DECL=	;GLOG_NO_ABBREVIATED_SEVERITIES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4018;4244;4996</DisableSpecificWarnings>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0804</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Dlg_Main.cpp" />
+    <ClCompile Include="src\00.Finger\Dlg_Finger.cpp" />
+    <ClCompile Include="src\00.Finger\Finger.cpp" />
+    <ClCompile Include="src\00.Finger\FingerFeature.cpp" />
+    <ClCompile Include="src\00.Finger\FingerImageProcess.cpp" />
+    <ClCompile Include="src\01.Media\my\Dlg_Media.cpp" />
+    <ClCompile Include="src\01.Media\my\H264.cpp" />
+    <ClCompile Include="src\01.Media\my\MediaLayout.cpp" />
+    <ClCompile Include="src\01.Media\my\VideoCapture.cpp" />
+    <ClCompile Include="src\01.Media\my\VideoDecode.cpp" />
+    <ClCompile Include="src\01.Media\my\VideoEncode.cpp" />
+    <ClCompile Include="src\01.Media\my\VideoPlay.cpp" />
+    <ClCompile Include="src\03.Network\Dlg_Network.cpp" />
+    <ClCompile Include="src\03.Network\mongoose\mongoose.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\03.Network\WebService\soapC.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\03.Network\WebService\soapClient.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\03.Network\WebService\stdsoap2.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\03.Network\WebService\WebServiceCtrl.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\11.Common\ComputerInfo.cpp" />
+    <ClCompile Include="src\11.Common\mdump.cpp" />
+    <ClCompile Include="src\11.Common\ProFile.cpp" />
+    <ClCompile Include="src\11.Common\StrConver.cpp" />
+    <ClCompile Include="src\11.Common\SystemTray.cpp" />
+    <ClCompile Include="src\11.Common\TestSetConfig.cpp" />
+    <ClCompile Include="src\11.Common\TimeTick.cpp" />
+    <ClCompile Include="src\02.P2P\Dlg_P2P.cpp" />
+    <ClCompile Include="src\02.P2P\P2PApplication.cpp" />
+    <ClCompile Include="src\02.P2P\P2PBase.cpp" />
+    <ClCompile Include="src\02.P2P\P2PDataInfo.cpp" />
+    <ClCompile Include="src\02.P2P\P2PEnginer.cpp" />
+    <ClCompile Include="src\02.P2P\P2PFileOperator.cpp" />
+    <ClCompile Include="src\02.P2P\P2PFileUpdateApp.cpp" />
+    <ClCompile Include="src\02.P2P\P2PIocpLayout.cpp" />
+    <ClCompile Include="src\02.P2P\P2PPeer.cpp" />
+    <ClCompile Include="src\02.P2P\P2PPeerLayout.cpp" />
+    <ClCompile Include="src\02.P2P\P2PPeerList.cpp" />
+    <ClCompile Include="src\02.P2P\P2PProcessRecvMsg.cpp" />
+    <ClCompile Include="src\02.P2P\P2PProcessSendMsg.cpp" />
+    <ClCompile Include="src\02.P2P\P2PQueueLayout.cpp" />
+    <ClCompile Include="src\02.P2P\P2PTask.cpp" />
+    <ClCompile Include="src\02.P2P\P2PTaskLayout.cpp" />
+    <ClCompile Include="src\03.Network\IOCP\BuffPool.cpp" />
+    <ClCompile Include="src\03.Network\IOCP\ClientPool.cpp" />
+    <ClCompile Include="src\03.Network\IOCP\IOCP.cpp" />
+    <ClCompile Include="src\03.Network\IOCP\OperatePool.cpp" />
+    <ClCompile Include="src\03.Network\IOCP\PackQueue.cpp" />
+    <ClCompile Include="src\03.Network\IOCP\Pool.cpp" />
+    <ClCompile Include="src\03.Network\IOCP\PrePack.cpp" />
+    <ClCompile Include="src\03.Network\IOCP\Srv.cpp" />
+    <ClCompile Include="src\03.Network\Pinger.cpp" />
+    <ClCompile Include="src\05.CPU\CPU.cpp" />
+    <ClCompile Include="src\05.CPU\Dlg_CPU.cpp" />
+    <ClCompile Include="src\05.CPU\Memory.cpp" />
+    <ClCompile Include="src\05.CPU\MicroCode.cpp" />
+    <ClCompile Include="src\05.CPU\ShowData.cpp" />
+    <ClCompile Include="src\06.EMule\Dlg\Dlg_Emule.cpp" />
+    <ClCompile Include="src\06.EMule\Dlg\Dlg_Emule_KAD.cpp" />
+    <ClCompile Include="src\06.EMule\Dlg\Dlg_Emule_Search.cpp" />
+    <ClCompile Include="src\07.Database\ADODB.cpp" />
+    <ClCompile Include="src\07.Database\CppSQLite3.cpp" />
+    <ClCompile Include="src\07.Database\Dlg_DB.cpp" />
+    <ClCompile Include="src\07.Database\MySQLDB.cpp" />
+    <ClCompile Include="src\08.Algorithm\base\MD5.cpp" />
+    <ClCompile Include="src\08.Algorithm\base\XTXml.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TestSet.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dlg_Main.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="src\00.Finger\Dlg_Finger.h" />
+    <ClInclude Include="src\00.Finger\Finger.h" />
+    <ClInclude Include="src\00.Finger\FingerFeature.h" />
+    <ClInclude Include="src\00.Finger\FingerImageProcess.h" />
+    <ClInclude Include="src\01.Media\my\Dlg_Media.h" />
+    <ClInclude Include="src\01.Media\my\H264.h" />
+    <ClInclude Include="src\01.Media\my\MediaLayout.h" />
+    <ClInclude Include="src\01.Media\my\VideoCapture.h" />
+    <ClInclude Include="src\01.Media\my\VideoDecode.h" />
+    <ClInclude Include="src\01.Media\my\VideoEncode.h" />
+    <ClInclude Include="src\01.Media\my\VideoPlay.h" />
+    <ClInclude Include="src\03.Network\Dlg_Network.h" />
+    <ClInclude Include="src\03.Network\mongoose\mongoose.h" />
+    <ClInclude Include="src\03.Network\WebService\soapH.h" />
+    <ClInclude Include="src\03.Network\WebService\soapStub.h" />
+    <ClInclude Include="src\03.Network\WebService\stdsoap2.h" />
+    <ClInclude Include="src\03.Network\WebService\WebServiceCtrl.h" />
+    <ClInclude Include="src\11.Common\ComputerInfo.h" />
+    <ClInclude Include="src\11.Common\mdump.h" />
+    <ClInclude Include="src\11.Common\ProFile.h" />
+    <ClInclude Include="src\11.Common\StrConver.h" />
+    <ClInclude Include="src\11.Common\SystemTray.h" />
+    <ClInclude Include="src\11.Common\TestSetConfig.h" />
+    <ClInclude Include="src\11.Common\TimeTick.h" />
+    <ClInclude Include="src\02.P2P\Dlg_P2P.h" />
+    <ClInclude Include="src\02.P2P\P2PApplication.h" />
+    <ClInclude Include="src\02.P2P\P2PBase.h" />
+    <ClInclude Include="src\02.P2P\P2PDataInfo.h" />
+    <ClInclude Include="src\02.P2P\P2PEnginer.h" />
+    <ClInclude Include="src\02.P2P\P2PFileOperator.h" />
+    <ClInclude Include="src\02.P2P\P2PFileUpdateApp.h" />
+    <ClInclude Include="src\02.P2P\P2PIocpLayout.h" />
+    <ClInclude Include="src\02.P2P\P2PPeer.h" />
+    <ClInclude Include="src\02.P2P\P2PPeerLayout.h" />
+    <ClInclude Include="src\02.P2P\P2PPeerList.h" />
+    <ClInclude Include="src\02.P2P\P2PProcessRecvMsg.h" />
+    <ClInclude Include="src\02.P2P\P2PProcessSendMsg.h" />
+    <ClInclude Include="src\02.P2P\P2PProtocol.h" />
+    <ClInclude Include="src\02.P2P\P2PQueueLayout.h" />
+    <ClInclude Include="src\02.P2P\P2PTask.h" />
+    <ClInclude Include="src\02.P2P\P2PTaskLayout.h" />
+    <ClInclude Include="src\03.Network\IOCP\BuffPool.h" />
+    <ClInclude Include="src\03.Network\IOCP\ClientPool.h" />
+    <ClInclude Include="src\03.Network\IOCP\IOCP.h" />
+    <ClInclude Include="src\03.Network\IOCP\OperatePool.h" />
+    <ClInclude Include="src\03.Network\IOCP\PackQueue.h" />
+    <ClInclude Include="src\03.Network\IOCP\Pool.h" />
+    <ClInclude Include="src\03.Network\IOCP\PrePack.h" />
+    <ClInclude Include="src\03.Network\IOCP\Srv.h" />
+    <ClInclude Include="src\03.Network\Pinger.h" />
+    <ClInclude Include="src\05.CPU\CPU.h" />
+    <ClInclude Include="src\05.CPU\Dlg_CPU.h" />
+    <ClInclude Include="src\05.CPU\Memory.h" />
+    <ClInclude Include="src\05.CPU\MicroCode.h" />
+    <ClInclude Include="src\05.CPU\ShowData.h" />
+    <ClInclude Include="src\06.EMule\Dlg\Dlg_Emule.h" />
+    <ClInclude Include="src\06.EMule\Dlg\Dlg_Emule_KAD.h" />
+    <ClInclude Include="src\06.EMule\Dlg\Dlg_Emule_Search.h" />
+    <ClInclude Include="src\07.Database\ADODB.h" />
+    <ClInclude Include="src\07.Database\CppSQLite3.h" />
+    <ClInclude Include="src\07.Database\Dlg_DB.h" />
+    <ClInclude Include="src\07.Database\MySQLDB.h" />
+    <ClInclude Include="src\08.Algorithm\base\MD5.h" />
+    <ClInclude Include="src\08.Algorithm\base\XTXml.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TestSet.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\11.Environment\res\eMule\WideCharLowerMap.bin" />
+    <None Include="..\11.Environment\res\image\Contact0.ico" />
+    <None Include="..\11.Environment\res\image\Contact1.ico" />
+    <None Include="..\11.Environment\res\image\Contact2.ico" />
+    <None Include="..\11.Environment\res\image\Contact3.ico" />
+    <None Include="..\11.Environment\res\image\Contact4.ico" />
+    <None Include="..\11.Environment\res\image\dlg_MessageBox.png" />
+    <None Include="..\11.Environment\res\image\ListViewSortDown.bmp" />
+    <None Include="..\11.Environment\res\image\ListViewSortDown2x.bmp" />
+    <None Include="..\11.Environment\res\image\ListViewSortUp.bmp" />
+    <None Include="..\11.Environment\res\image\ListViewSortUp2x.bmp" />
+    <None Include="..\11.Environment\res\image\TaskbarNotifier.bmp" />
+    <None Include="..\11.Environment\res\image\toolbar.bmp" />
+    <None Include="..\11.Environment\res\image\大厅窗体_blue.png" />
+    <None Include="..\11.Environment\res\image\大厅窗体_red.png" />
+    <None Include="..\11.Environment\res\image\游戏窗体.png" />
+    <None Include="..\11.Environment\res\image\登陆窗体.png" />
+    <None Include="..\Environment\res\image\TestSet.ico" />
+    <None Include="res\TestSet.rc2" />
+    <None Include="..\Environment\res\image\Unonline.ico" />
+    <CustomBuild Include="src\08.Algorithm\base\MD5_asm.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ml.exe /c /Cx /coff /Fo $(IntDir)%(Filename).obj "%(FullPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ml.exe /c /Cx /coff /Fo $(IntDir)%(Filename).obj "%(FullPath)"</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename).obj</Outputs>
+    </CustomBuild>
+    <None Include="src\03.Network\WebService\WeatherWebServiceSoap.nsmap" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TestSet.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="TestSet.v8.vcxproj">
+      <Project>{3aa65dbc-54aa-41ee-9278-6ae2a37ef4dc}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="TestSet.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

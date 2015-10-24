@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="GB2312"?>
+<XmlRoot>
+
+  <Update Count="2" ServerURL="http://192.168.1.100:81">
+    <File name="test.xml" />
+    <File name="version.txt" />
+  </Update>
+
+  <Set CloseToMin="0" />
+
+  <Log GLOG_INFO="info_" GLOG_ERROR="error_" GLOG_WARNING="warning_" />
+  
+</XmlRoot>

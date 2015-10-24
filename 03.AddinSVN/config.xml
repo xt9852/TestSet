@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="GB2312" ?>
+<XmlRoot>
+  <!-- is_check是事检测BOM, need_bom是否需要BOM, type只检测此类型的文件-->
+  <check_bom is_check="1" need_bom="0" type=".h|.c|.cpp">
+    <!-- 当is_check为1时,表示不需要检测的文件 -->
+    <!-- 当is_check为0时,表示需要检测的文件 -->
+    <exclude name="odbc.c" />
+  </check_bom>
+
+  <commit>
+    <!-- 不需要提交的文件 -->
+    <exclude name="odbc.c" />
+    <exclude name="lim_mq_queue.h" />
+    <exclude name="lim_statistics_info.h" />
+    <exclude name="lim_statistics_info.c" />
+    <exclude name="garbagecollector.h" />
+    <exclude name="lim_service.h" />
+    <exclude name="lim_serverutil.c" />
+    <exclude name="utility.c" />
+    <exclude name="mem_chunk.h" />
+    <exclude name="mem_chunk.c" />
+    <exclude name="check_event.c" />
+    <exclude name="TestSet.vs2010.sln" />
+  </commit>
+</XmlRoot>

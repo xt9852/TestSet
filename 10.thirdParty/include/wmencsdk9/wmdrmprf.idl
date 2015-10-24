@@ -1,0 +1,220 @@
+//*@@@+++@@@@******************************************************************
+//
+// Microsoft Windows Media
+// Copyright (C) Microsoft Corporation. All rights reserved.
+//
+//*@@@---@@@@******************************************************************
+//
+// WMEncod.idl : IDL source for encengine.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (WMEncode.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+#include "..\include\wmsencid.h"
+
+interface IWMDRMContentAuthor;
+interface IWMDRMProfile;
+interface IWMDRMAttributes;
+
+cpp_quote( "EXTERN_GUID( IID_IWMDRMContentAuthor,       0x632B609D, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMDRMProfileCollection,   0x097A1BE3, 0x4692, 0x4ADD, 0xBF, 0x3F, 0x1A, 0xDB, 0xC3, 0x70, 0xF6, 0x62);" )
+cpp_quote( "EXTERN_GUID( IID_IWMDRMProfile,				0x632B609E, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMDRMAttributes,          0x632B60A0, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+
+
+	[
+		object,
+		uuid(097A1BE3-4692-4add-BF3F-1ADBC370F662),
+		dual,
+		helpstring("DRM profile collection."),
+		pointer_default(unique)
+	]
+	interface IWMDRMProfileCollection : IDispatch
+	{
+		[propget, id(DISPID_COLLECTION_LENGTH), helpstring("Retrieves the number of DRM profiles in the collection.")] 
+		HRESULT length([out, retval] long *plCount);
+
+		[propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of DRM profiles in the collection.")] 
+		HRESULT Count([out, retval] long *plCount);
+
+		[propget, restricted, id(DISPID_NEWENUM), helpstring("Enumerates the DRM profile collection.")] 
+		HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+
+		//
+		// var can be either index, or DRM profile id.  
+		//
+		[id(DISPID_VALUE), helpstring("Retrieves a specific DRM profiles from the collection.")] 
+		HRESULT Item([in] VARIANT var, [out, retval] IWMDRMProfile** ppDRMProfile);
+	};
+
+
+	[
+        object,
+        uuid(632B609D-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Specifies and retrieves DRM content author specifications."),
+        pointer_default(unique)
+    ]
+    interface IWMDRMContentAuthor : IDispatch
+    {
+		//
+		// bstrLAINFO: If input bstrLAINFO is empty, then the LAINFO in DRM profile will be used to 
+		// create DRM content.  Otherwise, bstrLAINFO will be used to create DRM content.
+		// 
+		// pbstrKID: If the input pbstrKID is empty, then encoder will generate a KID and return its value.
+		// If the input pbstrKID is not empty, then the value passed in will be used as KID.
+		// 
+        [id(DISPID_DRMCONTENTAUTHOR_SETSESSIONDRMPROFILE), helpstring("Set Encoder session DRM profile.")] 
+        HRESULT SetSessionDRMProfile([in] BSTR bstrProfileID, [in,out] VARIANT *pvartrKID);
+
+        [id(DISPID_DRMCONTENTAUTHOR_GETSESSIONDRMPROFILE), helpstring("Get Encoder session DRM profile.")]
+        HRESULT GetSessionDRMProfile([out] VARIANT* pvar/*IWMDRMProfile **ppDRMProf*/, [out,retval] BSTR* pbstrKID);
+
+        [propget, id(DISPID_DRMCONTENTAUTHOR_CID), helpstring("Retrieves ContentID.")] 
+        HRESULT ContentID( [out, retval] BSTR* pbstrCID);
+
+        [propput, id(DISPID_DRMCONTENTAUTHOR_CID), helpstring("Sets ContentID.")] 
+        HRESULT ContentID( [in] BSTR bstrCID);
+
+		//
+		// Use this interface to specify encoder session DRM attributes.
+		//
+        [propget, id(DISPID_DRMCONTENTAUTHOR_ATTRIBUTES), helpstring("Retrieves custom attribute options.")] 
+        HRESULT Attributes( [out, retval] IWMDRMAttributes **ppAttributes );
+
+        [id(DISPID_DRMCONTENTAUTHOR_CREATEDRMPROFILE), helpstring("Create a DRM profile.")] 
+        HRESULT CreateDRMProfile([in] BSTR bstrProviderURL, 
+                                 [in] BSTR bstrSignaturePrivKey, 
+                                 [in] BSTR bstrSignatureCrt, 
+                                 [in] BSTR bstrSignatureLicSrvCert, 
+                                 [in] BSTR bstrSignatureRootCert, 
+                                 [out] VARIANT* pbstrProfileID, 
+                                 [out] VARIANT* pvarSeed, 
+                                 [out,retval] BSTR* pbstrPubKey);
+        
+        [id(DISPID_DRMCONTENTAUTHOR_GETDRMPROFILE), helpstring("Get a DRM profile with profile id.")] 
+        HRESULT GetDRMProfile([in] BSTR bstrProfileID, [out,retval] IWMDRMProfile** ppDRMProfile);
+
+        [id(DISPID_DRMCONTENTAUTHOR_REMOVEDRMPROFILE), helpstring("Remove a DRM profile.")] 
+        HRESULT RemoveDRMProfile([in] BSTR bstrProfileID);
+
+        // 
+        // The password can't exceed 8 characters long.
+        //
+        [id(DISPID_DRMCONTENTAUTHOR_IMPORTDRMPROFILE), helpstring("Import a DRM profile.")] 
+        HRESULT ImportDRMProfile([in] BSTR bstrPassword, [in] BSTR bstrFile );
+
+        // 
+        // The password can't exceed 8 characters long.
+        //
+        [id(DISPID_DRMCONTENTAUTHOR_EXPORTDRMPROFILE), helpstring("Export a DRM profile.")] 
+        HRESULT ExportDRMProfile([in] BSTR bstrProfileID, [in] BSTR bstrPassword, [in] BSTR bstrFile );
+
+        // 
+        // Generate KeyID 
+        //
+        [id(DISPID_DRMCONTENTAUTHOR_GENERATEKID), helpstring("Generate a KeyID.")] 
+        HRESULT GenerateKeyID([out, retval] BSTR* pbstrKID);
+
+        // 
+        // Generate ContentID 
+        //
+        [id(DISPID_DRMCONTENTAUTHOR_GENERATECID), helpstring("Generate a ContentID.")] 
+        HRESULT GenerateContentID([out, retval] BSTR* pbstrCID);
+
+        [propget, id(DISPID_DRMCONTENTAUTHOR_DRMPROFILES), helpstring("Get DRMProfile collection.")] 
+	    HRESULT DRMProfileCollection( [out, retval] IWMDRMProfileCollection** ppUnkDRMProfiles );
+    };
+
+
+    [
+        object,
+        uuid(632B609E-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Specifies and retrieves DRM profile specifications."),
+        pointer_default(unique)
+    ]
+    interface IWMDRMProfile : IDispatch
+    {
+        [propget, id(DISPID_DRMPROFILE_ID), helpstring("Retrieves DRM profile ID.")] 
+        HRESULT ID([out, retval] BSTR *pbstrProfileID);
+        
+        [propget, id(DISPID_DRMPROFILE_PROVIDERURL), helpstring("Retrieves DRM profile Provider URL.")] 
+        HRESULT ProviderURL([out, retval] BSTR *pbstrProviderURL);
+        
+        [propget, id(DISPID_DRMPROFILE_NAME), helpstring("Retrieves DRM profile Friendly Name.")] 
+        HRESULT Name([out, retval] BSTR *pbstrProfileName);
+
+        [propput, id(DISPID_DRMPROFILE_NAME), helpstring("Set DRM profile Friendly Name.")] 
+        HRESULT Name([in] BSTR bstrProfileName);
+
+        [propget, id(DISPID_DRMPROFILE_DESCRIPTION), helpstring("Retrieves DRM profile Description.")] 
+        HRESULT Description([out, retval] BSTR *pbstrProfileDesc);
+
+        [propput, id(DISPID_DRMPROFILE_DESCRIPTION), helpstring("Set DRM profile Description.")] 
+        HRESULT Description([in] BSTR bstrProfileDesc);
+
+        [propget, id(DISPID_DRMPROFILE_LAINFO), helpstring("Retrieves DRM profile LAINFO.")] 
+        HRESULT LicenseAcquisitionURL([out,retval] BSTR *pbstrLAINFO);
+
+        [propput, id(DISPID_DRMPROFILE_LAINFO), helpstring("Set DRM profile LAINFO.")] 
+        HRESULT LicenseAcquisitionURL([in] BSTR bstrLAINFO);
+
+        [propget, id(DISPID_DRMPROFILE_V1LAINFO), helpstring("Retrieves DRM profile LAINFO.")] 
+        HRESULT V1LicenseAcquisitionURL([out,retval] BSTR *pbstrLAINFO);
+
+        [propput, id(DISPID_DRMPROFILE_V1LAINFO), helpstring("Set DRM profile LAINFO.")] 
+        HRESULT V1LicenseAcquisitionURL([in] BSTR bstrLAINFO);
+
+		//
+		// Use this interface to specify generic DRM attributes.
+		//
+        [propget, id(DISPID_DRMPROFILE_ATTRIBUTES), helpstring("Retrieves custom attribute options.")] 
+        HRESULT Attributes( [out, retval] IWMDRMAttributes **ppAttributes );
+
+		// Save updated DRM profile settings to system.
+        [id(DISPID_DRMPROFILE_UPDATE), helpstring("Update a DRM profile.")] 
+        HRESULT Update();
+
+		// Save updated DRM profile settings to system.
+        [propget, id(DISPID_DRMPROFILE_CONTENTREVOCATION), helpstring("Get content revocation info for this profile.")] 
+        HRESULT ContentRevocation( [out, retval] BSTR* pbstrContentRevocation );
+    };
+
+
+    [
+        object,
+        uuid(632B60A0-BBC6-11D2-A329-006097C4E476),
+        dual,
+        helpstring("Manages a collection of name-value pairs that provide custom information about DRM."),
+        pointer_default(unique)
+    ]
+    interface IWMDRMAttributes : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("Retrieves the number of attributes in the collection.")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [id(DISPID_VALUE), helpstring("Retrieves a specific attrribute from the collection.")] 
+        HRESULT Item([in] long Index, [out] VARIANT* pvarName, [out,retval] VARIANT *pVarValue );
+
+        [propget, id(DISPID_DRMATTRIBUTES_NAME), helpstring("Retrieves the namne of attributes in the collection by index.")] 
+        HRESULT Name([in] long lIndex, [out,retval] BSTR* pbstrName );
+
+        [propget, id(DISPID_DRMATTRIBUTES_VALUE), helpstring("Retrieves the value of attributes in the collection by index or name.")] 
+        HRESULT Value([in] VARIANT var, [out,retval] VARIANT* pvarValue );
+
+        [id(DISPID_DRMATTRIBUTES_ADD), helpstring("Adds an attribute to the collection.")] 
+        HRESULT Add([in] BSTR bstrName, [in] VARIANT varValue );
+
+        [id(DISPID_DRMATTRIBUTES_REMOVE), helpstring("Removes a specific attribute from the collection.")] 
+        HRESULT Remove([in] VARIANT var);
+
+        [id(DISPID_DRMATTRIBUTES_REMOVEALL), helpstring("Removes all attributes from the collection.")] 
+        HRESULT RemoveAll();
+    };
+
+

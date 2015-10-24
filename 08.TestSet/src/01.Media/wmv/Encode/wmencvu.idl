@@ -1,0 +1,50 @@
+import "oaidl.idl";
+
+cpp_quote( "EXTERN_GUID( IID_IWMEncDataView,            0xbb406aa0, 0x2b2b,0x11d3,0xb3,0x6b,0x00,0xc0,0x4f,0x61,0x08,0xff );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncPreview,            0xC3043B13, 0xE649, 0x436A, 0x9C, 0xE7, 0x8D, 0xA8, 0xCB, 0x0B, 0xF7, 0xC8 );" )
+
+//
+// If wmsdkidl header is not used, we will define WM_MEDIA_TYPE here.
+//
+cpp_quote( "#ifndef __wmsdkidl_h__" )
+
+typedef struct _WMMediaType
+{
+    GUID majortype;
+    GUID subtype;
+    BOOL bFixedSizeSamples;
+    BOOL bTemporalCompression;
+    ULONG lSampleSize;
+    GUID formattype;
+    IUnknown *pUnk;
+    ULONG cbFormat;
+    [size_is(cbFormat)] BYTE *pbFormat;
+} WM_MEDIA_TYPE;
+
+cpp_quote( "#endif" )
+
+
+///////////////////////////////////////////////////////////////////////////////
+[
+    object,
+    uuid( BB406AA0-2B2B-11d3-B36B-00C04F6108FF ),
+    helpstring( "IWMEncDataView Interface"),
+    pointer_default(unique)
+]
+interface IWMEncDataView : IUnknown
+{
+    HRESULT SetViewSetting( [in] DWORD dwStreamCookie, [in] DWORD dwSize, [in, size_is(dwSize)] BYTE* pData );
+    HRESULT GetViewSetting([in] DWORD dwStreamCookie, [in] DWORD* pdwSize, [in, size_is(*pdwSize)] BYTE* pData );
+
+    HRESULT AddStream( [in] DWORD dwStreamCookie, [in] WM_MEDIA_TYPE *pType );
+    HRESULT RemoveStream( [in] DWORD dwStreamCookie );
+    HRESULT SetMediaFormat( [in] DWORD dwStreamCookie, [in] WM_MEDIA_TYPE *pType );
+    HRESULT GetMediaFormat( [in] DWORD dwStreamCookie, [out] WM_MEDIA_TYPE **ppType );
+    HRESULT Start( [in] DWORD dwStreamCookie );
+    HRESULT Stop( [in] DWORD dwStreamCookie );
+    HRESULT StartAll();
+    HRESULT StopAll();
+};
+
+
+

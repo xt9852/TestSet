@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="gb2312"?>
+<XmlRoot>
+  <Script name="script1" desc="第一个脚本" >
+
+    <!-- func   表示调用的函数 -->
+    <!-- dll    表示调用的DLL -->
+    <!-- return 表示调用的返回值,默认为int型 -->
+    
+    <!-- input 表示参数是否为输入参数 -->
+    <!-- name  表示参数名称,当为输入参数时可为空 -->
+    <!-- type  表示参数类型 -->
+    <!-- size  当参数为字符串型表示参数缓冲区长 -->
+    <!-- value 表示参数初使值 -->
+
+    <Step func="GetTickCount" dll="kernel32.dll" url="" return="GetTickCount_Return" />
+
+    <Step func="GetActiveWindow" dll="User32.dll" url="" return="GetActiveWindow_Return" />
+
+    <Step func="GetWindowTextW" dll="User32.dll" url="" type="PARAM_INT" return="GetWindowTextW_Return">
+      <Param input="true"  name="" type="PARAM_INT" value="##GetActiveWindow_Return##"/>
+      <Param input="false" name="GetWindowTextW_Text" type="PARAM_WCHAR" size="260" value=""/>
+      <Param input="true"  name="" type="PARAM_INT" value="260"/>
+    </Step>
+
+    <Step func="MessageBoxW" dll="User32.dll" url="" type="PARAM_INT" return="MessageBoxW_Return">
+      <Param input="true" name="MessageBoxW_Hwnd"    type="PARAM_INT" value="0"/>
+      <Param input="true" name="MessageBoxW_Content" type="PARAM_WCHAR"    size="260" value="GetTickCount:##GetTickCount_Return##\nGetActiveWindow:##GetActiveWindow_Return##\nWindowTextLen:##GetWindowTextW_Return##\nWindowText:##GetWindowTextW_Text##"/>
+      <Param input="true" name="MessageBoxW_Title"   type="PARAM_WCHAR"    size="260" value="脚本标题"/>
+      <Param input="true" name="MessageBoxW_Option"  type="PARAM_INT"      value="0"/>
+    </Step>
+
+  </Script>
+</XmlRoot>

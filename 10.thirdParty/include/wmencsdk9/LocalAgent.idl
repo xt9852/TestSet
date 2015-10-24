@@ -1,0 +1,87 @@
+//*@@@+++@@@@******************************************************************
+//
+// Microsoft Windows Media
+// Copyright (C) Microsoft Corporation. All rights reserved.
+//
+//*@@@---@@@@******************************************************************
+//
+// LocalAgent.idl : IDL source for LocalAgent.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (LocalAgent.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+#define DISPID_COLLECTION_LENGTH        9
+#define DISPID_COLLECTION_COUNT         10
+#define DISPID_COLLECTION_ADD           11
+#define DISPID_COLLECTION_REMOVE        12
+
+cpp_quote( "EXTERN_GUID( CLSID_WMEncoderNamesCollection,    0xC728738A, 0xC81C, 0x4CDB, 0xBD, 0x92, 0x6B, 0x7A, 0xBF, 0x4C, 0xF3, 0xF0 );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncoderAgent,               0x00BB9AE0, 0xA7B8, 0x4966, 0x93, 0x7D, 0x6A, 0xED, 0x09, 0x2E, 0x7E, 0x4F );" )
+cpp_quote( "EXTERN_GUID( CLSID_WMEncoderAgent,              0xB6913798, 0x10BF, 0x430C, 0xA2, 0x6F, 0xE6, 0xDE, 0xE2, 0x2E, 0xB9, 0xBA );" )
+cpp_quote( "EXTERN_GUID( LIBID_WMEncAgtLib,                 0xD9655475, 0x53BD, 0x431C, 0xB2, 0x2F, 0xCC, 0x98, 0xBC, 0xE3, 0x30, 0x82 );" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncoderNamesCollection,     0x8EE540F8, 0xDEF6, 0x4D3E, 0xA2, 0xC3, 0x22, 0x67, 0xB1, 0x0B, 0x7F, 0x54 );" )
+
+    [
+        object,
+        uuid(8EE540F8-DEF6-4D3E-A2C3-2267B10B7F54),
+        dual,
+        helpstring("IEncoderNamesCollection Interface"),
+        pointer_default(unique)
+    ]
+    interface IWMEncoderNamesCollection : IDispatch
+    {
+        [propget, id(DISPID_COLLECTION_LENGTH), helpstring("property length")] 
+        HRESULT length([out, retval] long *plCount);
+
+        [propget, id(DISPID_COLLECTION_COUNT), helpstring("property Count")] 
+        HRESULT Count([out, retval] long *plCount);
+
+        [propget, restricted, id(DISPID_NEWENUM), helpstring("property _NewEnum")] 
+        HRESULT _NewEnum([out, retval] LPUNKNOWN *pIUnknown);
+
+        [id(DISPID_VALUE), helpstring("method Item")] 
+        HRESULT Item([in] long iIndex, [out, retval] BSTR* pbstrValue );
+    };
+
+    [
+        object,
+        uuid(00BB9AE0-A7B8-4966-937D-6AED092E7E4F),
+        dual,
+        helpstring("IWMEncoderAgent Interface"),
+        pointer_default(unique)
+    ]
+    interface IWMEncoderAgent : IDispatch
+    {
+        [id(1), helpstring("method CreateEncoder")] HRESULT CreateEncoder([in] BSTR bstrEncoderName, [in, optional] VARIANT varEncoderProgId, 
+                                                                          [out, retval] IDispatch** ppDispApp);
+        [id(2), helpstring("method GetEncoder")] HRESULT GetEncoder([in] BSTR name, [out, retval] IDispatch** ppDispEncoder);
+        [propget, id(3), helpstring("property EncoderNamesCollection")] HRESULT EncoderNamesCollection([out, retval] IDispatch** pVal);
+        [id(4), helpstring("method Register")] HRESULT Register([in] BSTR bstrName, [in] IDispatch* pUnkEncoder, [out, retval] DWORD *pdwCookie);
+        [id(5), helpstring("method UnRegister")] HRESULT UnRegister([in] DWORD dwCookie);
+    };
+
+[
+    uuid(D9655475-53BD-431C-B22F-CC98BCE33082),
+    version(1.0),
+    helpstring("Windows Media Encoder Agent")
+]
+library WMEncAgtLib
+{
+    importlib("stdole32.tlb");
+    importlib("stdole2.tlb");
+
+    interface IWMEncoderNamesCollection;
+
+    [
+        uuid(B6913798-10BF-430C-A26F-E6DEE22EB9BA),
+        helpstring("WMEncoderAgent Class")
+    ]
+    coclass WMEncoderAgent
+    {
+        [default] interface IWMEncoderAgent;
+    };
+};

@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="gb2312" ?> 
+
+<!--
+项目属性
+
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="HR1"
+	ProjectGUID="{151F3143-DDE4-475E-9083-AC8F6B4AF7DF}"
+	RootNamespace="KJGTicketDeCode"
+	Keyword="MFCProj"
+	TargetFrameworkVersion="131072"
+	>
+
+-->
+
+<VisualStudioProject>
+	<Attribute Name="项目类型" XmlName="ProjectType" XmlValue="Visual C++" Select="" Explain="项目类型(Visual C++)" />
+	<Attribute Name="项目版本" XmlName="Version" XmlValue="9.0" Select="" Explain="项目版本(7.10|8.0|9.0)" />
+	<Attribute Name="项目名称" XmlName="Name" XmlValue=" " Select="" Explain="项目名称" />
+	<Attribute Name="项目GUID" XmlName="ProjectGUID" XmlValue=" " Select="" Explain="项目GUID" />
+	<Attribute Name="命名空间" XmlName="RootNamespace" XmlValue=" " Select="" Explain="命名空间" />
+	<Attribute Name="关键字"   XmlName="Keyword" XmlValue="MFCProj" Select="" Explain="关键字(MFCProj|AtlProj|Win32Proj)" />
+	<Attribute Name="框架版本" XmlName="TargetFrameworkVersion" XmlValue=" " Select="" Explain="框架版本" />
+	<Attribute Name="引用路径" XmlName="AssemblyReferenceSearchPaths" XmlValue=" " Select="" Explain="引用路径" />
+
+	<!--
+	设备平台
+
+	<Platforms>
+		<Platform
+			Name="Windows Mobile 6 Professional SDK (ARMV4I)"
+		/>
+		<Platform
+			Name="gege2440 (ARMV4I)"
+		/>
+	</Platforms>
+
+	-->
+
+	<NameSpace>
+		<Attribute XmlName="Name" XmlValue="Win32" /><!-- Windows Mobile 6 Professional SDK (ARMV4I)|gege2440 (ARMV4I) -->
+		<Attribute XmlName="Name" XmlValue="Debug" /><!-- Debug|Release -->
+		
+		<!-- 最后配置名有4个
+		     Debug|Windows Mobile 6 Professional SDK (ARMV4I)
+		     Debug|gege2440 (ARMV4I)
+		     Release|Windows Mobile 6 Professional SDK (ARMV4I)
+		     Release|gege2440 (ARMV4I)
+		-->
+	</NameSpace>
+
+	<!--
+	工具文件
+
+	<ToolFiles>
+	</ToolFiles>
+
+	-->
+
+	<ToolFiles>
+	</ToolFiles>
+
+	<!--
+	配置属性
+
+	<Configurations>
+		<Configuration
+			Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfMFC="1"
+			CharacterSet="1"
+			>
+
+	-->
+
+	<Configurations>
+		<Configuration>
+			<Attribute Name="输出目录" XmlName="OutputDirectory" XmlValue="$(SolutionDir)$(ConfigurationName)" Select="" Explain="指定输出文件目录的相对路径；可以包含环境变量。" />
+			<Attribute Name="中间目录" XmlName="IntermediateDirectory" XmlValue="$(ConfigurationName)" Select="" Explain="指定中间文件目录的相对路径；可以包含环境变量。" />
+			<Attribute Name="清除时要删除的扩展名" XmlName="DeleteExtensionsOnClean"  XmlValue="*.obj;*.ilk;*.tlb;*.tli;*.tlh;*.tmp;*.rsp;*.pgc;*.pgd;$(TargetPath);" Select="" Explain="分号分隔的通配符规范，指定在清除或重新生成时要删除中间目录中的哪些文件。" />
+			<Attribute Name="生成日志文件" XmlName="BuildLogFile" XmlValue="$(ConfigurationName)\BuildLog.htm" Select="" Explain="指定启用生成记录时写入的生成日志文件。" />
+			<Attribute Name="配置类型" XmlName="ConfigurationType" XmlValue="1" Select="生成文件|应用程序(.exe)|动态库(.dll)|静态库(.lib)|实用工具" Explain="指定该配置生成的输出类型。" />
+			<Attribute Name="MFC的使用" XmlName="UseOfMFC" XmlValue="1" Select="使用标准Windows库|在静态库中使用MFC|在共享DLL中使用MFC" Explain="指定配置使用 MFC 的方式。" />
+			<Attribute Name="ATL的使用" XmlName="UseOfATL" XmlValue="0" Select="不使用 ATL|静态链接到 ATL|动态链接到 ATL" Explain="指定配置使用 ATL 的方式。" />
+			<Attribute Name="在ATL中最小使用CRT" XmlName="ATLMinimizesCRunTimeLibraryUsage" XmlValue="true" Select="是|否" Explain="通知 ATL 静态链接到 C 运行时库以使依赖项最小化；需要设置“对 ATL 的使用”。" />
+			<Attribute Name="字符集" XmlName="CharacterSet" XmlValue="1" Select="未设置|使用 Unicode 字符集|使用多字节字符集" Explain="通知编译器使用指定的字符集；帮助解决本地化问题。" />
+			<Attribute Name="公共语言运行库支持" XmlName="ManagedExtensions" XmlValue="0"  Select="无公共语言运行库支持|公共语言运行库支持(/clr)|纯 MSIL 公共语言运行库支持(/clr:pure)|安全 MSIL 公共语言运行库支持(/clr:safe)|公共语言运行库支持，原来的语法 (/clr:oldSyntax)" Explain="指定此配置是否支持公共语言运行库。这与其他某些设置(例如运行时检查)不兼容。有关完整的冲突列表，请参见 /clr 系列 C++ 编译器开关的帮助。" />
+			<Attribute Name="全程序优化" XmlName="WholeProgramOptimization" XmlValue="0" Select="无全程序优化|使用链接时间代码生成|按配置优化 - 检测|按配置优化 - 优化|按配置优化 - 更新" Explain="指定程序将跨 .obj 边界进行优化；当打开 C/C++ 优化时效果最好。" />
+
+			<VCCLCompilerTool><!-- <Tool Name="VCCLCompilerTool" -->
+				<Common><!-- 常规 -->
+					<Attribute Name="附加包含目录" XmlName="AdditionalIncludeDirectories" XmlValue=" " Select="" Explain="指定一个或多个要添加到包含路径中的目录；当目录不止一个时，请用分号分隔。     (/I[path])" />
+					<Attribute Name="解析#using引用" XmlName="AdditionalUsingDirectories" XmlValue=" " Select="" Explain="指定一个或多个为解析传递给 #using 指令的名称而搜索的目录(用分号分隔目录名)。  (/AI[path])" />
+					<Attribute Name="调试信息格式" XmlName="DebugInformationFormat" XmlValue="0" Select="禁用|C7 兼容(/Z7)|程序数据库(/Zi)|用于“编辑并继续”的程序数据库(/ZI)" Explain="指定编译器生成的调试信息类型。还必须适当更改链接器设置以与之匹配。    (/Z7, Zd, /Zi, /ZI)" />
+					<Attribute Name="取消显示启动版权标志" XmlName="SuppressStartupBanner" XmlValue="true" Select="否|是(/nologo)" Explain="取消显示启动版权标志和版权信息。     (/nologo)" />
+					<Attribute Name="警告等级" XmlName="WarningLevel" XmlValue="1" Select="关 : 关闭所有警告(/W0)|1 级(/W1)|2 级(/W2)|3 级(/W3)|4 级(/W4)" Explain="选择编译器在检查潜在的可疑结构时的严格程度。     (/W0 - /W4)" />
+					<Attribute Name="检测64位可移植性问题" XmlName="Detect64BitPortabilityProblems" XmlValue="false" Select="否|是(/Wp64)|" Explain="通知编译器检查 64 位可移植性问题。     (/Wp64)" />
+					<Attribute Name="将警告视为错误" XmlName="WarnAsError" XmlValue="false" Select="否|是(/WX)" Explain="使编译器能够将所有警告都视为错误。     (/WX)"  />
+					<Attribute Name="使用UNICODE响应文件" XmlName="UseUnicodeResponseFiles" XmlValue="true" Select="否|是" Explain="指示项目系统在生成 C/C++ 编译器时生成 UNICODE 响应文件。当项目中的文件具有 UNICODE 路径时，将该属性设置为“是”。" />
+				</Common>
+				<Optimization><!-- 优化 -->
+					<Attribute Name="优化" XmlName="Optimization" XmlValue="2" Select="禁用(/Od)|最小化大小(/O1)|最大化速度(/O2)|完全优化(/Ox)|自定义" Explain="选择代码优化选项；选择“自定义”可使用特定的优化选项。     (/Od, /O1, /O2, /Ox)" />
+					<Attribute Name="内联函数展开" XmlName="InlineFunctionExpansion" XmlValue=" " Select="默认值|只适用于 __inline (/Ob1)|任何适用项(/Ob2)|" Explain="选择生成的内联函数展开级别。     (/Ob1, /Ob2)" />
+					<Attribute Name="启用内部函数" XmlName="EnableIntrinsicFunctions" XmlValue="false" Select="否|是(/Oi)" Explain="启用内部函数。使用内部函数生成代码更快，但代码可能更大。     (/Oi)"/>
+					<Attribute Name="优选大小或速度" XmlName="FavorSizeOrSpeed" XmlValue="0" Select="均不|代码速度优先(/Ot)|代码大小优先(/Os)" Explain="选择是优选代码大小还是优选代码速度；必须打开“全局优化”。     (/Ot, /Os)" />
+					<Attribute Name="省略框架指针" XmlName="OmitFramePointers" XmlValue="false" Select="否|是(/Oy)" Explain="取消框架指针。     (/Oy)" />
+					<Attribute Name="启用纤程安全优化" XmlName="EnableFiberSafeOptimizations" XmlValue="false" Select="否|是(/GT)" Explain="使用纤程和线程本地存储区访问时启用内存空间优化。     (/GT)" />
+					<Attribute Name="全程序优化" XmlName="WholeProgramOptimization" XmlValue="true" Select="否|启用链接时间代码生成(/GL)" Explain="通过将代码生成延迟到链接时间来启用跨模块优化；要求打开链接器选项“链接时间代码生成”。     (/GL)" />
+				</Optimization>
+				<Preprocessor><!-- 预处理器 -->
+					<Attribute Name="预处理器定义" XmlName="PreprocessorDefinitions" XmlValue=" " Select="" Explain="指定一个或多个预处理器定义。     (/D[macro])" />
+					<Attribute Name="忽略标准包含路径" XmlName="IgnoreStandardIncludePath" XmlValue="false" Select="否|是(/X)" Explain="忽略标准包含路径。     (/X)" />
+					<Attribute Name="生成预处理文件" XmlName="GeneratePreprocessedFile" XmlValue="0" Select="否|带行号(/P)|不带行号(/EP /P)" Explain="指定该配置的预处理选项。     (/P, /EP /P)" />
+					<Attribute Name="保留注释" XmlName="KeepComments" XmlValue="false" Select="否|是(/C)" Explain="从源代码取消注释条；要求设置一个“预处理”选项。     (/C)" />
+				</Preprocessor>
+				<Build><!-- 代码生成 -->
+					<Attribute Name="启用字符串池" XmlName="StringPooling" XmlValue="false" Select="否|是(/GF)" Explain="启用只读的字符串池以生成较小的编译代码。     (/GF)" />
+					<Attribute Name="启用最小重新生成" XmlName="MinimalRebuild" XmlValue="false" Select="否|是(/Gm)" Explain="检测 C++ 类定义的更改并只对受影响的源文件进行重新编译。     (/Gm)" />
+					<Attribute Name="启用C++异常" XmlName="ExceptionHandling" XmlValue="1" Select="否|是(/EHsc)|是，但有 SEH 异常(/EHa)" Explain="在由引发的异常所导致的堆栈展开期间调用自动对象的析构函数。      (/EHsc, /EHa)" />
+					<Attribute Name="较小类型检查" XmlName="SmallerTypeCheck" XmlValue="false" Select="否|是(/RTCc)" Explain="启用向较小类型转换时的检查，与除调试以外的任何优化类型不兼容。     (/RTCc)" />
+					<Attribute Name="基本运行时检查" XmlName="BasicRuntimeChecks" XmlValue="0" Select="默认值|堆栈帧(/RTCs)|未初始化的变量(/RTCu)|两者(/RTC1，等同于 /RTCsu)" Explain="执行基本运行时错误检查，与除调试以外的任何优化类型不兼容。    (/RTCs, /RTCu, /RTC1)" />
+					<Attribute Name="运行时库" XmlName="RuntimeLibrary" XmlValue="0" Select="多线程(/MT)|多线程调试(/MTd)|多线程 DLL (/MD)|多线程调试 DLL (/MDd)" Explain="指定运行时库以进行链接。    (/MT, /MTd, /MD, /MDd)" />
+					<Attribute Name="结构成员对齐" XmlName="StructMemberAlignment" XmlValue="0" Select="默认值|1 字节(/Zp1)|2 字节(/Zp2)|4 字节(/Zp4)8 字节(/Zp8)|16 字节(/Zp16)" Explain="为结构成员对齐指定 1、2、4、8 或 16 字节边界。     (/Zp[num])" />
+					<Attribute Name="缓冲区安全检查" XmlName="BufferSecurityCheck" XmlValue="true" Select="否(/GS-)|是" Explain="检查缓冲区溢出；用于关闭 Internet 服务器上可攻击的漏洞；默认为启用。    (/GS-)" />
+					<Attribute Name="启用函数级链接" XmlName="EnableFunctionLevelLinking" XmlValue="false" Select="否|是(/Gy)" Explain="启用函数级链接；要使“编辑并继续”起作用，必须设置该项。     (/Gy)" />
+					<Attribute Name="启用增强指令集" XmlName="EnableEnhancedInstructionSet" XmlValue="0" Select="未设置|流式处理 SIMD 扩展(/arch:SSE)|流式处理 SIMD 扩展 2 (/arch:SSE2)" Explain="允许使用支持增强指令集的处理器上的指令，例如 IA-32 的 SSE 和 SSE2 增强。当前只能在为 x86 结构生成程序时使用。   (/arch:SSE, /arch:SSE2)" />
+					<Attribute Name="浮点模型" XmlName="FloatingPointModel" XmlValue="0" Select="Precise (/fp:precise)|Strict (/fp:strict)|Fast (/fp:fast)" Explain="设置浮点模型。(/fp:precise, /fp:strict, /fp:fast)" />
+					<Attribute Name="启用浮点异常" XmlName="FloatingPointExceptions" XmlValue="false" Select="否|是(/fp:except)" Explain="在生成代码时启用浮点异常。    (/fp:except)" />
+				</Build>
+				<Language><!-- 语言 -->
+					<Attribute Name="禁用语言扩展" XmlName="DisableLanguageExtensions" XmlValue="false" Select="否|是(/Za)" Explain="取消或启用语言扩展。     (/Za)" />
+					<Attribute Name="默认Char无符号" XmlName="DefaultCharIsUnsigned" XmlValue="false" Select="否|是(/J)" Explain="将默认 char 类型设置为无符号。     (/J)" />
+					<Attribute Name="将wchar_t视为内置类型" XmlName="TreatWChar_tAsBuiltInType" XmlValue="true" Select="否(/Zc:wchar_t-)|是" Explain="将 wchar_t 视为内置类型。     (/Zc:wchar_t)" />
+					<Attribute Name="强制For循环范围中的一致性" XmlName="ForceConformanceInForLoopScope" XmlValue="true" Select="否(/Zc:forScope-)|是" Explain="强制编译器符合 For 循环中的局部范围。     (/Zc:forScope)" />
+					<Attribute Name="启用运行时类型信息" XmlName="RuntimeTypeInfo" XmlValue="true" Select="否(/GR-)|是" Explain="添加在运行时检查 C++ 对象类型(运行时类型信息)的代码。     (/GR, /GR-)" />
+					<Attribute Name="OpenMP支持" XmlName="OpenMP" XmlValue="false" Select="否|是(/openmp)" Explain="启用 OpenMP 2.0 语言扩展。    (/openmp)" />
+				</Language>
+				<Precompiled><!-- 预编译头 -->
+					<Attribute Name="创建/使用预编译头" XmlName="UsePrecompiledHeader" XmlValue=" " Select="不使用预编译头|创建预编译头(/Yc)|使用预编译头(/Yu)" Explain="在生成过程中允许创建或使用预编译头。     (/Yc, /Yu)" />
+					<Attribute Name="通过文件创建/使用PCH" XmlName="PrecompiledHeaderThrough" XmlValue="StdAfx.h" Select="" Explain="指定创建或使用预编译头文件时使用的头文件名。     (/Yc[name], /Yu[name])" />
+					<Attribute Name="预编译头文件" XmlName="PrecompiledHeaderFile" XmlValue="$(IntDir)\$(TargetName).pch" Select="" Explain="指定所生成的预编译头文件的路径和/或名称。     (/Fp[name])" />
+				</Precompiled>
+				<Output><!-- 输出文件 -->
+					<Attribute Name="展开带属性的源" XmlName="ExpandAttributedSource" XmlValue="false" Select="否|是(/Fx)" Explain="创建列表文件，将展开的属性插入到源文件中。     (/Fx)" />
+					<Attribute Name="汇编输出" XmlName="AssemblerOutput" XmlValue="0" Select="无列表|仅列出程序集(/FA)|程序集、机器码和源代码(/FAcs)带机器码的程序集(/FAc)|带源代码的程序集(/FAs)" Explain="指定汇编语言输出文件的内容。     (/FA, /FAc, /FAs, /FAcs)" />
+					<Attribute Name="ASM列表位置" XmlName="AssemblerListingLocation" XmlValue="$(IntDir)\" Select="" Explain="" />
+					<Attribute Name="对象文件名" XmlName="ObjectFile" XmlValue="$(IntDir)\" Select="" Explain="指定重写默认对象文件名的名称；可以是文件名或目录名。     (/Fo[name])" />
+					<Attribute Name="程序数据库文件名" XmlName="ProgramDataBaseFileName" XmlValue="$(IntDir)\vc80.pdb" Select="" Explain="指定编译器生成的 PDB 文件的名称；还指定所需的编译器生成的 IDB 文件的基文件名；可以是文件名或目录名。     (/Fd[name])" />
+					<Attribute Name="生成XML文档文件" XmlName="GenerateXMLDocumentationFiles" XmlValue="false" Select="否|是(/doc)" Explain="指定编译器应该生成 XML 文档注释文件(.XDC)。    (/doc)" />
+					<Attribute Name="XML文档文件名" XmlName="XMLDocumentationFileName" XmlValue=" " Select="" Explain="" />
+				</Output>
+				<Browse><!-- 浏览信息 -->
+					<Attribute Name="启用浏览信息" XmlName="BrowseInformation" XmlValue="0" Select="无|包含所有浏览信息(/FR)|无本地符号(/Fr)" Explain="指定 .bsc 文件中的浏览信息级别。     (/Fr, /FR)" />
+					<Attribute Name="浏览文件" XmlName="BrowseInformationFile" XmlValue="$(IntDir)\" Select="" Explain="指定浏览器信息文件的可选名称。     (/Fr[name], /FR[name])" />
+				</Browse>
+				<Advanced><!-- 高级 -->
+					<Attribute Name="调用约定" XmlName="CallingConvention" XmlValue="0" Select="__cdecl (/Gd)|__fastcall (/Gr)|__stdcall (/Gz)" Explain="选择应用程序的默认调用约定(可由函数重写)。     (/Gd, /Gr, /Gz)" />
+					<Attribute Name="编译为" XmlName="CompileAs" XmlValue="2" Select="默认值|编译为 C 代码(/TC)|编译为 C++ 代码(/TP)" Explain="选择 .c 和 .cpp 文件的编译语言选项。     (/TC, /TP)" />
+					<Attribute Name="禁用特定警告" XmlName="DisableSpecificWarnings" XmlValue=" " Select="" Explain="禁用所需的警告编号；将编号用分号分隔放在列表中。     (/wd[num])" />
+					<Attribute Name="强制包含" XmlName="ForcedIncludeFiles" XmlValue=" " Select="" Explain="指定一个或多个强制的包含文件。     (/FI[name])" />
+					<Attribute Name="强制#using" XmlName="ForcedUsingFiles" XmlValue=" " Select="" Explain="指定一个或多个强制的 #using 文件。     (/FU[name])" />
+					<Attribute Name="显示包含" XmlName="ShowIncludes" XmlValue="false" Select="否|是(/showIncludes)" Explain="生成包含文件列表(包括编译器输出)。     (/showIncludes)" />
+					<Attribute Name="取消预处理器定义" XmlName="UndefinePreprocessorDefinitions" XmlValue=" " Select="" Explain="指定取消一个或多个预处理器定义。     (/U[macro])" />
+					<Attribute Name="取消所有预处理器定义" XmlName="UndefineAllPreprocessorDefinitions" XmlValue="false" Select="否|是(/u)" Explain="取消以前定义的所有预处理器值。     (/u)" />
+					<Attribute Name="使用完全路径" XmlName="UseFullPaths" XmlValue="false" Select="否|是(/FC)" Explain="在诊断消息中使用完全路径。     (/FC)" />
+					<Attribute Name="省略默认的库名称" XmlName="OmitDefaultLibName" XmlValue="false" Select="否|是(/Zl)" Explain="不将默认的库名称包括在 .obj 文件中。     (/Zl)" />
+					<Attribute Name="错误报告" XmlName="ErrorReporting" XmlValue="1" Select="默认值|立即提示(/errorReport:prompt)|为下一次登录排队(/errorReport:queue)" Explain="指定将内部工具错误报告给 Microsoft 的方式。IDE 中的默认值是 prompt。命令行编译的默认值是 queue。    (/errorReport:[method])" />
+				</Advanced>
+				<CommandLine><!-- 命令行 -->
+					<Attribute Name="附加选项" XmlName="AdditionalOptions" XmlValue=" " Select="" Explain="" />
+				</CommandLine>
+			</VCCLCompilerTool>
+			
+			<VCLinkerTool><!-- <Tool Name="VCLinkerTool" -->
+				<Common><!-- 常规 -->
+					<Attribute Name="输出文件" XmlName="OutputFile" XmlValue="$(OutDir)\$(ProjectName).exe" Select="" Explain="重写默认的输出文件名。     (/OUT:[file])" />
+					<Attribute Name="显示进度" XmlName="ShowProgress" XmlValue=" " Select="未设置|显示所有进度消息(/VERBOSE)|显示某些进度消息(/VERBOSE:LIB)" Explain="启用进度的详细显示。     (/VERBOSE, /VERBOSE:LIB)" />
+					<Attribute Name="版本" XmlName="Version" XmlValue=" " Select="" Explain="将该值用作所创建图像标题中的版本号。     (/VERSION:[version])" />
+					<Attribute Name="启用增量链接" XmlName="LinkIncremental" XmlValue="0" Select="默认值|否(/INCREMENTAL:NO)|是(/INCREMENTAL)" Explain="启用增量链接。     (/INCREMENTAL, /INCREMENTAL:NO)" />
+					<Attribute Name="取消显示启动版权标志" XmlName="SuppressStartupBanner" XmlValue="true" Select="否|是(/NOLOGO)" Explain="取消显示启动版权标志和版权信息。     (/NOLOGO)" />
+					<Attribute Name="忽略导入库" XmlName="IgnoreImportLibrary" XmlValue="false" Select="否|是" Explain="指定不应将由该配置生成的导入库导入依赖项目中。" />
+					<Attribute Name="注册输出" XmlName="RegisterOutput" XmlValue="false" Select="否|是" Explain="指定是否注册该生成的主输出。" />
+					<Attribute Name="附加库目录" XmlName="AdditionalLibraryDirectories" XmlValue=" " Select="" Explain="指定搜索库时所用的一个或多个附加路径；特定于具体配置；当路径不止一个时，请使用分号分隔的列表。     (/LIBPATH:[dir])" />
+					<Attribute Name="链接库依赖项" XmlName="LinkLibraryDependencies" XmlValue="true" Select="否|是" Explain="指定是否自动链接项目依赖项的库输出。" />
+					<Attribute Name="使用库依赖项输出" XmlName="UseLibraryDependencyInputs" XmlValue="false" Select="否|是" Explain="指定当链接项目依赖项的库输出时是否要使用管理员工具的输入而不是库文件本身。" />
+					<Attribute Name="使用UNICODE响应文件" XmlName="UseUnicodeResponseFiles" XmlValue="true" Select="否|是" Explain="指示项目系统在生成链接器时生成 UNICODE 响应文件。当项目中的文件具有 UNICODE 路径时，将此属性设置为“是”。" />
+				</Common>
+				<Input><!-- 输入文件 -->
+					<Attribute Name="附加依赖项" XmlName="AdditionalDependencies" XmlValue=" " Select="" Explain="指定要添加到链接行的附加项(例如: kernel32.lib)；与具体配置有关。" />
+					<Attribute Name="忽略所有默认库" XmlName="IgnoreAllDefaultLibraries" XmlValue="false" Select="否|是(/NODEFAULTLIB)" Explain="链接过程中忽略所有默认库。     (/NODEFAULTLIB)" />
+					<Attribute Name="忽略特定库" XmlName="IgnoreDefaultLibraryNames" XmlValue=" " Select="" Explain="指定要忽略的一个或多个默认库的名称；用分号分隔多个库。     (/NODEFAULTLIB:[name, name, ...])" />
+					<Attribute Name="模块定义文件" XmlName="ModuleDefinitionFile" XmlValue=" " Select="" Explain="在创建可执行文件期间使用指定的模块定义文件。     (/DEF:name)" />
+					<Attribute Name="将模块添加到程序集" XmlName="AddModuleNamesToAssembly" XmlValue=" " Select="" Explain="将指定的非程序集文件导入到最终输出。     (/ASSEMBLYMODULE:file)" />
+					<Attribute Name="嵌入托管资源文件" XmlName="EmbedManagedResourceFile" XmlValue=" " Select="" Explain="嵌入指定的 .NET (或 .NET Framework)资源文件。    (/ASSEMBLYRESOURCE:file)" />
+					<Attribute Name="强制符号引用" XmlName="ForceSymbolReferences" XmlValue=" " Select="" Explain="强制链接器包括对该符号的引用。     (/INCLUDE:[symbol])" />
+					<Attribute Name="延迟加载的DLL" XmlName="DelayLoadDLLs" XmlValue=" " Select="" Explain="指定被延迟加载的一个或多个 DLL；如果有多个，则使用分号分隔。     (/DELAYLOAD:[dll_name])" />
+					<Attribute Name="程序集链接资源" XmlName="AssemblyLinkResource" XmlValue=" " Select="" Explain="将资源文件链接到输出程序集。与 /ASSEMBLYRESOURCE 开关不同，资源文件不放入输出程序集。  (/ASSEMBLYLINKRESOURCE)" />
+				</Input>
+				<Manifest><!-- 清单文件 -->
+					<Attribute Name="生成清单" XmlName="GenerateManifest" XmlValue="true" Select="否|是" Explain="指定链接器是否应该始终生成清单文件。     (/MANIFEST)" />
+					<Attribute Name="清单文件" XmlName="ManifestFile" XmlValue="$(IntDir)\$(TargetFileName).intermediate.manifest" Select="" Explain="指定要生成的清单文件的名称。仅当“生成清单”为 true 时才使用。     (/MANIFESTFILE:[文件])" />
+					<Attribute Name="附加清单依赖项" XmlName="AdditionalManifestDependencies" XmlValue=" " Select="" Explain="指定链接器将放入清单文件中的附加 XML 清单片断。    (/MANIFESTDEPENDENCY:[dependency])" />
+					<Attribute Name="允许隔离" XmlName="AllowIsolation" XmlValue="false" Select="不允许并行隔离(/ALLOWISOLATION:NO)|是" Explain="指定并行程序集的清单文件查找行为。     (/ALLOWISOLATION:NO)" />
+				</Manifest>
+				<Debug><!-- 调试 -->
+					<Attribute Name="生成调试信息" XmlName="GenerateDebugInformation" XmlValue="false" Select="否|是(/DEBUG)" Explain="允许生成调试信息。     (/DEBUG)" />
+					<Attribute Name="生成程序数据库文件" XmlName="ProgramDatabaseFile" XmlValue=" " Select="" Explain="允许生成程序数据库“.pdb”文件；要求启用“生成调试信息”选项。     (/PDB:name)" />
+					<Attribute Name="去除私有符号" XmlName="StripPrivateSymbols" XmlValue=" " Select="" Explain="不将私有符号放入指定的生成 PDB 文件。     (/PDBSTRIPPED:file)" />
+					<Attribute Name="生成映射文件" XmlName="GenerateMapFile" XmlValue=" " Select="" Explain="允许在链接过程中生成映射文件。     (/MAP)" />
+					<Attribute Name="映射文件名" XmlName="MapFileName" XmlValue=" " Select="" Explain="指定映射文件的名称。     (/MAP:[filename])" />
+					<Attribute Name="映射导出" XmlName="MapExports" XmlValue="false" Select="否|是(/MAPINFO:EXPORTS)" Explain="在映射文件信息中包含导出的函数。     (/MAPINFO:EXPORTS)" />
+					<Attribute Name="可调试程序集" XmlName="AssemblyDebug" XmlValue="0" Select="未产生 Debuggable 属性|运行库跟踪和禁用优化 (/ASSEMBLYDEBUG)|无运行库跟踪和启用优化 (/ASSEMBLYDEBUG:DISABLE)" Explain="向程序集发出 Debuggable 属性。     (/ASSEMBLYDEBUG, /ASSEMBLYDEBUG:DISABLE)" />
+				</Debug>
+				<System><!-- 系统 -->
+					<Attribute Name="子系统" XmlName="SubSystem" XmlValue="0" Select="未设置|控制台(/SUBSYSTEM:CONSOLE)|Windows (/SUBSYSTEM:WINDOWS)|本机(/SUBSYSTEM:NATIVE)|EFI 应用程序(/SUBSYSTEM:EFI_APPLICATION)|EFI 启动服务驱动程序(/SUBSYSTEM:EFI_BOOT_SERVICE_DRIVER)|EFI ROM (/SUBSYSTEM:EFI_ROM)|EFI 运行库(/SUBSYSTEM:EFI_RUNTIME_DRIVER)|Posix (/SUBSYSTEM:POSIX)|WindowsCE (/SUBSYSTEM:WINDOWSCE)" Explain="指定链接器的子系统。     (/SUBSYSTEM:[type])" />
+					<Attribute Name="堆保留大小" XmlName="HeapReserveSize" XmlValue="0" Select="" Explain="指定虚拟内存中堆分配的合计大小。     (/HEAP:reserve)" />
+					<Attribute Name="堆提交大小" XmlName="HeapCommitSize" XmlValue="0" Select="" Explain="指定物理内存中堆分配的合计大小。      (/HEAP:reserve,commit)" />
+					<Attribute Name="堆栈保留大小" XmlName="StackReserveSize" XmlValue="0" Select="" Explain="指定虚拟内存中堆栈分配的合计大小。     (/STACK:reserve)" />
+					<Attribute Name="堆栈提交大小" XmlName="StackCommitSize" XmlValue="0" Select="" Explain="指定物理内存中堆栈分配的合计大小。   " />
+					<Attribute Name="启用大地址" XmlName="LargeAddressAware" XmlValue="0" Select="默认值|不支持大于 2 GB 的地址(/LARGEADDRESSAWARE:NO)|支持大于 2 GB 的地址(/LARGEADDRESSAWARE)" Explain="允许处理大于 2 GB 的地址。     (/LARGEADDRESSAWARE, /LARGEADDRESSAWARE:NO)" />
+					<Attribute Name="终端服务器" XmlName="TerminalServerAware" XmlValue="0" Select="默认值|不识别终端服务器(/TSAWARE:NO)|应用程序识别终端服务器(/TSAWARE)" Explain="启用终端服务器识别功能。     (/TSAWARE, /TSAWARE:NO)" />
+					<Attribute Name="从CD交换运行" XmlName="SwapRunFromCD" XmlValue="false" Select="否|是(/SWAPRUN:CD)" Explain="从 CD 的交换位置运行应用程序。     (/SWAPRUN:CD)" />
+					<Attribute Name="从网络交换运行" XmlName="SwapRunFromNet" XmlValue="false" Select="否|是(/SWAPRUN:NET)" Explain="从网络的交换位置运行应用程序。     (/SWAPRUN:NET)" />
+					<Attribute Name="驱动程序" XmlName="Driver" XmlValue="0" Select="未设置|驱动程序(/DRIVER)|Up Only (/DRIVER:UPONLY)|WDM (/DRIVER:WDM)" Explain="为链接器指定驱动程序。      (/DRIVER:[type])" />
+				</System>
+				<Optimize><!-- 优化 -->
+					<Attribute Name="引用" XmlName="OptimizeReferences" XmlValue="0" Select="默认值|保留未引用数据(/OPT:NOREF)|消除未引用数据(/OPT:REF)" Explain="允许除去从未引用的函数和/或数据。     (/OPT:REF, /OPT:NOREF)" />
+					<Attribute Name="启用COMDAT折叠" XmlName="EnableCOMDATFolding" XmlValue="0" Select="默认值|不移除冗余的 COMDAT (/OPT:NOICF)|移除冗余的 COMDAT (/OPT:ICF)" Explain="从链接器输出中移除冗余的 COMDAT 符号。    (/OPT:ICF, /OPT:NOICF)" />
+					<Attribute Name="Windows98优化" XmlName="OptimizeForWindows98" XmlValue="0" Select="默认值|否(/OPT:NOWIN98)|是(/OPT:WIN98)" Explain="在 4KB 边界上对齐代码。这可提高 Windows 98 系统的性能。     (/OPT:WIN98, /OPT:NOWIN98)" />
+					<Attribute Name="函数顺序" XmlName="FunctionOrder" XmlValue=" " Select="" Explain="按预设的顺序将 COMDAT 放置到图像中；指定包含该顺序的文件名；无增量链接。     (/ORDER:[file])" />
+					<Attribute Name="按配置优化数据库" XmlName="ProfileGuidedDatabase" XmlValue="$(TargetDir)$(TargetName).pgd111" Select="" Explain="指定在使用按配置优化时使用的数据库文件(/PGD:database)。仅当使用“按配置优化”时才应使用此属性。" />
+					<Attribute Name="链接时间代码生成" XmlName="LinkTimeCodeGeneration" XmlValue="4" Select="默认值|使用链接时间代码生成(/ltcg)|按配置优化 - 检测(/ltcg:pginstrument)|按配置优化 - 优化(/ltcg:pgoptimize)|按配置优化 - 更新(/ltcg:pgupdate)" Explain="对用“全程序优化”设置编译的对象启用链接时间代码生成。     (/LTCG)" />
+				</Optimize>
+				<EmbeddedIDL><!-- 嵌入的IDL -->
+					<Attribute Name="MIDL命令" XmlName="MidlCommandFile" XmlValue=" " Select="" Explain="指定 MIDL 命令使用的响应文件或其所需内容。     (/MIDL:[file])" />
+					<Attribute Name="忽略嵌入的IDL" XmlName="IgnoreEmbeddedIDL" XmlValue=" " Select="否|是(/IGNOREIDL)" Explain="忽略对象文件的嵌入 .idlsym 部分。     (/IGNOREIDL)" />
+					<Attribute Name="合并的IDL基文件名" XmlName="MergedIDLBaseFileName" XmlValue=" " Select="" Explain="指定 .IDL 文件(它包含合并的 IDLSYM 部分的内容)的基名称。     (/IDLOUT:[file])" />
+					<Attribute Name="类型库" XmlName="TypeLibraryFile" XmlValue=" " Select="" Explain="指定类型库文件的名称。     (/TLBOUT:[filename])" />
+					<Attribute Name="类型库资源ID" XmlName="TypeLibraryResourceID" XmlValue="1" Select="" Explain="指定分配给编译资源中的 .tlb 文件的 ID 号。     (/TLBID:[id])" />
+				</EmbeddedIDL>
+				<Advanced><!-- 高级 -->
+					<Attribute Name="入口点" XmlName="EntryPointSymbol" XmlValue=" " Select="" Explain="设置 .exe 文件或 DLL 的起始地址。     (/ENTRY:[symbol])" />
+					<Attribute Name="无入口点" XmlName="ResourceOnlyDLL" XmlValue="false" Select="否|是(/NOENTRY)" Explain="创建不带入口点的 DLL；与设置“入口点”选项不兼容。    (/NOENTRY)" />
+					<Attribute Name="设置校验和" XmlName="SetChecksum" XmlValue=" " Select="" Explain="允许在 .exe 文件头中设置校验和。     (/RELEASE)" />
+					<Attribute Name="基址" XmlName="BaseAddress" XmlValue=" " Select="" Explain="指定程序的基址；数值或字符串。     (/BASE:[address|filename,key])" />
+					<Attribute Name="固定基址" XmlName="FixedBaseAddress" XmlValue="0" Select="默认值|生成重定位节(/FIXED:NO)|必须在固定地址加载图像(/FIXED)" Explain="指定是否必须以固定地址加载图像。     (/FIXED:[No])" />
+					<Attribute Name="关闭程序集生成" XmlName="TurnOffAssemblyGeneration" XmlValue="false" Select="否|是(/NOASSEMBLY)" Explain="指定不生成任何程序集，即使对象文件中存在公共语言运行库信息。     (/NOASSEMBLY)" />
+					<Attribute Name="延迟加载的DLL" XmlName="SupportUnloadOfDelayLoadedDLL" XmlValue="false" Select="不支持卸载|支持卸载(/DELAY:UNLOAD)" Explain="指定允许显式卸载延迟加载的 DLL。     (/DELAY:UNLOAD)" />
+					<Attribute Name="导入库" XmlName="ImportLibrary" XmlValue=" " Select="" Explain="指定要生成的导入库。     (/IMPLIB:[name, name, ...])" />
+					<Attribute Name="合并区" XmlName="MergeSections" XmlValue=" " Select="" Explain="导致链接器将“源”区合并到“目标”区；如果“目标”区不存在，则“源”区重命名为“目标”区。     (/MERGE:[from=to])" />
+					<Attribute Name="目标计算机" XmlName="TargetMachine" XmlValue="0" Select="未设置|MachineX86 (/MACHINE:X86)|MachineAM33 (/MACHINE:AM33)|MachineARM (/MACHINE:ARM)|MachineEBC (/MACHINE:EBC)|MachineIA64 (/MACHINE:IA64)|MachineM32R (/MACHINE:M32R)|MachineMIPS (/MACHINE:MIPS)|MachineMIPS16 (/MACHINE:MIPS16)|MachineMIPSFPU (/MACHINE:MIPSFPU)|MachineMIPSFPU16 (/MACHINE:MIPSFPU16)|MachineMIPSR41XX (/MACHINE:MIPSR41XX)|MachineSH3 (/MACHINE:SH3)|MachineSH3DSP (/MACHINE:SH3DSP)|MachineSH4 (/MACHINE:SH4)|MachineSH5 (/MACHINE:SH5)|MachineTHUMB (/MACHINE:THUMB)|MachineX64 (/MACHINE:X64)" Explain="指定链接器的子系统。     (/MACHINE:[type])" />
+					<Attribute Name="探查" XmlName="Profile" XmlValue="false" Select="否|启用探查信息(/PROFILE)" Explain="产生可用于企业级开发版的性能探查器的输出文件。     (/PROFILE)" />
+					<Attribute Name="CLR线程属性" XmlName="CLRThreadAttribute" XmlValue="0" Select="无线程属性集|MTA 线程属性(/CLRTHREADATTRIBUTE:MTA)|STA 线程属性(/CLRTHREADATTRIBUTE:STA)" Explain="指定用于 CLR 程序的入口点的线程属性。    (/CLRTHREADATTRIBUTE:STA, /CLRTHREADATTRIBUTE:MTA)" />
+					<Attribute Name="CLR图像类型" XmlName="CLRImageType" XmlValue="0" Select="默认图像类型|强制 IJW 图像(/CLRIMAGETYPE:IJW)|强制纯 IL 图像(/CLRIMAGETYPE:PURE)|强制安全 IL 图像(/CLRIMAGETYPE:SAFE)" Explain="指定 CLR 图像的类型。用于链接不同类型的对象文件。    (/CLRIMAGETYPE:IJW, /CLRIMAGETYPE:PURE, /CLRIMAGETYPE:SAFE)" />
+					<Attribute Name="密钥文件" XmlName="KeyFile" XmlValue=" " Select="" Explain="指定包含用于强命名输出程序集的密钥的文件。 (/KEYFILE:[filename])" />
+					<Attribute Name="密钥容器" XmlName="KeyContainer" XmlValue=" " Select="" Explain="指定用于强命名输出程序集的密钥的已命名容器。 (/KEYCONTAINER:[name]" />
+					<Attribute Name="延迟签名" XmlName="DelaySign" XmlValue="false" Select="否|是(/DELAYSIGN)" Explain="指示是否应该对输出程序集延迟签名。   (/DELAYSIGN)" />
+					<Attribute Name="错误报告" XmlName="ErrorReporting" XmlValue="1" Select="默认值|立即提示(/ERRORREPORT:PROMPT)|为下一次登录排队(/ERRORREPORT:QUEUE)" Explain="指定将内部工具错误报告给 Microsoft 的方式。IDE 中的默认值是 prompt。命令行编译的默认值是 queue。    (/errorReport:[method])" />
+					<Attribute Name="CLR非托管代码检查" XmlName="CLRUnmanagedCodeCheck" XmlValue="false" Select="否|应用非托管代码检查 (/CLRUNMANAGEDCODECHECK)" Explain="指定链接器是否将 T:System.Security.SuppressUnmanagedCodeSecurityAttribute 应用到从托管代码到本机 DLL 的链接器生成的 PInvoke 调用。     (/CLRUNMANAGEDCODECHECK)" />
+				</Advanced>
+				<CommandLine><!-- 命令行 -->
+					<Attribute Name="附加选项" XmlName="AdditionalOptions" XmlValue=" " Select="" Explain="" />
+				</CommandLine>
+			</VCLinkerTool>
+			
+			<VCManifestTool><!-- <Tool Name="VCManifestTool" -->
+				<Common><!-- 常规 -->
+					<Attribute Name="取消显示启动版权标志" XmlName="SuppressStartupBanner" XmlValue="true" Select="否|是(/nologo)" Explain="取消显示启动版权标志和版权信息。     (/nologo)" />
+					<Attribute Name="详细输出" XmlName="VerboseOutput" XmlValue="false" Select="否|是(/verbose)" Explain="在清单生成期间显示附加信息。     (/verbose)" />
+					<Attribute Name="程序集标识" XmlName="AssemblyIdentity" XmlValue=" " Select="" Explain="指定清单中 &lt;assemblyIdentity&gt; 元素的属性。     (/identity:[attributes])" />
+					<Attribute Name="使用UNICODE响应文件" XmlName="UseUnicodeResponseFiles" XmlValue="true" Select="否|是" Explain="指示项目系统在生成清单工具时生成 UNICODE 响应文件。当项目中的文件具有 UNICODE 路径时，将此属性设置为“是”。" />
+					<Attribute Name="使用FAT32解决办法" XmlName="UseFAT32Workaround" XmlValue="false" Select="否|是" Explain="解决 FAT32 驱动器上的文件时间戳问题，以使清单工具可以正确更新。" />
+				</Common>
+				<InputOutput><!-- 输入和输出 -->
+					<Attribute Name="附加清单文件" XmlName="AdditionalManifestFiles" XmlValue=" " Select="" Explain="" />
+					<Attribute Name="输入资源清单" XmlName="InputResourceManifests" XmlValue=" " Select="" Explain="" />
+					<Attribute Name="嵌入清单" XmlName="EmbedManifest" XmlValue="true" Select="是|否" Explain="" />
+					<Attribute Name="输出清单文件" XmlName="OutputManifestFile" XmlValue="$(IntDir)\$(TargetFileName).embed.manifest" Select="" Explain="" />
+					<Attribute Name="清单资源文件" XmlName="ManifestResourceFile" XmlValue="$(IntDir)\$(TargetFileName).embed.manifest.res" Select="" Explain="" />
+					<Attribute Name="生成目录文件" XmlName="GenerateCatalogFiles" XmlValue="false" Select="否|是(/makecdfs)" Explain="" />
+					<Attribute Name="依赖项信息文件" XmlName="DependencyInformationFile" XmlValue="$(IntDir)\mt.dep" Select="" Explain="" />
+				</InputOutput>
+				<COM><!-- 独立COM -->
+					<Attribute Name="类型库文件" XmlName="TypeLibraryFile" XmlValue=" " Select="" Explain="指定用于 RegFree COM 清单支持的类型库。     (/tlb:[file])" />
+					<Attribute Name="注册器脚本文件" XmlName="RegistrarScriptFile" XmlValue=" " Select="" Explain="指定用于 RegFree COM 清单支持的注册器脚本文件。    (/rgs:[file])" />
+					<Attribute Name="组件文件名" XmlName="ComponentFileName" XmlValue=" " Select="" Explain="指定组件的文件名，该组件由指定的 .rgs 或 .tlb 生成。     (/dll:[name])" />
+					<Attribute Name="替换文件" XmlName="ReplacementsFile" XmlValue=" " Select="" Explain="指定用于替换 .rgs 文件中字符串的 XML 替换文件。     (/replacements:[file])" />
+				</COM>
+				<Advanced><!-- 高级 -->
+					<Attribute Name="更新文件哈希" XmlName="UpdateFileHashes" XmlValue="false" Select="否|是(/hashupdate)" Explain="指定是否应更新文件哈希。     (/hashupdate)" />
+					<Attribute Name="更新文件哈希搜索路径" XmlName="UpdateFileHashesSearchPath" XmlValue=" " Select="" Explain="指定更新文件哈希时使用的搜索路径。     (/hashupdate:[path])" />
+				</Advanced>
+				<CommandLine><!-- 命令行 -->
+					<Attribute Name="附加选项" XmlName="AdditionalOptions" XmlValue=" " Select="" Explain="" />
+				</CommandLine>
+			</VCManifestTool>
+			
+			<VCResourceCompilerTool><!-- 命令行 -->
+				<Common><!-- 常规 -->
+					<Attribute Name="预处理器定义" XmlName="PreprocessorDefinitions" XmlValue=" " Select="" Explain="为资源编译器指定一个或多个定义。     (/d[macro])" />
+					<Attribute Name="区域性" XmlName="Culture" XmlValue="0" Select="默认值|中文(台湾) (0x404)|中文(中国) (0x804)|中文(香港特别行政区) (0xc04)|中文(新加坡) (0x1004)|英语(美国) (0x409)|英语(英国) (0x809)" Explain="列出资源中使用的区域性设置(如美国英语或墨西哥西班牙语)。     (/l [num])" />
+					<Attribute Name="附加包含目录" XmlName="AdditionalIncludeDirectories" XmlValue=" " Select="" Explain="指定一个或多个要添加到包含路径的目录；如果目录不止一个，请使用分号分隔符。     (/I[path])" />
+					<Attribute Name="忽略标准包含路径" XmlName="IgnoreStandardIncludePath" XmlValue="false" Select="否|是(/X)" Explain="忽略标准包含路径。     (/X)" />
+					<Attribute Name="显示进度" XmlName="ShowProgress" XmlValue="false" Select="否|是(/v)" Explain="将进度信息发送到输出窗口。     (/v)" />
+					<Attribute Name="资源文件名" XmlName="ResourceOutputFileName" XmlValue="$(IntDir)/$(InputName).res" Select="" Explain="指定资源文件的名称。     (/fo[file])" />
+				</Common>
+				<CommandLine><!-- 命令行 -->
+					<Attribute Name="附加选项" XmlName="AdditionalOptions" XmlValue=" " Select="" Explain="" />
+				</CommandLine>
+			</VCResourceCompilerTool>
+			
+			<VCXDCMakeTool><!-- XML文档生成 -->
+				<Common><!-- 常规 -->
+					<Attribute Name="取消显示启动版权标志" XmlName="SuppressStartupBanner" XmlValue="true" Select="否|是(/nologo)" Explain="取消显示启动版权标志和版权信息。     (/nologo)" />
+					<Attribute Name="验证IntelliSense" XmlName="ValidateIntelliSense" XmlValue="false" Select="否|是(/validate)" Explain="在文档合并完成后验证 IntelliSense 信息。     (/validate)" />
+					<Attribute Name="附加文档文件" XmlName="AdditionalDocumentFiles" XmlValue=" " Select="" Explain="要合并的附加文档文件(.XDC)。     (/Fs[file])" />
+					<Attribute Name="输出文档文件" XmlName="OutputDocumentFile" XmlValue="$(TargetDir)$(TargetName).xml" Select="" Explain="指定由所有输入文档文件合并后得到的输出文档文件(.XML)。     (/Fo[file])" />
+					<Attribute Name="文档库依赖项" XmlName="" XmlValue="true" Select="否|是" Explain="如果为 true，输出静态库的项目依赖项将把它们的 XML 文档注释文件(.XDC)记录在项目的 XML 文档文件中。" />
+					<Attribute Name="使用UNICODE响应文件" XmlName="UseUnicodeResponseFiles" XmlValue="true" Select="否|是" Explain="指示项目系统在生成 xdcmake 工具时生成 UNICODE 响应文件。当项目中的文件具有 UNICODE 路径时，将此属性设置为“是”。" />
+				</Common>
+				<CommandLine><!-- 命令行 -->
+					<Attribute Name="附加选项" XmlName="AdditionalOptions" XmlValue=" " Select="" Explain="" />
+				</CommandLine>
+			</VCXDCMakeTool>
+			
+			<VCBscMakeTool><!-- 浏览信息 -->
+				<Common><!-- 常规 -->
+					<Attribute Name="取消显示启动版权标志" XmlName="SuppressStartupBanner" XmlValue="true" Select="否|是(/nologo)" Explain="取消显示启动版权标志和版权信息。     (/nologo)" />
+					<Attribute Name="输出文件" XmlName="OutputFile" XmlValue="$(OutDir)/$(ProjectName).bsc" Select="" Explain="重写默认输出文件名。     (/o[file])" />
+				</Common>
+				<CommandLine><!-- 命令行 -->
+					<Attribute Name="附加选项" XmlName="AdditionalOptions" XmlValue=" " Select="" Explain="" />
+				</CommandLine>
+			</VCBscMakeTool>
+			
+			<VCPreBuildEventTool><!-- 预生成事件 -->
+				<Attribute Name="命令行" XmlName="CommandLine" XmlValue=" " Select="" Explain="指定使预生成事件工具运行的命令行。" />
+				<Attribute Name="说明" XmlName="Description" XmlValue=" " Select="" Explain="提供使预生事件工具要显示的说明。" />
+				<Attribute Name="从生成中排除" XmlName="ExcludedFromBuild" XmlValue="false" Select="否|是" Explain="指定是否将该生成事件从当前配置的生成中排除。" />
+			</VCPreBuildEventTool>
+			
+			<VCPreLinkEventTool><!-- 预链接事件 -->
+				<Attribute Name="命令行" XmlName="CommandLine" XmlValue=" " Select="" Explain="指定使预链接事件工具运行的命令行。" />
+				<Attribute Name="说明" XmlName="Description" XmlValue=" " Select="" Explain="提供预链接事件工具要显示的说明。" />
+				<Attribute Name="从生成中排除" XmlName="ExcludedFromBuild" XmlValue="false" Select="否|是" Explain="指定是否将该生成事件从当前配置的生成中排除。" />
+			</VCPreLinkEventTool>
+			
+			<VCPostBuildEventTool><!-- 生成后事件 -->
+				<Attribute Name="命令行" XmlName="CommandLine" XmlValue=" " Select="" Explain="指定使生成后事件工具运行的命令行。" />
+				<Attribute Name="说明" XmlName="Description" XmlValue=" " Select="" Explain="提供生成后事件工具要显示的说明。" />
+				<Attribute Name="从生成中排除" XmlName="ExcludedFromBuild" XmlValue="false" Select="否|是" Explain="指定是否将该生成事件从当前配置的生成中排除。" />
+			</VCPostBuildEventTool>
+
+			<VCCustomBuildTool><!-- 自定义生成步骤 -->
+				<Attribute Name="命令行" XmlName="CommandLine" XmlValue=" " Select="" Explain="指定用于自定义生成步骤的命令行。" />
+				<Attribute Name="说明" XmlName="Description" XmlValue="正在执行自定义生成步骤" Select="" Explain="指定自定义生成步骤的说明。" />
+				<Attribute Name="输出" XmlName="Outputs" XmlValue=" " Select="" Explain="指定自定义生成步骤生成的输出文件。" />
+				<Attribute Name="附加依赖项" XmlName="AdditionalDependencies" XmlValue=" " Select="" Explain="指定用于自定义生成的任何附加输入文件。" />
+			</VCCustomBuildTool>
+
+			<VCWebDeploymentTool><!-- WEB部署 -->
+				<Attribute Name="虚拟目录名" XmlName="VirtualDirectoryName" XmlValue="$(ProjectName)" Select="" Explain="虚拟目录的别名。" />
+				<Attribute Name="应用程序映射" XmlName="ApplicationMappings" XmlValue=" " Select="" Explain="要与主项目输出关联的文件扩展名的分号分隔列表。(仅限 ISAPI)" />
+				<Attribute Name="应用程序保护" XmlName="ApplicationProtection" XmlValue="0" Select="低(IIS 进程)|中(池)|高(独立)" Explain="虚拟目录使用的进程隔离级别。仅当创建虚拟目录时设置值。" />
+				<Attribute Name="从生成中排除" XmlName="ExcludedFromBuild" XmlValue="true" Select="否|是" Explain="指定是否从当前配置的生成中排除 Web 部署工具。" />
+				<Attribute Name="相对路径" XmlName="RelativePath" XmlValue="bin" Select="" Explain="相对于主项目输出将复制到的虚拟目录的路径。" />
+				<Attribute Name="附加文件" XmlName="AdditionalFiles" XmlValue=" " Select="" Explain="要部署的附加文件的分号分隔列表。省略标记为可部署内容的主项目输出和文件。" />
+				<Attribute Name="复制前卸载" XmlName="UnloadBeforeCopy" XmlValue="false" Select="否|是" Explain="复制前卸载 ISAPI 扩展。暂时停止服务器。" />
+				<Attribute Name="注册输出" XmlName="RegisterOutput" XmlValue="false" Select="否|是" Explain="指定在部署后是否应注册主项目输出。" />
+			</VCWebDeploymentTool>
+		<!--
+		</Configuration>
+		-->
+		</Configuration>
+	<!--
+	Configurations
+	-->
+	</Configurations>
+
+	<Files>
+	</Files>
+
+	<Globals>
+			<Global	Name="RESOURCE_FILE" Value=""/>
+	</Globals>
+
+</VisualStudioProject>
+
+<!--
+
+&lt|    <   小于号
+&gt|    >   大于号
+&amp|   &   和,与
+&apos|  '   单引号
+&quot|  "   双引号
+
+-->
+
+ 

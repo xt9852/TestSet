@@ -1,0 +1,240 @@
+//*@@@+++@@@@******************************************************************
+//
+// Microsoft Windows Media
+// Copyright (C) Microsoft Corporation. All rights reserved.
+//
+//*@@@---@@@@******************************************************************
+//
+// WMPreview.idl : IDL source for WMPreview.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (WMDevCtl.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+import "wmencode.idl";
+
+#include "..\include\wmsencid.h"
+
+cpp_quote( "EXTERN_GUID( LIBID_WMDEVICECONTROLLib,            0x22F0E5C5, 0x5008, 0x4E2E, 0xBC, 0x60, 0x20, 0x27, 0xF5, 0xC2, 0x36, 0xCE );" )
+cpp_quote( "EXTERN_GUID( DIID__IWMEncDeviceControlEvents,   0x632B6066, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76 );" )
+
+
+cpp_quote( "EXTERN_GUID( CLSID_WMEncEditDecisionList,       0x632B608F, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+
+cpp_quote( "EXTERN_GUID( IID_IWMEncEditDecisionList,		0x632B608D, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncEditDecisionData,	    0x632B608E, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+cpp_quote( "EXTERN_GUID( IID_IWMEncDeviceControlPlugin,		0x632B608B, 0xBBC6, 0x11D2, 0xA3, 0x29, 0x00, 0x60, 0x97, 0xC4, 0xE4, 0x76);" )
+
+typedef enum WMENC_DEVICE_MODE
+{
+    WMENC_DEVICE_PLAY       = 0x00000001,       /* play device*/
+    WMENC_DEVICE_PAUSE      = 0x00000002,       /* pause device*/
+    WMENC_DEVICE_STOP       = 0x00000003,       /* stop device*/
+    WMENC_DEVICE_FF         = 0x00000004,       /* fast forward device*/
+    WMENC_DEVICE_REW        = 0x00000005,       /* fast rewind device*/
+    WMENC_DEVICE_STEP_FWD   = 0x00000006,       /* step forwarddevice*/
+    WMENC_DEVICE_STEP_REW   = 0x00000007,       /* step rewind device*/
+    WMENC_DEVICE_CUE        = 0x00000008,       /* cue up device*/
+    WMENC_DEVICE_EJECT      = 0x00000009,       /* eject tape */
+    //
+    // Variable speed can be specified by calling IAMExtTransport::put_Rate( double dbSpeed ).
+    // For DV device, this call will return E_NOTIMPL, only slowest speed is available.
+    //
+    WMENC_DEVICE_VAR_FORWARD = 0x0000000A,      /* variable speed playback forward */
+    WMENC_DEVICE_VAR_REVERSE = 0x0000000B       /* variable speed playback in reverse */
+} WMENC_DEVICE_MODE;
+
+
+typedef  struct WMTIMECODE
+{
+    WORD    wFrameRate;
+    WORD    wFrameFract;
+    DWORD   dwFrames;
+} WMTIMECODE;
+
+typedef struct WMTIMECODE_SAMPLE
+{
+    LONGLONG    qwTick;
+    WMTIMECODE  timecode;
+    DWORD       dwUser;
+    DWORD       dwFlags;
+} WMTIMECODE_SAMPLE;
+
+
+[
+    object,
+    dual,
+    uuid(632B608E-BBC6-11D2-A329-006097C4E476),
+    helpstring("Edit Decision Data."),
+    pointer_default(unique)
+]
+interface IWMEncEditDecisionData : IDispatch
+{
+//
+// IWMEncEditDecisionData is more like a IPersistPropertyBag.  Users can set edit data 
+// in a name/value pairs.  This is for easy extensibility.
+//
+// EditData should support at least MarkIn and MarkOut properties.
+// Markin, Markout value is in SMPTE time code
+//
+// Edit data can also support track number if the device support it.
+//
+    [propget, helpstring("Retrieves the number of name/value pairs in the edit data.")] 
+    HRESULT Count([out, retval] long *plCount);
+
+    [helpstring("Retrieves a specific attribute from the collection.")] 
+    HRESULT Item([in] long Index, [out] VARIANT *pvarName, [out,retval] VARIANT *pVarValue );
+
+    [propget, helpstring("Retrieves a specific value for the name.")] 
+    HRESULT Value([in] BSTR bstrName, [out,retval] VARIANT *pVarValue );
+
+    [helpstring("Adds a name/value pair to the edit data.")] 
+    HRESULT Add([in] BSTR bstrName, [in] VARIANT varValue );
+
+    [helpstring("Removes a specific attribute from the collection.")] 
+    HRESULT Remove([in] VARIANT var);
+
+    [helpstring("Removes all attributes from the collection.")] 
+    HRESULT RemoveAll();
+};
+
+[
+    object,
+    uuid(632B608D-BBC6-11D2-A329-006097C4E476),
+    dual,
+    helpstring("Edit Decision List."),
+    pointer_default(unique)
+]
+interface IWMEncEditDecisionList : IDispatch
+{
+    [propget, helpstring("Retrieves the number of EditData in the list.")] 
+    HRESULT Count([out, retval] long *piCount);
+    
+    [helpstring("Retrieves a specific EditData in the list.")] 
+    HRESULT Item([in] long iIndex, [out, retval] IWMEncEditDecisionData** ppEditData );
+    
+    [helpstring("Adds a EditData into the list.")] 
+    HRESULT Add([out, retval] IWMEncEditDecisionData** ppEditData);
+    
+    [helpstring("Removes a EditData from the list.")] 
+    HRESULT Remove([in] long iIndex );
+};
+
+[
+    object,
+    uuid(632B608B-BBC6-11D2-A329-006097C4E476),
+    dual,
+    helpstring("Device Control Plugin."),
+    pointer_default(unique)
+]
+interface IWMEncDeviceControlPlugin : IDispatch
+{
+    [propput, helpstring("Specify device name.")] 
+	HRESULT ControlSource([in] BSTR bstrSource );
+
+    [propget, helpstring("Retrieve device name.")] 
+	HRESULT ControlSource([out, retval] BSTR* pbstrSource );
+
+    [propget, helpstring("Retrieve EditList.")] 
+    HRESULT EditDecisionList([out,retval] IWMEncEditDecisionList** ppEditList);
+
+// Preroll unit is in frames.
+    [propget, helpstring("Retrieve device preroll value.")] 
+    HRESULT PreRoll([out, retval] long *plPreroll);
+
+    [propput, helpstring("Specify device preroll value.")] 
+    HRESULT PreRoll([in] long lPreroll);
+
+// Postroll unit is in frames.
+    [propget, helpstring("Retrieve device post-roll value.")] 
+    HRESULT PostRoll([out, retval] long *plPostroll);
+
+    [propput, helpstring("Specify device post-roll value.")] 
+    HRESULT PostRoll([in] long lPostroll);
+
+    [helpstring("Device operation.")] 
+    HRESULT SetOperation([in] WMENC_DEVICE_MODE enumMode);
+
+    [helpstring("Get device state.")] 
+    HRESULT GetDeviceState([out, retval] WMENC_DEVICECONTROL_STATE* penumState );
+
+    [propput, helpstring("Set Ignore EDL during Device Operation.")] 
+    HRESULT IgnoreEDL([in] VARIANT_BOOL bIgnoreEDL );
+
+    [propget, helpstring("Retrieve Ignore EDL during Device Operation setting.")] 
+    HRESULT IgnoreEDL([out, retval] VARIANT_BOOL* pbIgnoreEDL );
+
+// We may need to add offset here to offset start latency.  The data unit is sample count +/-.
+    [propget, helpstring("Retrieve device startup latency value.")] 
+    HRESULT StartupLatency([out, retval] long *plLantency);
+
+    [propput, helpstring("Specify device startup latency value.")] 
+    HRESULT StartupLatency([in] long lLantency);
+
+// We may need to add offset here to offset stop latency.  The data unit is sample count +/-.
+    [propput, helpstring("Specify device stop latency value.")] 
+    HRESULT StopLatency([in] long lLantency);
+
+    [propget, helpstring("Retrieve device stop latency value.")] 
+    HRESULT StopLatency([out, retval] long *plLantency);
+
+    [propget, helpstring("Retrieve current Timecode position on tape.")] 
+    HRESULT CurrentPosition([out, retval] WMTIMECODE_SAMPLE *ptimecodeSample);
+
+    [propget, helpstring("Retrieve current Absolute Track Number on tape.")] 
+    HRESULT CurrentATN([out, retval] WMTIMECODE_SAMPLE *ptimecodeSample);
+
+    [propget, helpstring("Retrieve current Edit Decision List Entry.")] 
+    HRESULT CurrentEDLEntry([out, retval] long *plCurrentEntry);
+
+    [propget, helpstring("Retrieve Frame Rate for current device control.")] 
+    HRESULT FrameRate([out, retval] long *plFrameRate);
+
+    [propput, helpstring("Set Frame Rate for current device control.")] 
+    HRESULT FrameRate([in] long lFrameRate);
+
+    [propget, helpstring("Retrieve total EDLs duration in Timecode format hh:mm:ss:ff.")]
+    HRESULT TotalEDLDurationInTimecode( long* plDuration );
+
+    [propget, helpstring("Retrieve total EDLs duration in millisecond unit.")]
+    HRESULT TotalEDLDurationInMilliseconds( long* plDuration );
+};
+
+[
+	uuid(22F0E5C5-5008-4E2E-BC60-2027F5C236CE),
+	version(1.0),
+	helpstring("Windows Media Encoder Device Control")
+]
+library WMDEVICECONTROLLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+    interface IWMEncEditDecisionList;
+    interface IWMEncEditDecisionData;
+    interface IWMEncDeviceControlPlugin;
+
+    [
+        uuid(632B6066-BBC6-11D2-A329-006097C4E476),
+        helpstring("Receives Windows Media device control event notifications.")
+    ]
+    dispinterface _IWMEncDeviceControlEvents
+    {
+        properties:
+        methods:
+        [id(DISPID_DEVICECONTROLEVENT_STATECHANGE), helpstring("Indicates the device control operation state.")] 
+		HRESULT OnDeviceControlStateChange([in] WMENC_DEVICECONTROL_STATE enumState, [in] BSTR bstrName, [in] BSTR bstrScheme );
+    };
+
+    [
+        uuid(632B608F-BBC6-11D2-A329-006097C4E476),
+        helpstring("WMEncEditDecisionList object.")
+    ]
+    coclass WMEncEditDecisionList
+    {
+        [default] interface IWMEncEditDecisionList;
+    };
+
+};

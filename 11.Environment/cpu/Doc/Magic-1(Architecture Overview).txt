@@ -1,0 +1,281 @@
+Magic Architecture Overview
+
+The basic architecture is one-address, with 8 and 16-bit operations.  Each process will see up to 128K bytes of address space as 32 2K data pages and 32 2K code pages mapped into a 22-bit physical address space (actually, it is effectively a 23-bit physical address space when you consider device space).  Each process has an associated page table consisting of 64 16-bit entries in dedicated page table memory, and located by a per-process page table base pointer. I/O is memory mapped.  Support exists for external interrupts and DMA.  Finally, bit and byte order are big-endian, because as all right-thinking people know, little-endianness is the mark of Satan.
+
+An emphasis was placed on efficient addressing for traditional languages, so there is a fairly rich (though unfortunately non-orthogonal) set of addressing modes and address generation instructions.  I also am a fan of atomic "compare and branch" and "test and branch" instructions, so I've devoted a large chunk of the opcode space to them.  By limiting myself to 8-bit opcodes, I've pretty much had to abandon a clean encoding.  This means that I'll be using a lot more microcode than most projects of this sort that I've seen.  Oh well.
+
+I should note that I wasn't shooting for elegence in this architectural design, but rather utility within my project goals and constraints.  In particular, I designed with code generation output of a non-optimizing C compiler in mind.  This is reflected in the addressing modes, as well as the way I strayed from a pure one-address model.  My first version of Magic was a pure one-address accumulator design.  However, when I began doing hand-compilation of C code into Magic assembly I eventually added the "B" register and "C" registers for efficiency.  "B" is almost an accumulator, but not quite as capable as "A", and "C" is a count register for repeating operations.
+
+One of the more interesting outcomes of my iterative Magic architecture design process is that I now have a much greater understanding of why the X86 architecture is the way it is (i.e. - covered with warts).  For Magic, I was by intent not taking a long view.  I designed for the first (and probably only) implementation and was very conscious of my immediate technology constraints (i.e. TTL, wire-wrap, limited amount of time my wife would let me play with this stuff, etc.).  My goal was functionality of the first implementation.  This, I imagine, was probably not unlike the goals of the early X86 designers battling in the marketplace with other microprocessor designs for survival.  
+
+What made this so clear to me was the number of times during Magic design that I realized that with just a few wires or gates, I could add something potentially useful.  This "useful" feature, though, would be useful in the same sense that you could create useful storage in your house by nailing a few pieces of plywood together in the back yard.  Useful space - but at the cost of degrading the overall appearance (and future resale value) of your home.  
+
+For example, at one point I realized that with just a trivial amount of extra hardware I could create a generic "repeat" instruction which would use the C (count) register to repeatedly execute the following instruction.  X86 has such an instruction - the repeat prefix.  When you consider the microprocessor landscape when the 8086 was introduced, the repeat prefix added real market value.  Architecturally in the long run, though,  it is a vile abomination that costs far more to retain backwards compatibility in modern X86 implementations than any value it might bring.  On the other hand,  in a competitive marketplace those ugly but useful useful features today may well be what allow you to survive to see tommorow.  The key is finding the balance.
+
+Anyway, here's Magic:
+
+Visible Registers
+ A - Accumulator.  Can be addressed as 8 or 16 bits.  Implied target of most operations and also used as a general load/store base register and memop operand. 
+ B - General load/store base register, plus source operand of alu ops and memops and target of some loads..   
+ C - Special-purpose count register for block moves and variable shifts. 
+ MSW.  Alu flags: Carry, Zero, Sign and oVerflow.  Control flags: Mode (0 for supervisor, 1 for user), Paging enable and EI (Enable Interrupts).  Also, following a memory fault, a  status bit, Data,  will appear in the saved MSW describing whether the faulting address was referencing the code or data portion of the page table. 
+ DP - Global data pointer.  Most data references are relative to a base. 
+ SP - Stack pointer.  Always pushes and pop 16 bits at a time (though doesn't need to be aligned. 
+ SSP - Supervisor stack pointer.  Used when in supervisor mode. 
+ PC - Program Counter 
+ PTB - Base of page table for current process in user mode.  Supervisor mode base is hardwired to 0x0000.  Note that the address refers to the special page table memory - not main memory. 
+
+Control Lines
+All control lines are low active.  They are:
+
+ IRQ0, IRQ1, IRQ2, IRQ3, IRQ4 and IRQ5 - External interrupt request lines.  Highest priority is IRQ0, lowest is IRQ5. 
+ DMA_REQ - Request control of address and data busses.  Assert this line, then wait for DMA_ACK.  At that point, you have control of the busses, but must keep DMA_REQ asserted until you're done with them.  I expect the front panel to be the only user of this feature. 
+ DMA_ACK - See above. 
+ RESET - Asserting this line will cause the following:  Internal memory address register (MAR)  zeroed, which effectively sets PC to 0x0000 
+ SP zeroed 
+ Supervisor mode 
+ Paging off 
+ Interrupts disabled 
+ Condition codes (C,S,V,Z) reset 
+ IRQ0-IRQ5 reset (and internal halt FF reset) 
+ UARTS reset 
+ IDE interface reset 
+ 
+
+Addressing Modes
+Ignoring some special-purpose instructions, the Accumulator (register A) is the source and destination of all unary operations, and destination and source 1 of binary operations with a memory operand or register B serving as source 2.  Both register A and register B may be the source or target registers for memory operations and memory adress generation operations.
+
+The available memory addressing modes are:  Register Indirect with offset - uint8(A) and uint8(B) 
+ Frame local with offset - uint8(SP) and uint16(SP) 
+ Global with offset - uint16(DP) 
+ Immediate - (PC++) 
+ Push - (--SP) 
+ Pop - (SP++) 
+
+
+Note that an emphasis is placed on base-relative addressing, and that absolute addressing is available only by first loading an immediate into a base register. The intent here is to encourage position independent code.  My expectation is that most  global variable addressing will be done relative to DP, and locals relative to SP.  Further towards the aim of position-independent code, all direct branching is PC-relative.
+
+Paging
+When paging is enabled, all addresses go through the address translation mechanism.  This involves generating a 22-bit physical address by selecting a 2K page based on a direct index of the top 5 bits of the logical address into the page table, and concatenating the lower 11 bits of the logical address.   A process' 64-entry page table is split in to 32 code page entries, and 32 data page entries.  In user mode, the base of the page table is located via the Page Table Base (PTB) register.  When in supervisor mode, the base is hard-wired to 0x0000.  There also exists a mechanism to override the supervisor mode page table base and use the current PTB instead, as well as explicit selections for code and data accesses.  The latter features are used in supervisor mode to copy data between the user and supervisor address spaces.
+
+Each page table entry is 16 bits wide.  The low 11 bits are used to select the page, and the upper 3 bits are used as page attribute flags.  Two bits are reserved for expansion of either the address space or page attribute flags.  The flags are:
+
+ P - Page present. 
+ W - Page writeable 
+ M - Is this RAM or a device?  (This is how we do device memory mapping) 
+
+To simplify the circuitry, these bits will only be written is supervisor mode using the Write Page Table Entry (WPTE) instruction.  To keep track of pages written to, all new pages will be entered into the table a non-writeable.  On the first write, we'll trap and the OS can make the page dirty in the OS page table and then turn on the writeable bit and resume.
+
+Instruction Set
+Magic feature a one-bye opcode followed by up to 3 bytes of immediate operands.  There are 256 possible instructions, and the full list may be found in the microcode listings starting here.
+
+Load/Store
+ ld.8/16 [a|b],[imm8|0|i16|exti8|([a|b|sp+u8])|(sp|dp+u16) 
+ st.8/16 ([a|b|sp+u8])|(sp|dp+u16),[a|b] 
+ ldclr a,(b)    // Load & clear for semaphore implementation 
+ push [a|msw|b|c|dp|pc|sp) 
+ pop [a|msw|b|c|dp|pc|sp) 
+ memcopy    // Block copy, count in C 
+ tosys    // Block copy from user to system space, count in C 
+ fromsys  // Block copy from system to user space, count in C 
+ ldcode.8/16 a,(b)   // Load from code space 
+ stcode.8/16 (b),a   // Store to code space 
+
+Address Manipulation
+ lea [a|b],([a|b|sp|dp|pc]+u16) 
+
+Special Register Access
+ ld a,msw 
+ ld msw,a 
+ ld ptb,a 
+ ld ssp,a 
+ ld dp,a 
+ ld sp,a 
+ ld c,a 
+
+Arithmetic Ops
+ sub.8/16    a,[imm8|1|i16|exti8|b|([a|b|sp]+u8])|(dp+u16) 
+ add.8/16    a,[imm8|1|i16|exti8|b|([a|b|sp]+u8])|(dp+u16) 
+ and.8/16    a,[imm8|255|i16|extib|8|([a|b|sp]+u8])|(dp+u16) 
+ or.8/16    a,[imm8|1|i16|exti8|b|([a|b|sp]+u8])|(dp+u16) 
+ cmp.8/16    a,[imm8|0|i16|exti8|b|([a|b|sp]+u8])|(dp+u16) 
+ sbc.16    a,b 
+ adc.16    a,b 
+ xor.16    a,b 
+ vshl.16    a    // shift count in C 
+ vshr.16    a    // shift count in C 
+ shl.16    a 
+ shr.16    a 
+ sex     [a|b]    // Sign extend 
+
+Control Flow
+ cmpb.[ne|eq|lt|le].8/16 a,[imm8|i16|exti8|b|([a|b|sp]+u8])|(dp+u16),d8 
+ br.[eq|ne|lt|le|gt|ge|ltu|leu|gtu|geu]    d16 
+ b[set|clr] a,mask8/16,d8 
+ sbr d8    // Short displacement branch 
+ br [d16|a] 
+ call [d16|a] 
+ enter i8/i16 
+ leave     // Pseudo-op for "pop sp" 
+ ret       // Pseudo-op for "pop pc" 
+ reti      // Return from interrupt 
+
+System Ops
+ halt 
+ trapo        // Trap on overflow 
+ syscall u8   // System call trap 
+ bpt          // Breakpoint trap 
+ wcpte a,(b)    // Write code page table entry for address in B 
+ wdpte a,(b)    // Write data page table entry for address in B 
+
+Software Conventions
+Although not strictly part of the hardware architecture, the expected usage of the features is important to consider.  On this page we'll briefly outline the initial expectations of calling conventions, data access and shared library linkage.
+
+Here's an index to the various sections:
+
+ Calling Convention 
+ Global data accesses 
+ Local data accesses 
+ Memory map 
+ IRQ assignments 
+ Load file format 
+ Shared library linkage 
+
+Calling Convention
+In brief, we'll be using a fixed-frame convention in which passed parameters and returned values are stored in the caller's frame. As far as architectural support, we have the ENTER and LEAVE instructions for frame creation and deletion. "ENTER #imm" allocates imm bytes of storage on the stack, and then pushes the original stack pointer. LEAVE is actually just another name for "POP SP". Each procedure is expected to allocate enough space for all parameters for called routines. Values will be returned in registers - a for 8/16 bits and both a&b for 32-bit results. In the latter case, a will hold the lsw and b the msw. Structures are passed by copy and structures are returned by having the caller pass a pointer to the return area as hidden argument (passed in register A).
+
+Note also that arguments are processed left to right.
+
+The stack grows down towards decreasing addresses, and should be kept word-aligned by the software (to prevent page faults between byte-accesses which might result in inconsistent trap state. Here's an ASCII sketch, in which the current SP is at the bottom of the picture
+
+|                 |
+| arg 0           |
+| arg 1           |
+| arg ..N         |
+|-----------------|
+| prev. frame ptr |
+|-----------------| } = current frame
+| return address  | } 
+|-----------------| } 
+|       .         | } 
+|       .         | } 
+| local variables | } 
+| and spill       | }
+|-----------------| } 
+|(parameter space)| } 
+|                 | } 
+| arg 0           | } 
+| arg 1           | } 
+| arg ..N         | }
+|-----------------| } 
+| prev. frame ptr | } 
+|-----------------| << SP of current procedure } 
+  
+What this picture is intending to show is that I intend to use a fixed-frame calling convention in which arguments are passed in the caller's frame. The callee references all of his incoming parameters SP relative (and will, in fact, reference all locals and spill variables similarly). Functions return 2 and 4-byte values in regisers a and a/b. Space for structure returns must be allocated by the caller, and the caller passes a pointer to this space in register a. The called function will copy the value before returning.
+
+Note that we consider frame size to include the previous stack pointer pushed at the end of the ENTER instruction.  In other words, frame_size equals the ENTER parameter plus 2.  It does not include the caller's return pointer.
+
+Items within the frame are accesses as follows:
+
+ Incoming arguments: (SP + frame_size + 2 + argument_offset) 
+ Passed arguments (SP + 2 + argument_offset) 
+ Returned return values: (SP + frame_size + 2) 
+ Local variables: (SP + 2 + parameter_space_size + local_offset) 
+
+Here's an example.  Consider the following program:
+
+int foo( int n ) {
+    return (n + 1);
+}
+
+void bar() {
+    int result;
+    result = foo(10);
+}
+
+
+"bar" has one local variable (result, 2 bytes), passes one parameter( the immediate "10", size 2 bytes) and accepts a 2-byte function result.  Thus it's frame would be:
+
+|-----------------| } = bar's frame
+| return address  | } 
+|-----------------| } 
+| res             | } <= locals
+|-----------------| } 
+| argument for fib| } <= parameters
+|-----------------| } 
+| prev. frame ptr | } 
+|-----------------| << SP of current procedure } 
+The size of the frame is thus 10 bytes, and is created in two step.  The return address is pushed to the stack during the original call to bar.  Immediately on entry to bar, we execute a "entry 4" instruction, which allocates 4 bytes (2 for result, 2 for argument area) and the pushes the previous stack pointer.
+
+To call foo, bar would store a 10 in the argument area and then execute the call instruction (which pushes a return address).  Let's assume that the compiler isn't very clever, and foo allocates a spill variable to save the result of the (n + 1) expression before returning it.  So, after bar's entry, the stack would look like:
+
+|-----------------| 
+| return address  |  
+|-----------------|  
+| res             |
+|-----------------|  
+| 10              |  <= "10" passed to foo
+|-----------------|  
+| prev. frame ptr |  
+|-----------------|
+| bar ret address | } = foo's frame 
+|-----------------| } 
+| n+1 spill temp  | } 
+|-----------------| } 
+| prev. frame ptr | } 
+|-----------------| << SP of current procedure }
+Note that foo has an empty outgoing argument region (since it doesn't make any calls) and an empty local variable region.  Now, foo find it's data as follows:
+
+load n [the 10] from bar's frame at (SP + 10) 
+add 1 to n, giving 11 
+store temporary result in foo's spill area at (SP + 2) 
+load the result into register A 
+Execute a leave instruction to strip the frame (this is actually just a "pop sp" 
+Execute a return instruction (actually "pop pc"). 
+Global Data Accesses
+The register DP is intended to be used as a base for global variable addressing.  Because I don't plan on any link-time or post-link optimizations, my compiler will never know how big a dp-relative offset will be.  That's the reason we just have a 16-bit displacement dp-relative addressing mode and not an 8-bit variant.
+
+I also expect to use DP to allow shared library code to access its globals.  In short, all calls to shared library entry points will go through stubs which save the current DP and load the DP for the shared library.  The return from the shared library routine would go back through the stub and the original DP would be replaced.
+
+Local Data Accesses
+Local data access will be fairly simple - SP+u8 and SP+u16.  For details on layout within the frame, see the Calling Conventions section.
+
+Memory Map
+When M-1 boots, it comes up in supervisor mode, paging off and interrupts disabled.  When paging is off, all memory accesses are done to device memory, and code and data addresses map to the same physical address space (0x0000 through 0xFFFF).  From 0x0000 to 0x3FFF is either ROM or RAM, depending on a front panel switch.  From 0x4000 to 0x7FFF is always RAM.  The top 128 bytes are decoded into 16-byte device control blocks.  They are allocated as follows:
+
+ 0xFFF0-0xFFFF: UART #0 
+ 0xFFE0-0xFFEF: UART #1 
+ 0xFFD0-0xFFDF: Real time clock 
+ 0xFFC0-0xFFCF: 2-digit hex display 
+ 0xFFB0-0xFFBF: IDE interface 
+ 0xFFA0-0xFFAF: Front panel switch block 
+ 0xFF90-0xFF9F: unassigned 
+ 0xFF80-0xFF8F: unassigned 
+
+Interrupt Vector
+IRQ0 is the highest priority interrupt request line and IRQ5 is the lowest.
+
+ IRQ0 - unassigned 
+ IRQ1 - IDE interface 
+ IRQ2 - Serial port 1 
+ IRQ3 - Serial port 0 
+ IRQ4 - unassigned 
+ IRQ5 - Heartbeat interrupt 
+
+Load File Format
+Probably COFF, maybe ELF.  Depends on what existing open source link editors I come across.  Of course, I could always be twisted and use HP's old PA-RISC Spectrum Object Module, or SOM format.  However, I've worked with linkers before, and am not anxious to write my own.
+
+Shared Library Linkage
+TBD.
+
+ 
+
+  
+ 
+
+ 
+
+
+
+ 
+ 

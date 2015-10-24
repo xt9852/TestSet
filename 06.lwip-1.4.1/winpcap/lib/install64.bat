@@ -1,0 +1,1 @@
+copy npf-64.sys C:\WINDOWS\system32\drivers\npf.sys
