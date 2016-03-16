@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by TestSet.rc
+// Microsoft Visual C++ 生成的包含文件。
+// 供 TestSet.rc 使用
 //
 #define IDP_SOCKETS_INIT_FAILED         99
 #define IDD_DLG_DB                      105
@@ -34,6 +34,7 @@
 #define IDD_DLG_H323_CALLING            134
 #define IDD_DLG_H323_INCOMING_CALL      135
 #define IDD_DLG_H323_ADVANCED_SETUP     136
+#define IDD_2_CPU                       247
 #define IDD_DLG_MESSAGE                 1000
 #define IDC_MESSAGE_BTN_CLOSE           1001
 #define IDC_MESSAGE_BTN_1               1002
@@ -448,7 +449,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        247
+#define _APS_NEXT_RESOURCE_VALUE        248
 #define _APS_NEXT_COMMAND_VALUE         30001
 #define _APS_NEXT_CONTROL_VALUE         14021
 #define _APS_NEXT_SYMED_VALUE           300

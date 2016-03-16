@@ -4,7 +4,7 @@
 #include "08.Algorithm/base/MD5.h"
 #include "../courgette/courgette.h"
 
-#pragma comment(lib, "../10.thirdParty/lib/zip/7z.lib")
+//#pragma comment(lib, "../10.thirdParty/lib/zip/7z.lib")
 #ifdef _DEBUG
 #pragma comment(lib, "../10.thirdParty/lib/courgette/courgetted.lib")
 #else
@@ -548,7 +548,7 @@ namespace XT_P2P
         int ret = runProcess(cmd, rootPath); // 使用7z.exe压缩文件
 #else
 
-        int ret = exclude_7z(zip7, outPath); // 使用7z.lib压缩文件
+        int ret = 0;// exclude_7z(zip7, outPath); // 使用7z.lib压缩文件
 
 #endif // ZIP7_EXE
 

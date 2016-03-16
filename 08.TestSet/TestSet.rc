@@ -14,7 +14,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (Simplified, PRC) resources
+// 中文(简体，中国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -625,7 +625,7 @@ CAPTION "H323(Calling...)"
 FONT 9, "宋体"
 BEGIN
     PUSHBUTTON      "取消呼叫",IDC_H323_CALLING_CANCELCALL,135,11,44,14
-    ICON            13400,IDC_H323_CALLING_STATIC,3,6,20,20
+    ICON            IDI_H323_CALLING_ICONGREEN,IDC_H323_CALLING_STATIC,3,6,20,20
     LTEXT           "",IDC_H323_CALLING_WAIT_TIP,28,9,100,22
 END
 
@@ -804,6 +804,10 @@ BEGIN
     BEGIN
     END
 
+    IDD_2_CPU, DIALOG
+    BEGIN
+    END
+
     IDD_3_NETWORK, DIALOG
     BEGIN
     END
@@ -885,7 +889,7 @@ BEGIN
     ID_UI_STATBAR_INDICATOR_NISH "状态栏"
 END
 
-#endif    // Chinese (Simplified, PRC) resources
+#endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

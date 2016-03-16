@@ -495,7 +495,7 @@ class AssignmentProblem {
       AssignOne(p_info, m_info);
 //       VLOG(4) <<  "    Extending assignment seq[+" << p_pos - p_pos_start
 //               << "] -> " << ToString(p_info) << " := " << ToString(m_info);
-      printf("    Extending assignment seq[+%d] -> %s := \n",
+      printf("    Extending assignment seq[+%d] -> %s := %s\n",
           (p_pos - p_pos_start),
           ToString(p_info).c_str(),
           ToString(m_info).c_str());

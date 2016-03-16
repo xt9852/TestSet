@@ -267,13 +267,13 @@ void CDlg_Network::OnBnClickedBtnFtp()
             {
                 if (!ftp->CreateDirectory(dir.c_str()))
                 {
-                    LOG(ERROR) << "CreateDirNotOK" << dir.c_str() << GetLastError();
+                    //LOG(ERROR) << "CreateDirNotOK" << dir.c_str() << GetLastError();
                 }
             }
 
             if (!ftp->SetCurrentDirectory(dir.c_str())) // 设置当前目录
             {
-                LOG(ERROR) << "SetDirNotOK" << dir.c_str() << GetLastError();
+                //LOG(ERROR) << "SetDirNotOK" << dir.c_str() << GetLastError();
             }
         }
         else

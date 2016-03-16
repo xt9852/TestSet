@@ -16,6 +16,7 @@
 
 #include <limits>
 #include <vector>
+#include <algorithm>
 #include <windows.h>
 
 // #include "base/basictypes.h"

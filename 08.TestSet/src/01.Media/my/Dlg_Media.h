@@ -2,9 +2,6 @@
 #pragma once
 
 #include "resource.h"
-//#include "Srv/Srv_AV.h"
-//#include "Media/MediaCapt.h"
-//#include "SoundCtrl.h"
 #include "VideoPlay.h"
 #include "VideoCapture.h"
 #include "VideoEncode.h"
@@ -21,20 +18,10 @@ public:
     enum { IDD = IDD_1_MEDIA };
 
 private:
-    CTabCtrl    tableCtrl_;
+    CTabCtrl        tableCtrl_;
+    CSliderCtrl     soundCtrl_;    // “Ù¡øøÿ÷∆
 
-//     CSoundCtrl  m_SoundCtrl;    // “Ù∆µøÿ÷∆
-     CSliderCtrl m_SoundSel;
-// 
-//     XT_IOCP::CSrv_AV m_SrvAV;
-// 
-// 	CMeidaCapt capture_;
-// 
-// 	BYTE		*m_pbyData;
-// 	DWORD		m_dwDataLen;
-// 	CBrush		m_hBrush;
-
-    VideoPlay       videoPlay_;
+    VideoPlay       videoPlay1_;
     VideoPlay       videoPlay2_;
     VideoCapture    videoCature_;
     VideoEncode     videoEncode_;

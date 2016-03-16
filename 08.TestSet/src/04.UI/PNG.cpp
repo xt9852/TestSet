@@ -527,7 +527,7 @@ void CPNG::ToBitmap(const unsigned char *image)
             }
         }
 
-        for (int i = 0; i < remain; i++)
+        for (int k = 0; k < remain; k++)
         {
             data_[index++] = 0;
         }

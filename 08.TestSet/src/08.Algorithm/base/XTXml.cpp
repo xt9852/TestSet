@@ -133,8 +133,8 @@ namespace XT_XML
 	 */
 	TiXmlElementEx* TiXmlElementEx::SelectSingleNode(const char *path)
 	{
-		TiXmlElement *next = NULL;
 		TiXmlElement *node = this;
+		TiXmlElement *child = NULL;
 
 		char seps[] = "\\";
 		char temp[MAX_PATH] = "";
@@ -146,11 +146,11 @@ namespace XT_XML
 
 		while (token != NULL)
 		{
-			next = node->FirstChildElement(token);
+			child = node->FirstChildElement(token);
 
-			if (next != NULL)
+			if (child != NULL)
 			{
-				node = next;
+				node = child;
 			}
 			else
 			{

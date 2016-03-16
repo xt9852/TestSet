@@ -239,7 +239,7 @@ void AssemblyProgram::AssignRemainingIndexes(RVAToLabel* labels) {
   }
 
   //VLOG(1) << used << " of " << labels->size() << " labels pre-assigned";
-  printf("%d of %d labels pre-assigned\n");
+  //printf("%d of %d labels pre-assigned\n");
 
   // Are there any unused labels that happen to be adjacent following a used
   // label?

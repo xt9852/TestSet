@@ -7,7 +7,7 @@
 #include <algorithm> // find_if
 #include <cctype>  // isspace
 #include <atlchecked.h> // strupr_s
-
+#include <functional>
 
 #if defined( WIN32 ) || defined( _WIN32 )
 # include <windows.h>

@@ -9,15 +9,10 @@ IMPLEMENT_DYNAMIC(CDlg_Media, CDialog)
 CDlg_Media::CDlg_Media(CWnd* pParent /*=NULL*/)
     :CDialog(CDlg_Media::IDD, pParent)
 {
-// 	m_pbyData = NULL;
-// 	m_dwDataLen = 0;
-// 	m_hBrush.CreateSolidBrush(RGB(212, 208, 200));
 }
 
 CDlg_Media::~CDlg_Media()
 {
-//	if (NULL != m_pbyData) delete[] m_pbyData;
-
     OnBnClickedMediaBtnUninit();
 }
 
@@ -25,7 +20,7 @@ void CDlg_Media::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_MEDIA_TAB, tableCtrl_);
-    DDX_Control(pDX, IDC_MEDIA_SLIDER1, m_SoundSel);
+    DDX_Control(pDX, IDC_MEDIA_SLIDER1, soundCtrl_);
 }
 
 BEGIN_MESSAGE_MAP(CDlg_Media, CDialog)
@@ -45,26 +40,8 @@ BOOL CDlg_Media::OnInitDialog()
     tableCtrl_.InsertItem(0,  "H264");
     tableCtrl_.InsertItem(1,  "H323");
 
-    m_SoundSel.SetRange(0, 100, TRUE);
-    m_SoundSel.SetTicFreq(10);
-// 
-//     BYTE byError = m_SrvAV.Init(this);
-//     if (0 != byError)
-//     {
-//         CString strError(_T("初使化客户端错误:"));
-//         strError.AppendFormat(_T("%d"), byError);
-//         MessageBox(strError);
-//         return FALSE;
-//     }
-// 
-//     byError = m_SrvAV.Start();
-//     if (0 != byError)
-//     {
-//         CString strError(_T("运行错误:"));
-//         strError.AppendFormat(_T("%d"), byError);
-//         MessageBox(strError);
-//         return FALSE;
-//     }
+    soundCtrl_.SetRange(0, 100, TRUE);
+    soundCtrl_.SetTicFreq(10);
 
     return TRUE;
 }
@@ -100,7 +77,7 @@ void CDlg_Media::OnBnClickedMediaBtnInit()
         return;
     }
 
-    ret = videoPlay_.init(20, 80, GetDC()->m_hDC, videoCature_.getBmpInfoHeader());
+    ret = videoPlay1_.init(20, 80, GetDC()->m_hDC, videoCature_.getBmpInfoHeader());
 
     if (0 != ret)
     {
@@ -132,16 +109,20 @@ void CDlg_Media::OnBnClickedMediaBtnInit()
         return;
     }
 
-    videoCature_.setNext(&videoPlay_);
-    videoPlay_.setNext(&videoEncode_);
+    videoCature_.setNext(&videoPlay1_);
+    videoPlay1_.setNext(&videoEncode_);
     videoEncode_.setNext(&videoDecode_);
     videoDecode_.setNext(&videoPlay2_);
 }
 
 void CDlg_Media::OnBnClickedMediaBtnUninit()
 {
-    videoPlay_.uninit();
+    videoCature_.stopCapture();
+    videoPlay1_.uninit();
+    videoPlay2_.uninit();
     videoCature_.uninit();
+    videoEncode_.uninit();
+    videoDecode_.uninit();
 }
 
 void CDlg_Media::OnBnClickedStart()
@@ -156,7 +137,7 @@ void CDlg_Media::OnBnClickedStop()
 
 void CDlg_Media::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-    m_SoundSel.GetPos();
+    soundCtrl_.GetPos();
 
     CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
